@@ -74,6 +74,51 @@ S: dict[str, dict[str, str]] = {
 }
 
 
+# Bot profile text set via the Bot API at startup. Telegram picks the version by the user's app language;
+# "" is the default for everyone else. Most Tamil speakers run Telegram in English, so the default is bilingual.
+# Limits: description 512 characters (empty-chat screen), short description 120 (profile page and share links).
+BOT_DESCRIPTION = {
+    "": (
+        "உங்களுக்குக் கிடைக்கக்கூடிய அரசு நலத் திட்டங்களைக் கண்டறியுங்கள்.\n"
+        "Find government welfare schemes you may be eligible for.\n\n"
+        "🎙️ Talk or type in தமிழ், English or हिंदी: your age, district, work and family income.\n"
+        "✅ See central and Tamil Nadu schemes that look likely for you, with documents and where to apply.\n\n"
+        "🔒 Never asks for Aadhaar, phone or bank numbers.\n"
+        "⚖️ Indicative only. The government department makes the final decision."
+    ),
+    "en": (
+        "Find government welfare schemes you may be eligible for.\n\n"
+        "🎙️ Send a voice note or type in Tamil, English or Hindi: your age, district, work and family income.\n"
+        "✅ See which central and Tamil Nadu schemes look likely for you, the documents you need and where to apply.\n"
+        "👆 Answer a few quick questions with one tap.\n\n"
+        "🔒 Never asks for Aadhaar, phone or bank numbers.\n"
+        "⚖️ Indicative only. The government department makes the final decision."
+    ),
+    "ta": (
+        "உங்களுக்குக் கிடைக்கக்கூடிய அரசு நலத் திட்டங்களைக் கண்டறியுங்கள்.\n\n"
+        "🎙️ தமிழ், ஆங்கிலம் அல்லது இந்தியில் பேசுங்கள் அல்லது எழுதுங்கள்: உங்கள் வயது, மாவட்டம், வேலை, குடும்ப வருமானம்.\n"
+        "✅ உங்களுக்குக் கிடைக்க வாய்ப்புள்ள மத்திய, தமிழ்நாடு அரசுத் திட்டங்கள், தேவையான ஆவணங்கள், விண்ணப்பிக்கும் இடம்.\n"
+        "👆 சில கேள்விகளுக்கு ஒரே தட்டலில் பதில்.\n\n"
+        "🔒 ஆதார், தொலைபேசி, வங்கி எண்களைக் கேட்பதில்லை.\n"
+        "⚖️ இது தோராயமான தகவல் மட்டுமே. இறுதி முடிவு அரசுத் துறையுடையது."
+    ),
+    "hi": (
+        "जानिए कौन-सी सरकारी कल्याण योजनाएँ आपको मिल सकती हैं।\n\n"
+        "🎙️ तमिल, अंग्रेज़ी या हिंदी में बोलें या लिखें: अपनी उम्र, ज़िला, काम और परिवार की आय।\n"
+        "✅ देखें कि कौन-सी केंद्र और तमिलनाडु सरकार की योजनाएँ आपके लिए संभावित हैं, कौन-से दस्तावेज़ चाहिए और कहाँ आवेदन करें।\n"
+        "👆 कुछ आसान सवालों के जवाब एक टैप में।\n\n"
+        "🔒 आधार, फ़ोन या बैंक नंबर कभी नहीं माँगता।\n"
+        "⚖️ केवल अनुमान। अंतिम निर्णय संबंधित सरकारी विभाग का होगा।"
+    ),
+}
+BOT_SHORT_DESCRIPTION = {
+    "": "அரசுத் திட்டங்களைக் கண்டறியுங்கள் · Find government schemes you may be eligible for. Tamil, English, Hindi.",
+    "en": "Find government welfare schemes you may be eligible for. Talk in Tamil, English or Hindi, by voice or text.",
+    "ta": "உங்களுக்குக் கிடைக்கக்கூடிய அரசு நலத் திட்டங்களைக் கண்டறியுங்கள். குரல் அல்லது எழுத்தில் பேசுங்கள்.",
+    "hi": "जानिए कौन-सी सरकारी योजनाएँ आपको मिल सकती हैं। तमिल, अंग्रेज़ी या हिंदी में, बोलकर या लिखकर।",
+}
+
+
 def t(key: str, lang: str, **kw) -> str:
     d = S[key]
     s = d.get(lang) or d["en"]

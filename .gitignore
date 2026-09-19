@@ -4,6 +4,9 @@ __pycache__/
 # Virtual environments
 venv/
 
+# Downloaded retrieval models and cached chunk vectors (server/.models)
+.models/
+
 # Testing / Coverage
 .pytest_cache/
 

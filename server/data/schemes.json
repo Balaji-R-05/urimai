@@ -1,0 +1,2464 @@
+[
+  {
+    "schema_version": 1,
+    "id": "pm_kisan",
+    "status": "active",
+    "level": "central",
+    "category": [
+      "agriculture",
+      "income_support"
+    ],
+    "name": {
+      "en": "PM-KISAN",
+      "ta": "பிஎம்-கிசான் விவசாயிகள் நிதியுதவி",
+      "hi": "पीएम-किसान"
+    },
+    "aliases": [
+      "PM Kisan",
+      "Kisan Samman Nidhi",
+      "PM-KISAN Samman Nidhi"
+    ],
+    "benefit": {
+      "summary": {
+        "en": "₹6,000 a year in 3 instalments to farmer families",
+        "ta": "விவசாயக் குடும்பங்களுக்கு ஆண்டுக்கு ₹6,000 (3 தவணைகளில்)"
+      },
+      "annual_cash_value_inr": 6000
+    },
+    "eligibility": {
+      "all": [
+        {
+          "field": "occupation",
+          "op": "eq",
+          "value": "farmer"
+        },
+        {
+          "field": "owns_agri_land",
+          "op": "is_true"
+        }
+      ],
+      "any": [],
+      "none": [
+        {
+          "field": "is_income_tax_payer",
+          "op": "is_true"
+        },
+        {
+          "field": "is_govt_employee",
+          "op": "is_true"
+        }
+      ],
+      "other": []
+    },
+    "documents": [
+      "aadhaar",
+      "land_records",
+      "bank_passbook"
+    ],
+    "application": {
+      "mode": "both",
+      "where": {
+        "en": "pmkisan.gov.in, CSC / e-Sevai centre, or agriculture office",
+        "ta": "pmkisan.gov.in, இ-சேவை மையம் அல்லது வேளாண் அலுவலகம்"
+      },
+      "url": "https://pmkisan.gov.in/",
+      "steps": {
+        "en": [
+          "Register on pmkisan.gov.in (New Farmer Registration) or at a CSC",
+          "Enter Aadhaar, land and bank details",
+          "Complete e-KYC",
+          "Verification by the state",
+          "Money is credited to the bank account"
+        ]
+      }
+    },
+    "source": {
+      "url": "https://pmkisan.gov.in/",
+      "origin": "manual"
+    },
+    "verification": {
+      "status": "unverified"
+    },
+    "mutually_exclusive_with": []
+  },
+  {
+    "schema_version": 1,
+    "id": "pmjay_senior",
+    "status": "active",
+    "level": "central",
+    "category": [
+      "health"
+    ],
+    "name": {
+      "en": "Ayushman Bharat PM-JAY (Vay Vandana, age 70+)",
+      "ta": "ஆயுஷ்மான் பாரத் (70+ மூத்த குடிமக்கள்)",
+      "hi": "आयुष्मान भारत वय वंदना (70+)"
+    },
+    "aliases": [
+      "Ayushman Bharat",
+      "PM-JAY",
+      "PMJAY",
+      "Ayushman card",
+      "Vay Vandana"
+    ],
+    "benefit": {
+      "summary": {
+        "en": "Free hospital treatment up to ₹5 lakh a year for citizens aged 70+",
+        "ta": "70 வயதுக்கு மேற்பட்டோருக்கு ஆண்டுக்கு ₹5 லட்சம் வரை இலவச சிகிச்சை"
+      },
+      "annual_cash_value_inr": 0,
+      "cover_highlight": {
+        "en": "₹5 lakh health cover",
+        "ta": "₹5 லட்சம் மருத்துவக் காப்பீடு"
+      }
+    },
+    "eligibility": {
+      "all": [
+        {
+          "field": "age",
+          "op": "gte",
+          "value": 70
+        }
+      ],
+      "any": [],
+      "none": [],
+      "other": []
+    },
+    "documents": [
+      "aadhaar"
+    ],
+    "application": {
+      "mode": "both",
+      "where": {
+        "en": "Ayushman app / beneficiary.nha.gov.in or any empanelled hospital",
+        "ta": "ஆயுஷ்மான் செயலி அல்லது பதிவு பெற்ற மருத்துவமனை"
+      },
+      "url": "https://beneficiary.nha.gov.in/",
+      "steps": {
+        "en": [
+          "Open the Ayushman app or visit an empanelled hospital",
+          "Verify with Aadhaar e-KYC",
+          "Download the Ayushman Vay Vandana card"
+        ]
+      }
+    },
+    "source": {
+      "url": "https://pmjay.gov.in/",
+      "origin": "manual"
+    },
+    "verification": {
+      "status": "unverified"
+    },
+    "mutually_exclusive_with": []
+  },
+  {
+    "schema_version": 1,
+    "id": "pmuy",
+    "status": "active",
+    "level": "central",
+    "category": [
+      "energy",
+      "women"
+    ],
+    "name": {
+      "en": "PM Ujjwala Yojana (free LPG connection)",
+      "ta": "பிரதமரின் உஜ்வாலா திட்டம் (இலவச கேஸ் இணைப்பு)",
+      "hi": "प्रधानमंत्री उज्ज्वला योजना"
+    },
+    "aliases": [
+      "Ujjwala",
+      "PMUY",
+      "Ujjwala gas"
+    ],
+    "benefit": {
+      "summary": {
+        "en": "Free LPG connection with first refill and stove for women of poor households",
+        "ta": "ஏழைக் குடும்பப் பெண்களுக்கு இலவச கேஸ் இணைப்பு, முதல் சிலிண்டர் மற்றும் அடுப்பு"
+      },
+      "annual_cash_value_inr": 0,
+      "cover_highlight": {
+        "en": "Free LPG connection",
+        "ta": "இலவச கேஸ் இணைப்பு"
+      }
+    },
+    "eligibility": {
+      "all": [
+        {
+          "field": "gender",
+          "op": "eq",
+          "value": "female"
+        },
+        {
+          "field": "age",
+          "op": "gte",
+          "value": 18
+        },
+        {
+          "field": "has_lpg_connection",
+          "op": "is_false"
+        }
+      ],
+      "any": [
+        {
+          "field": "has_bpl_ration_card",
+          "op": "is_true"
+        },
+        {
+          "field": "caste_is_sc_st",
+          "op": "is_true"
+        }
+      ],
+      "none": [],
+      "other": []
+    },
+    "documents": [
+      "aadhaar",
+      "ration_card",
+      "bank_passbook"
+    ],
+    "application": {
+      "mode": "both",
+      "where": {
+        "en": "pmuy.gov.in or the nearest LPG distributor",
+        "ta": "pmuy.gov.in அல்லது அருகிலுள்ள கேஸ் விநியோகஸ்தர்"
+      },
+      "url": "https://pmuy.gov.in/",
+      "steps": {
+        "en": [
+          "Apply online at pmuy.gov.in or at an LPG distributor",
+          "Submit KYC with Aadhaar and ration card",
+          "Connection is released after verification"
+        ],
+        "ta": [
+          "pmuy.gov.in அல்லது கேஸ் விநியோகஸ்தரிடம் விண்ணப்பிக்கவும்",
+          "ஆதார், ரேஷன் கார்டுடன் KYC கொடுக்கவும்",
+          "சரிபார்ப்புக்குப் பின் இணைப்பு வழங்கப்படும்"
+        ]
+      }
+    },
+    "source": {
+      "url": "https://pmuy.gov.in/",
+      "origin": "manual"
+    },
+    "verification": {
+      "status": "unverified"
+    },
+    "mutually_exclusive_with": []
+  },
+  {
+    "schema_version": 1,
+    "id": "pmay_g",
+    "status": "active",
+    "level": "central",
+    "category": [
+      "housing"
+    ],
+    "name": {
+      "en": "PM Awas Yojana – Gramin",
+      "ta": "பிரதமரின் வீட்டு வசதித் திட்டம் – கிராமம்",
+      "hi": "प्रधानमंत्री आवास योजना – ग्रामीण"
+    },
+    "aliases": [
+      "PMAY-G",
+      "PMAY Gramin",
+      "Awas Yojana Gramin",
+      "Indira Awas"
+    ],
+    "benefit": {
+      "summary": {
+        "en": "About ₹1.2 lakh (plains) to build a pucca house",
+        "ta": "கான்கிரீட் வீடு கட்ட சுமார் ₹1.2 லட்சம் உதவி"
+      },
+      "annual_cash_value_inr": 0,
+      "cover_highlight": {
+        "en": "₹1.2 lakh housing help",
+        "ta": "₹1.2 லட்சம் வீட்டு உதவி"
+      }
+    },
+    "eligibility": {
+      "all": [
+        {
+          "field": "residence",
+          "op": "eq",
+          "value": "rural"
+        },
+        {
+          "field": "has_pucca_house",
+          "op": "is_false"
+        },
+        {
+          "field": "has_bpl_ration_card",
+          "op": "is_true"
+        }
+      ],
+      "any": [],
+      "none": [],
+      "other": []
+    },
+    "documents": [
+      "aadhaar",
+      "ration_card",
+      "bank_passbook"
+    ],
+    "application": {
+      "mode": "offline",
+      "where": {
+        "en": "Gram Panchayat / Block Development Office",
+        "ta": "கிராம ஊராட்சி / வட்டார வளர்ச்சி அலுவலகம்"
+      },
+      "url": "https://pmayg.nic.in/",
+      "steps": {
+        "en": [
+          "Check your name on the Awaas+ list with the Panchayat",
+          "Submit Aadhaar and bank details",
+          "Geo-tagged verification",
+          "Instalments paid as construction progresses"
+        ]
+      }
+    },
+    "source": {
+      "url": "https://pmayg.nic.in/",
+      "origin": "manual"
+    },
+    "verification": {
+      "status": "unverified"
+    },
+    "mutually_exclusive_with": [
+      "kalaignar_kanavu_illam"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "id": "pmay_u",
+    "status": "active",
+    "level": "central",
+    "category": [
+      "housing"
+    ],
+    "name": {
+      "en": "PM Awas Yojana – Urban 2.0",
+      "ta": "பிரதமரின் வீட்டு வசதித் திட்டம் – நகரம்",
+      "hi": "प्रधानमंत्री आवास योजना – शहरी"
+    },
+    "aliases": [
+      "PMAY-U",
+      "PMAY Urban",
+      "Awas Yojana Urban"
+    ],
+    "benefit": {
+      "summary": {
+        "en": "Help to build or buy a house, or interest subsidy on a home loan",
+        "ta": "வீடு கட்ட / வாங்க உதவி அல்லது வீட்டுக் கடன் வட்டி மானியம்"
+      },
+      "annual_cash_value_inr": 0,
+      "cover_highlight": {
+        "en": "Urban housing help",
+        "ta": "நகர வீட்டு உதவி"
+      }
+    },
+    "eligibility": {
+      "all": [
+        {
+          "field": "residence",
+          "op": "eq",
+          "value": "urban"
+        },
+        {
+          "field": "has_pucca_house",
+          "op": "is_false"
+        },
+        {
+          "field": "annual_family_income",
+          "op": "lte",
+          "value": 900000
+        }
+      ],
+      "any": [],
+      "none": [],
+      "other": []
+    },
+    "documents": [
+      "aadhaar",
+      "income_certificate",
+      "bank_passbook"
+    ],
+    "application": {
+      "mode": "online",
+      "where": {
+        "en": "pmay-urban.gov.in or the municipality",
+        "ta": "pmay-urban.gov.in அல்லது நகராட்சி அலுவலகம்"
+      },
+      "url": "https://pmay-urban.gov.in/",
+      "steps": {
+        "en": [
+          "Apply on pmay-urban.gov.in",
+          "Upload Aadhaar and income details",
+          "Verification by the urban local body"
+        ]
+      }
+    },
+    "source": {
+      "url": "https://pmay-urban.gov.in/",
+      "origin": "manual"
+    },
+    "verification": {
+      "status": "unverified"
+    },
+    "mutually_exclusive_with": []
+  },
+  {
+    "schema_version": 1,
+    "id": "ssy",
+    "status": "active",
+    "level": "central",
+    "category": [
+      "savings",
+      "women"
+    ],
+    "name": {
+      "en": "Sukanya Samriddhi Yojana",
+      "ta": "செல்வமகள் சேமிப்புத் திட்டம் (சுகன்யா சம்ரித்தி)",
+      "hi": "सुकन्या समृद्धि योजना"
+    },
+    "aliases": [
+      "SSY",
+      "Sukanya",
+      "Sukanya Samriddhi Account"
+    ],
+    "benefit": {
+      "summary": {
+        "en": "High-interest, tax-free savings account for a daughter under 10",
+        "ta": "10 வயதுக்குட்பட்ட மகளுக்கு அதிக வட்டி சேமிப்புக் கணக்கு"
+      },
+      "annual_cash_value_inr": 0
+    },
+    "eligibility": {
+      "all": [
+        {
+          "field": "has_girl_child_under_10",
+          "op": "is_true"
+        }
+      ],
+      "any": [],
+      "none": [],
+      "other": []
+    },
+    "documents": [
+      "birth_certificate_child",
+      "aadhaar",
+      "photo"
+    ],
+    "application": {
+      "mode": "offline",
+      "where": {
+        "en": "Post office or bank",
+        "ta": "அஞ்சல் அலுவலகம் அல்லது வங்கி"
+      },
+      "url": "https://www.indiapost.gov.in/",
+      "steps": {
+        "en": [
+          "Visit a post office or bank",
+          "Fill the SSY form with the daughter's birth certificate",
+          "Deposit at least ₹250"
+        ]
+      }
+    },
+    "source": {
+      "url": "https://www.indiapost.gov.in/",
+      "origin": "manual"
+    },
+    "verification": {
+      "status": "unverified"
+    },
+    "mutually_exclusive_with": []
+  },
+  {
+    "schema_version": 1,
+    "id": "apy",
+    "status": "active",
+    "level": "central",
+    "category": [
+      "pension"
+    ],
+    "name": {
+      "en": "Atal Pension Yojana",
+      "ta": "அடல் ஓய்வூதியத் திட்டம்",
+      "hi": "अटल पेंशन योजना"
+    },
+    "aliases": [
+      "APY",
+      "Atal Pension"
+    ],
+    "benefit": {
+      "summary": {
+        "en": "Guaranteed ₹1,000–5,000 monthly pension from age 60 for a small monthly contribution",
+        "ta": "சிறு மாதச் செலுத்தலுக்கு 60 வயது முதல் மாதம் ₹1,000–5,000 ஓய்வூதியம்"
+      },
+      "annual_cash_value_inr": 0
+    },
+    "eligibility": {
+      "all": [
+        {
+          "field": "age",
+          "op": "between",
+          "value": [
+            18,
+            40
+          ]
+        }
+      ],
+      "any": [],
+      "none": [
+        {
+          "field": "is_income_tax_payer",
+          "op": "is_true"
+        }
+      ],
+      "other": []
+    },
+    "documents": [
+      "aadhaar",
+      "bank_passbook"
+    ],
+    "application": {
+      "mode": "offline",
+      "where": {
+        "en": "Your bank or post office",
+        "ta": "உங்கள் வங்கி அல்லது அஞ்சல் அலுவலகம்"
+      },
+      "url": "https://www.jansuraksha.gov.in/",
+      "steps": {
+        "en": [
+          "Visit your bank branch",
+          "Fill the APY form and choose a pension amount",
+          "Monthly auto-debit starts"
+        ]
+      }
+    },
+    "source": {
+      "url": "https://www.jansuraksha.gov.in/",
+      "origin": "manual"
+    },
+    "verification": {
+      "status": "unverified"
+    },
+    "mutually_exclusive_with": []
+  },
+  {
+    "schema_version": 1,
+    "id": "pmjjby",
+    "status": "active",
+    "level": "central",
+    "category": [
+      "insurance"
+    ],
+    "name": {
+      "en": "PM Jeevan Jyoti Bima Yojana",
+      "ta": "பிரதமரின் ஜீவன் ஜோதி காப்பீடு",
+      "hi": "प्रधानमंत्री जीवन ज्योति बीमा योजना"
+    },
+    "aliases": [
+      "PMJJBY",
+      "Jeevan Jyoti"
+    ],
+    "benefit": {
+      "summary": {
+        "en": "₹2 lakh life insurance for ₹436 a year",
+        "ta": "ஆண்டுக்கு ₹436க்கு ₹2 லட்சம் ஆயுள் காப்பீடு"
+      },
+      "annual_cash_value_inr": 0,
+      "cover_highlight": {
+        "en": "₹2 lakh life cover",
+        "ta": "₹2 லட்சம் ஆயுள் காப்பீடு"
+      }
+    },
+    "eligibility": {
+      "all": [
+        {
+          "field": "age",
+          "op": "between",
+          "value": [
+            18,
+            50
+          ]
+        }
+      ],
+      "any": [],
+      "none": [],
+      "other": []
+    },
+    "documents": [
+      "aadhaar",
+      "bank_passbook"
+    ],
+    "application": {
+      "mode": "offline",
+      "where": {
+        "en": "Your bank or post office",
+        "ta": "உங்கள் வங்கி அல்லது அஞ்சல் அலுவலகம்"
+      },
+      "url": "https://www.jansuraksha.gov.in/",
+      "steps": {
+        "en": [
+          "Give the consent form at your bank",
+          "Premium is auto-debited once a year"
+        ],
+        "ta": [
+          "வங்கியில் ஒப்புதல் படிவம் கொடுக்கவும்",
+          "ஆண்டுக்கு ஒருமுறை பிரீமியம் தானாகப் பிடிக்கப்படும்"
+        ]
+      }
+    },
+    "source": {
+      "url": "https://www.jansuraksha.gov.in/",
+      "origin": "manual"
+    },
+    "verification": {
+      "status": "unverified"
+    },
+    "mutually_exclusive_with": []
+  },
+  {
+    "schema_version": 1,
+    "id": "pmsby",
+    "status": "active",
+    "level": "central",
+    "category": [
+      "insurance"
+    ],
+    "name": {
+      "en": "PM Suraksha Bima Yojana",
+      "ta": "பிரதமரின் சுரக்ஷா விபத்துக் காப்பீடு",
+      "hi": "प्रधानमंत्री सुरक्षा बीमा योजना"
+    },
+    "aliases": [
+      "PMSBY",
+      "Suraksha Bima"
+    ],
+    "benefit": {
+      "summary": {
+        "en": "₹2 lakh accident insurance for ₹20 a year",
+        "ta": "ஆண்டுக்கு ₹20க்கு ₹2 லட்சம் விபத்துக் காப்பீடு"
+      },
+      "annual_cash_value_inr": 0,
+      "cover_highlight": {
+        "en": "₹2 lakh accident cover",
+        "ta": "₹2 லட்சம் விபத்துக் காப்பீடு"
+      }
+    },
+    "eligibility": {
+      "all": [
+        {
+          "field": "age",
+          "op": "between",
+          "value": [
+            18,
+            70
+          ]
+        }
+      ],
+      "any": [],
+      "none": [],
+      "other": []
+    },
+    "documents": [
+      "aadhaar",
+      "bank_passbook"
+    ],
+    "application": {
+      "mode": "offline",
+      "where": {
+        "en": "Your bank or post office",
+        "ta": "உங்கள் வங்கி அல்லது அஞ்சல் அலுவலகம்"
+      },
+      "url": "https://www.jansuraksha.gov.in/",
+      "steps": {
+        "en": [
+          "Give the consent form at your bank",
+          "₹20 is auto-debited once a year"
+        ],
+        "ta": [
+          "வங்கியில் ஒப்புதல் படிவம் கொடுக்கவும்",
+          "ஆண்டுக்கு ஒருமுறை ₹20 தானாகப் பிடிக்கப்படும்"
+        ]
+      }
+    },
+    "source": {
+      "url": "https://www.jansuraksha.gov.in/",
+      "origin": "manual"
+    },
+    "verification": {
+      "status": "unverified"
+    },
+    "mutually_exclusive_with": []
+  },
+  {
+    "schema_version": 1,
+    "id": "pm_sym",
+    "status": "active",
+    "level": "central",
+    "category": [
+      "pension"
+    ],
+    "name": {
+      "en": "PM Shram Yogi Maan-dhan (PM-SYM)",
+      "ta": "பிரதமரின் ஷ்ரம் யோகி மான்-தன் ஓய்வூதியம்",
+      "hi": "प्रधानमंत्री श्रम योगी मान-धन"
+    },
+    "aliases": [
+      "PM-SYM",
+      "PMSYM",
+      "Maandhan",
+      "Shram Yogi"
+    ],
+    "benefit": {
+      "summary": {
+        "en": "₹3,000 monthly pension from age 60 for unorganised workers",
+        "ta": "அமைப்புசாரா தொழிலாளர்களுக்கு 60 வயது முதல் மாதம் ₹3,000 ஓய்வூதியம்"
+      },
+      "annual_cash_value_inr": 0
+    },
+    "eligibility": {
+      "all": [
+        {
+          "field": "age",
+          "op": "between",
+          "value": [
+            18,
+            40
+          ]
+        },
+        {
+          "field": "occupation",
+          "op": "in",
+          "value": [
+            "@UNORGANISED"
+          ],
+          "text": {
+            "en": "Unorganised-sector worker",
+            "ta": "அமைப்புசாரா தொழிலாளி",
+            "hi": "असंगठित क्षेत्र के कामगार"
+          }
+        },
+        {
+          "field": "annual_family_income",
+          "op": "lte",
+          "value": 180000
+        }
+      ],
+      "any": [],
+      "none": [
+        {
+          "field": "is_epfo_member",
+          "op": "is_true"
+        },
+        {
+          "field": "is_income_tax_payer",
+          "op": "is_true"
+        }
+      ],
+      "other": []
+    },
+    "documents": [
+      "aadhaar",
+      "bank_passbook"
+    ],
+    "application": {
+      "mode": "both",
+      "where": {
+        "en": "CSC / e-Sevai centre or maandhan.in",
+        "ta": "இ-சேவை மையம் அல்லது maandhan.in"
+      },
+      "url": "https://maandhan.in/",
+      "steps": {
+        "en": [
+          "Visit a CSC with Aadhaar and bank passbook",
+          "Enrol and set up auto-debit",
+          "Get the Shram Yogi pension card"
+        ]
+      }
+    },
+    "source": {
+      "url": "https://maandhan.in/",
+      "origin": "manual"
+    },
+    "verification": {
+      "status": "unverified"
+    },
+    "mutually_exclusive_with": []
+  },
+  {
+    "schema_version": 1,
+    "id": "eshram",
+    "status": "active",
+    "level": "central",
+    "category": [
+      "employment",
+      "insurance"
+    ],
+    "name": {
+      "en": "e-Shram registration",
+      "ta": "இ-ஷ்ரம் அமைப்புசாரா தொழிலாளர் பதிவு",
+      "hi": "ई-श्रम पंजीकरण"
+    },
+    "aliases": [
+      "e-Shram",
+      "eShram",
+      "e-Shram card",
+      "UAN card"
+    ],
+    "benefit": {
+      "summary": {
+        "en": "e-Shram (UAN) card, access to worker welfare schemes and accident cover",
+        "ta": "இ-ஷ்ரம் அட்டை, தொழிலாளர் நலத் திட்டங்கள் மற்றும் விபத்துக் காப்பீடு"
+      },
+      "annual_cash_value_inr": 0
+    },
+    "eligibility": {
+      "all": [
+        {
+          "field": "age",
+          "op": "between",
+          "value": [
+            16,
+            59
+          ]
+        },
+        {
+          "field": "occupation",
+          "op": "in",
+          "value": [
+            "@UNORGANISED"
+          ],
+          "text": {
+            "en": "Unorganised-sector worker",
+            "ta": "அமைப்புசாரா தொழிலாளி",
+            "hi": "असंगठित क्षेत्र के कामगार"
+          }
+        }
+      ],
+      "any": [],
+      "none": [
+        {
+          "field": "is_epfo_member",
+          "op": "is_true"
+        },
+        {
+          "field": "is_income_tax_payer",
+          "op": "is_true"
+        }
+      ],
+      "other": []
+    },
+    "documents": [
+      "aadhaar",
+      "bank_passbook"
+    ],
+    "application": {
+      "mode": "both",
+      "where": {
+        "en": "eshram.gov.in or CSC / e-Sevai centre",
+        "ta": "eshram.gov.in அல்லது இ-சேவை மையம்"
+      },
+      "url": "https://eshram.gov.in/",
+      "steps": {
+        "en": [
+          "Self-register on eshram.gov.in with Aadhaar-linked mobile, or visit a CSC",
+          "Fill occupation and bank details",
+          "Download the e-Shram card"
+        ],
+        "ta": [
+          "ஆதார் இணைந்த மொபைலுடன் eshram.gov.in இல் பதியவும் அல்லது இ-சேவை மையம் செல்லவும்",
+          "வேலை மற்றும் வங்கி விவரங்களை நிரப்பவும்",
+          "இ-ஷ்ரம் அட்டையைப் பதிவிறக்கவும்"
+        ]
+      }
+    },
+    "source": {
+      "url": "https://eshram.gov.in/",
+      "origin": "manual"
+    },
+    "verification": {
+      "status": "unverified"
+    },
+    "mutually_exclusive_with": []
+  },
+  {
+    "schema_version": 1,
+    "id": "pm_svanidhi",
+    "status": "active",
+    "level": "central",
+    "category": [
+      "business"
+    ],
+    "name": {
+      "en": "PM SVANidhi (street vendor loan)",
+      "ta": "பிஎம் ஸ்வநிதி (தெருவோர வியாபாரிகள் கடன்)",
+      "hi": "पीएम स्वनिधि"
+    },
+    "aliases": [
+      "SVANidhi",
+      "PM SVANidhi"
+    ],
+    "benefit": {
+      "summary": {
+        "en": "Collateral-free working-capital loans that grow ₹10,000 → ₹20,000 → ₹50,000",
+        "ta": "பிணையில்லா கடன் ₹10,000 → ₹20,000 → ₹50,000"
+      },
+      "annual_cash_value_inr": 0,
+      "cover_highlight": {
+        "en": "Loan up to ₹50,000",
+        "ta": "₹50,000 வரை கடன்"
+      }
+    },
+    "eligibility": {
+      "all": [
+        {
+          "field": "occupation",
+          "op": "eq",
+          "value": "street_vendor"
+        }
+      ],
+      "any": [],
+      "none": [],
+      "other": []
+    },
+    "documents": [
+      "aadhaar",
+      "vending_certificate",
+      "bank_passbook"
+    ],
+    "application": {
+      "mode": "both",
+      "where": {
+        "en": "pmsvanidhi.mohua.gov.in, CSC or bank",
+        "ta": "pmsvanidhi.mohua.gov.in, இ-சேவை மையம் அல்லது வங்கி"
+      },
+      "url": "https://pmsvanidhi.mohua.gov.in/",
+      "steps": {
+        "en": [
+          "Apply online or at a CSC",
+          "Get a Letter of Recommendation from the municipality if you have no vending certificate",
+          "Bank sanctions the loan"
+        ]
+      }
+    },
+    "source": {
+      "url": "https://pmsvanidhi.mohua.gov.in/",
+      "origin": "manual"
+    },
+    "verification": {
+      "status": "unverified"
+    },
+    "mutually_exclusive_with": []
+  },
+  {
+    "schema_version": 1,
+    "id": "pm_vishwakarma",
+    "status": "active",
+    "level": "central",
+    "category": [
+      "business"
+    ],
+    "name": {
+      "en": "PM Vishwakarma",
+      "ta": "பிஎம் விஸ்வகர்மா",
+      "hi": "पीएम विश्वकर्मा"
+    },
+    "aliases": [
+      "Vishwakarma",
+      "PM Vishwakarma Yojana"
+    ],
+    "benefit": {
+      "summary": {
+        "en": "Skill training, ₹15,000 toolkit support and loans up to ₹3 lakh at low interest for traditional artisans",
+        "ta": "கைவினைஞர்களுக்குப் பயிற்சி, ₹15,000 கருவி உதவி, ₹3 லட்சம் வரை குறைந்த வட்டிக் கடன்"
+      },
+      "annual_cash_value_inr": 0,
+      "cover_highlight": {
+        "en": "Loan up to ₹3 lakh",
+        "ta": "₹3 லட்சம் வரை கடன்"
+      }
+    },
+    "eligibility": {
+      "all": [
+        {
+          "field": "occupation",
+          "op": "eq",
+          "value": "artisan"
+        },
+        {
+          "field": "age",
+          "op": "gte",
+          "value": 18
+        }
+      ],
+      "any": [],
+      "none": [
+        {
+          "field": "is_govt_employee",
+          "op": "is_true"
+        }
+      ],
+      "other": []
+    },
+    "documents": [
+      "aadhaar",
+      "bank_passbook",
+      "ration_card"
+    ],
+    "application": {
+      "mode": "offline",
+      "where": {
+        "en": "CSC / e-Sevai centre",
+        "ta": "இ-சேவை மையம்"
+      },
+      "url": "https://pmvishwakarma.gov.in/",
+      "steps": {
+        "en": [
+          "Register at a CSC",
+          "Verification by the Gram Panchayat / ULB",
+          "Attend skill training and receive toolkit support"
+        ]
+      }
+    },
+    "source": {
+      "url": "https://pmvishwakarma.gov.in/",
+      "origin": "manual"
+    },
+    "verification": {
+      "status": "unverified"
+    },
+    "mutually_exclusive_with": []
+  },
+  {
+    "schema_version": 1,
+    "id": "ignoaps",
+    "status": "active",
+    "level": "central",
+    "category": [
+      "pension"
+    ],
+    "name": {
+      "en": "Old Age Pension (IGNOAPS / TN OAP)",
+      "ta": "முதியோர் ஓய்வூதியம்",
+      "hi": "वृद्धावस्था पेंशन"
+    },
+    "aliases": [
+      "IGNOAPS",
+      "OAP",
+      "Old age pension",
+      "முதியோர் உதவித்தொகை"
+    ],
+    "benefit": {
+      "summary": {
+        "en": "Monthly pension (about ₹1,200/month in Tamil Nadu)",
+        "ta": "மாத ஓய்வூதியம் (தமிழ்நாட்டில் சுமார் மாதம் ₹1,200)"
+      },
+      "annual_cash_value_inr": 14400
+    },
+    "eligibility": {
+      "all": [
+        {
+          "field": "age",
+          "op": "gte",
+          "value": 60
+        },
+        {
+          "field": "has_bpl_ration_card",
+          "op": "is_true"
+        }
+      ],
+      "any": [],
+      "none": [],
+      "other": []
+    },
+    "documents": [
+      "aadhaar",
+      "age_proof",
+      "ration_card",
+      "bank_passbook",
+      "photo"
+    ],
+    "application": {
+      "mode": "offline",
+      "where": {
+        "en": "Village Administrative Officer / Taluk office, or e-Sevai centre",
+        "ta": "கிராம நிர்வாக அலுவலர் / வட்டாட்சியர் அலுவலகம் அல்லது இ-சேவை மையம்"
+      },
+      "url": "https://nsap.nic.in/",
+      "steps": {
+        "en": [
+          "Apply at an e-Sevai centre or Taluk office",
+          "Attach age proof and ration card",
+          "Field verification by the VAO / Revenue Inspector",
+          "Pension credited to the bank every month"
+        ],
+        "ta": [
+          "இ-சேவை மையம் அல்லது வட்டாட்சியர் அலுவலகத்தில் விண்ணப்பிக்கவும்",
+          "வயதுச் சான்று, ரேஷன் கார்டு இணைக்கவும்",
+          "கிராம நிர்வாக அலுவலர் சரிபார்ப்பு",
+          "ஒவ்வொரு மாதமும் வங்கியில் ஓய்வூதியம்"
+        ]
+      }
+    },
+    "source": {
+      "url": "https://nsap.nic.in/",
+      "origin": "manual"
+    },
+    "verification": {
+      "status": "unverified"
+    },
+    "mutually_exclusive_with": [
+      "ignwps",
+      "igndps",
+      "kmut"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "id": "ignwps",
+    "status": "active",
+    "level": "central",
+    "category": [
+      "pension",
+      "women"
+    ],
+    "name": {
+      "en": "Widow Pension (IGNWPS / TN Destitute Widow Pension)",
+      "ta": "விதவை ஓய்வூதியம்",
+      "hi": "विधवा पेंशन"
+    },
+    "aliases": [
+      "IGNWPS",
+      "Widow pension",
+      "விதவை உதவித்தொகை"
+    ],
+    "benefit": {
+      "summary": {
+        "en": "Monthly pension (about ₹1,200/month in Tamil Nadu)",
+        "ta": "மாத ஓய்வூதியம் (தமிழ்நாட்டில் சுமார் மாதம் ₹1,200)"
+      },
+      "annual_cash_value_inr": 14400
+    },
+    "eligibility": {
+      "all": [
+        {
+          "field": "gender",
+          "op": "eq",
+          "value": "female"
+        },
+        {
+          "field": "marital_status",
+          "op": "eq",
+          "value": "widowed"
+        },
+        {
+          "field": "age",
+          "op": "between",
+          "value": [
+            40,
+            79
+          ]
+        },
+        {
+          "field": "has_bpl_ration_card",
+          "op": "is_true"
+        }
+      ],
+      "any": [],
+      "none": [],
+      "other": []
+    },
+    "documents": [
+      "aadhaar",
+      "death_certificate_spouse",
+      "ration_card",
+      "age_proof",
+      "bank_passbook"
+    ],
+    "application": {
+      "mode": "offline",
+      "where": {
+        "en": "Village Administrative Officer / Taluk office, or e-Sevai centre",
+        "ta": "கிராம நிர்வாக அலுவலர் / வட்டாட்சியர் அலுவலகம் அல்லது இ-சேவை மையம்"
+      },
+      "url": "https://nsap.nic.in/",
+      "steps": {
+        "en": [
+          "Apply at an e-Sevai centre or Taluk office",
+          "Attach husband's death certificate, ration card and age proof",
+          "Field verification by the VAO",
+          "Pension credited to the bank every month"
+        ],
+        "ta": [
+          "இ-சேவை மையம் அல்லது வட்டாட்சியர் அலுவலகத்தில் விண்ணப்பிக்கவும்",
+          "கணவரின் இறப்புச் சான்றிதழ், ரேஷன் கார்டு, வயதுச் சான்று இணைக்கவும்",
+          "கிராம நிர்வாக அலுவலர் சரிபார்ப்பு",
+          "ஒவ்வொரு மாதமும் வங்கியில் ஓய்வூதியம்"
+        ]
+      }
+    },
+    "source": {
+      "url": "https://nsap.nic.in/",
+      "origin": "manual"
+    },
+    "verification": {
+      "status": "unverified"
+    },
+    "mutually_exclusive_with": [
+      "ignoaps",
+      "igndps",
+      "kmut"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "id": "igndps",
+    "status": "active",
+    "level": "central",
+    "category": [
+      "pension",
+      "disability"
+    ],
+    "name": {
+      "en": "Disability Pension (IGNDPS / TN)",
+      "ta": "மாற்றுத்திறனாளி ஓய்வூதியம்",
+      "hi": "दिव्यांग पेंशन"
+    },
+    "aliases": [
+      "IGNDPS",
+      "Disability pension",
+      "மாற்றுத்திறனாளி உதவித்தொகை"
+    ],
+    "benefit": {
+      "summary": {
+        "en": "Monthly pension for persons with severe disability",
+        "ta": "கடுமையான மாற்றுத்திறனாளிகளுக்கு மாத ஓய்வூதியம்"
+      },
+      "annual_cash_value_inr": 14400
+    },
+    "eligibility": {
+      "all": [
+        {
+          "field": "disability_percent",
+          "op": "gte",
+          "value": 80
+        },
+        {
+          "field": "age",
+          "op": "between",
+          "value": [
+            18,
+            79
+          ]
+        },
+        {
+          "field": "has_bpl_ration_card",
+          "op": "is_true"
+        }
+      ],
+      "any": [],
+      "none": [],
+      "other": []
+    },
+    "documents": [
+      "aadhaar",
+      "disability_certificate",
+      "ration_card",
+      "bank_passbook"
+    ],
+    "application": {
+      "mode": "offline",
+      "where": {
+        "en": "Taluk office or e-Sevai centre",
+        "ta": "வட்டாட்சியர் அலுவலகம் அல்லது இ-சேவை மையம்"
+      },
+      "url": "https://nsap.nic.in/",
+      "steps": {
+        "en": [
+          "Apply at an e-Sevai centre with the UDID / disability certificate",
+          "Field verification",
+          "Pension credited monthly"
+        ]
+      }
+    },
+    "source": {
+      "url": "https://nsap.nic.in/",
+      "origin": "manual"
+    },
+    "verification": {
+      "status": "unverified"
+    },
+    "mutually_exclusive_with": [
+      "ignoaps",
+      "ignwps",
+      "kmut"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "id": "pmmvy",
+    "status": "active",
+    "level": "central",
+    "category": [
+      "maternity",
+      "women"
+    ],
+    "name": {
+      "en": "PM Matru Vandana Yojana",
+      "ta": "பிரதமரின் மாத்ரு வந்தனா (மகப்பேறு உதவி)",
+      "hi": "प्रधानमंत्री मातृ वंदना योजना"
+    },
+    "aliases": [
+      "PMMVY",
+      "Matru Vandana"
+    ],
+    "benefit": {
+      "summary": {
+        "en": "₹5,000 for the first child (₹6,000 for a second child if a girl)",
+        "ta": "முதல் குழந்தைக்கு ₹5,000 (இரண்டாவது பெண் குழந்தைக்கு ₹6,000)"
+      },
+      "annual_cash_value_inr": 5000
+    },
+    "eligibility": {
+      "all": [
+        {
+          "field": "gender",
+          "op": "eq",
+          "value": "female"
+        },
+        {
+          "field": "is_pregnant",
+          "op": "is_true"
+        },
+        {
+          "field": "age",
+          "op": "gte",
+          "value": 19
+        }
+      ],
+      "any": [],
+      "none": [],
+      "other": []
+    },
+    "documents": [
+      "pregnancy_registration",
+      "aadhaar",
+      "bank_passbook"
+    ],
+    "application": {
+      "mode": "both",
+      "where": {
+        "en": "Anganwadi centre or pmmvy.wcd.gov.in",
+        "ta": "அங்கன்வாடி மையம் அல்லது pmmvy.wcd.gov.in"
+      },
+      "url": "https://pmmvy.wcd.gov.in/",
+      "steps": {
+        "en": [
+          "Register the pregnancy at the Anganwadi / health centre",
+          "Submit the PMMVY form with Aadhaar and bank details",
+          "Money is paid to the bank account"
+        ]
+      }
+    },
+    "source": {
+      "url": "https://pmmvy.wcd.gov.in/",
+      "origin": "manual"
+    },
+    "verification": {
+      "status": "unverified"
+    },
+    "mutually_exclusive_with": []
+  },
+  {
+    "schema_version": 1,
+    "id": "post_matric_sc",
+    "status": "active",
+    "level": "central",
+    "category": [
+      "education"
+    ],
+    "name": {
+      "en": "Post-Matric Scholarship for SC/ST students",
+      "ta": "SC/ST மாணவர்களுக்கான மேற்படிப்பு உதவித்தொகை",
+      "hi": "SC/ST पोस्ट-मैट्रिक छात्रवृत्ति"
+    },
+    "aliases": [
+      "Post Matric Scholarship",
+      "PMS SC/ST"
+    ],
+    "benefit": {
+      "summary": {
+        "en": "Tuition fees and a maintenance allowance for studies after class 10",
+        "ta": "10ஆம் வகுப்புக்குப் பிறகான படிப்புக்குக் கல்விக் கட்டணம் மற்றும் பராமரிப்புத் தொகை"
+      },
+      "annual_cash_value_inr": 0,
+      "cover_highlight": {
+        "en": "Full fee + allowance",
+        "ta": "முழுக் கட்டணம் + உதவித்தொகை"
+      }
+    },
+    "eligibility": {
+      "all": [
+        {
+          "field": "caste_is_sc_st",
+          "op": "is_true"
+        },
+        {
+          "field": "is_student_higher_ed",
+          "op": "is_true"
+        },
+        {
+          "field": "annual_family_income",
+          "op": "lte",
+          "value": 250000
+        }
+      ],
+      "any": [],
+      "none": [],
+      "other": []
+    },
+    "documents": [
+      "community_certificate",
+      "income_certificate",
+      "college_admission_proof",
+      "bank_passbook"
+    ],
+    "application": {
+      "mode": "online",
+      "where": {
+        "en": "Through your college on the state scholarship portal / scholarships.gov.in",
+        "ta": "உங்கள் கல்லூரி மூலம் கல்வி உதவித்தொகை இணையதளத்தில்"
+      },
+      "url": "https://scholarships.gov.in/",
+      "steps": {
+        "en": [
+          "Apply online through your college",
+          "Upload community and income certificates",
+          "College and department verify",
+          "Money is paid to the bank account"
+        ]
+      }
+    },
+    "source": {
+      "url": "https://scholarships.gov.in/",
+      "origin": "manual"
+    },
+    "verification": {
+      "status": "unverified"
+    },
+    "mutually_exclusive_with": []
+  },
+  {
+    "schema_version": 1,
+    "id": "pm_mudra",
+    "status": "active",
+    "level": "central",
+    "category": [
+      "business"
+    ],
+    "name": {
+      "en": "PM Mudra Yojana",
+      "ta": "பிரதமரின் முத்ரா கடன் திட்டம்",
+      "hi": "प्रधानमंत्री मुद्रा योजना"
+    },
+    "aliases": [
+      "Mudra",
+      "Mudra loan",
+      "PMMY"
+    ],
+    "benefit": {
+      "summary": {
+        "en": "Collateral-free business loans (Shishu, Kishore, Tarun) for small enterprises",
+        "ta": "சிறு தொழில்களுக்குப் பிணையில்லா கடன் (சிசு, கிஷோர், தருண்)"
+      },
+      "annual_cash_value_inr": 0,
+      "cover_highlight": {
+        "en": "Business loan up to ₹10 lakh+",
+        "ta": "₹10 லட்சம் வரை தொழில் கடன்"
+      }
+    },
+    "eligibility": {
+      "all": [
+        {
+          "field": "age",
+          "op": "gte",
+          "value": 18
+        }
+      ],
+      "any": [
+        {
+          "field": "wants_to_start_business",
+          "op": "is_true"
+        },
+        {
+          "field": "occupation",
+          "op": "in",
+          "value": [
+            "self_employed",
+            "small_business",
+            "street_vendor",
+            "artisan"
+          ]
+        }
+      ],
+      "none": [],
+      "other": []
+    },
+    "documents": [
+      "aadhaar",
+      "project_report",
+      "bank_passbook"
+    ],
+    "application": {
+      "mode": "both",
+      "where": {
+        "en": "Any bank / NBFC, or the Udyamimitra portal",
+        "ta": "எந்த வங்கியிலும் அல்லது Udyamimitra இணையதளம்"
+      },
+      "url": "https://www.mudra.org.in/",
+      "steps": {
+        "en": [
+          "Prepare a simple business plan",
+          "Apply at a bank or on udyamimitra.in",
+          "Bank appraises and sanctions the loan"
+        ]
+      }
+    },
+    "source": {
+      "url": "https://www.mudra.org.in/",
+      "origin": "manual"
+    },
+    "verification": {
+      "status": "unverified"
+    },
+    "mutually_exclusive_with": []
+  },
+  {
+    "schema_version": 1,
+    "id": "stand_up_india",
+    "status": "active",
+    "level": "central",
+    "category": [
+      "business"
+    ],
+    "name": {
+      "en": "Stand-Up India",
+      "ta": "ஸ்டாண்ட்-அப் இந்தியா",
+      "hi": "स्टैंड-अप इंडिया"
+    },
+    "aliases": [
+      "Stand Up India",
+      "StandUp India"
+    ],
+    "benefit": {
+      "summary": {
+        "en": "Bank loans from ₹10 lakh to ₹1 crore for new enterprises by women or SC/ST entrepreneurs",
+        "ta": "பெண்கள் அல்லது SC/ST தொழில்முனைவோரின் புதிய தொழிலுக்கு ₹10 லட்சம் – ₹1 கோடி கடன்"
+      },
+      "annual_cash_value_inr": 0,
+      "cover_highlight": {
+        "en": "Loan ₹10 lakh–₹1 crore",
+        "ta": "₹10 லட்சம் – ₹1 கோடி கடன்"
+      }
+    },
+    "eligibility": {
+      "all": [
+        {
+          "field": "age",
+          "op": "gte",
+          "value": 18
+        },
+        {
+          "field": "wants_to_start_business",
+          "op": "is_true"
+        }
+      ],
+      "any": [
+        {
+          "field": "gender",
+          "op": "eq",
+          "value": "female"
+        },
+        {
+          "field": "caste_is_sc_st",
+          "op": "is_true"
+        }
+      ],
+      "none": [],
+      "other": []
+    },
+    "documents": [
+      "aadhaar",
+      "project_report",
+      "community_certificate",
+      "bank_passbook"
+    ],
+    "application": {
+      "mode": "online",
+      "where": {
+        "en": "standupmitra.in or any bank branch",
+        "ta": "standupmitra.in அல்லது எந்த வங்கிக் கிளையும்"
+      },
+      "url": "https://www.standupmitra.in/",
+      "steps": {
+        "en": [
+          "Register on standupmitra.in",
+          "Submit the project proposal",
+          "Bank appraises and sanctions"
+        ]
+      }
+    },
+    "source": {
+      "url": "https://www.standupmitra.in/",
+      "origin": "manual"
+    },
+    "verification": {
+      "status": "unverified"
+    },
+    "mutually_exclusive_with": []
+  },
+  {
+    "schema_version": 1,
+    "id": "pmkvy",
+    "status": "active",
+    "level": "central",
+    "category": [
+      "employment",
+      "education"
+    ],
+    "name": {
+      "en": "PM Kaushal Vikas Yojana (skill training)",
+      "ta": "பிரதமரின் திறன் மேம்பாட்டுத் திட்டம் (PMKVY)",
+      "hi": "प्रधानमंत्री कौशल विकास योजना"
+    },
+    "aliases": [
+      "PMKVY",
+      "Kaushal Vikas",
+      "Skill India"
+    ],
+    "benefit": {
+      "summary": {
+        "en": "Free short-term skill training with a certificate and placement support",
+        "ta": "சான்றிதழுடன் இலவசத் திறன் பயிற்சி மற்றும் வேலைவாய்ப்பு உதவி"
+      },
+      "annual_cash_value_inr": 0
+    },
+    "eligibility": {
+      "all": [
+        {
+          "field": "age",
+          "op": "between",
+          "value": [
+            15,
+            45
+          ]
+        },
+        {
+          "field": "occupation",
+          "op": "in",
+          "value": [
+            "unemployed",
+            "student"
+          ]
+        }
+      ],
+      "any": [],
+      "none": [],
+      "other": []
+    },
+    "documents": [
+      "aadhaar",
+      "educational_certificate",
+      "bank_passbook"
+    ],
+    "application": {
+      "mode": "both",
+      "where": {
+        "en": "Skill India Digital portal or a PMKVY training centre",
+        "ta": "Skill India Digital இணையதளம் அல்லது PMKVY பயிற்சி மையம்"
+      },
+      "url": "https://www.skillindiadigital.gov.in/",
+      "steps": {
+        "en": [
+          "Register on Skill India Digital",
+          "Pick a course and training centre",
+          "Complete training and assessment to get the certificate"
+        ]
+      }
+    },
+    "source": {
+      "url": "https://www.skillindiadigital.gov.in/",
+      "origin": "manual"
+    },
+    "verification": {
+      "status": "unverified"
+    },
+    "mutually_exclusive_with": []
+  },
+  {
+    "schema_version": 1,
+    "id": "pm_surya_ghar",
+    "status": "active",
+    "level": "central",
+    "category": [
+      "energy"
+    ],
+    "name": {
+      "en": "PM Surya Ghar Muft Bijli Yojana",
+      "ta": "பிஎம் சூர்ய கர் இலவச மின்சாரத் திட்டம்",
+      "hi": "पीएम सूर्य घर मुफ्त बिजली योजना"
+    },
+    "aliases": [
+      "Surya Ghar",
+      "PM Surya Ghar",
+      "Rooftop solar scheme"
+    ],
+    "benefit": {
+      "summary": {
+        "en": "Subsidy for rooftop solar and up to 300 free units of electricity a month",
+        "ta": "கூரை சோலார் மானியம் மற்றும் மாதம் 300 யூனிட் வரை இலவச மின்சாரம்"
+      },
+      "annual_cash_value_inr": 0,
+      "cover_highlight": {
+        "en": "Rooftop solar subsidy",
+        "ta": "கூரை சோலார் மானியம்"
+      }
+    },
+    "eligibility": {
+      "all": [
+        {
+          "field": "owns_house",
+          "op": "is_true"
+        },
+        {
+          "field": "has_electricity_connection",
+          "op": "is_true"
+        }
+      ],
+      "any": [],
+      "none": [],
+      "other": []
+    },
+    "documents": [
+      "electricity_bill",
+      "aadhaar",
+      "bank_passbook"
+    ],
+    "application": {
+      "mode": "online",
+      "where": {
+        "en": "pmsuryaghar.gov.in",
+        "ta": "pmsuryaghar.gov.in"
+      },
+      "url": "https://pmsuryaghar.gov.in/",
+      "steps": {
+        "en": [
+          "Register on pmsuryaghar.gov.in with your electricity consumer number",
+          "Choose a registered vendor and install",
+          "Subsidy is credited after inspection"
+        ]
+      }
+    },
+    "source": {
+      "url": "https://pmsuryaghar.gov.in/",
+      "origin": "manual"
+    },
+    "verification": {
+      "status": "unverified"
+    },
+    "mutually_exclusive_with": []
+  },
+  {
+    "schema_version": 1,
+    "id": "kmut",
+    "status": "active",
+    "level": "state",
+    "state": "TN",
+    "category": [
+      "women",
+      "income_support"
+    ],
+    "name": {
+      "en": "Kalaignar Magalir Urimai Thogai",
+      "ta": "கலைஞர் மகளிர் உரிமைத் தொகை",
+      "hi": "कलैञर महिला अधिकार राशि (TN)"
+    },
+    "aliases": [
+      "KMUT",
+      "Magalir Urimai Thogai",
+      "Kalaignar Magalir Urimai",
+      "மகளிர் உரிமைத் தொகை"
+    ],
+    "benefit": {
+      "summary": {
+        "en": "₹1,000 a month to women heads of family",
+        "ta": "குடும்பத் தலைவிகளுக்கு மாதம் ₹1,000"
+      },
+      "annual_cash_value_inr": 12000
+    },
+    "eligibility": {
+      "all": [
+        {
+          "field": "gender",
+          "op": "eq",
+          "value": "female"
+        },
+        {
+          "field": "age",
+          "op": "gte",
+          "value": 21
+        },
+        {
+          "field": "is_head_of_family",
+          "op": "is_true"
+        },
+        {
+          "field": "annual_family_income",
+          "op": "lte",
+          "value": 250000
+        }
+      ],
+      "any": [],
+      "none": [
+        {
+          "field": "is_govt_employee",
+          "op": "is_true"
+        },
+        {
+          "field": "is_income_tax_payer",
+          "op": "is_true"
+        }
+      ],
+      "other": []
+    },
+    "documents": [
+      "aadhaar",
+      "ration_card",
+      "bank_passbook",
+      "electricity_bill"
+    ],
+    "application": {
+      "mode": "both",
+      "where": {
+        "en": "Special camps / ration shop area, or kmut.tn.gov.in",
+        "ta": "சிறப்பு முகாம்கள் / நியாயவிலைக் கடை பகுதி அல்லது kmut.tn.gov.in"
+      },
+      "url": "https://kmut.tn.gov.in/",
+      "steps": {
+        "en": [
+          "Collect the application at your ration shop or camp",
+          "Fill it with Aadhaar, ration card, bank and electricity details",
+          "Submit at the camp; field verification follows",
+          "₹1,000 is credited on the 15th of each month"
+        ],
+        "ta": [
+          "நியாயவிலைக் கடை அல்லது முகாமில் விண்ணப்பம் பெறவும்",
+          "ஆதார், ரேஷன் கார்டு, வங்கி, மின் இணைப்பு விவரங்களுடன் நிரப்பவும்",
+          "முகாமில் சமர்ப்பிக்கவும்; களச் சரிபார்ப்பு நடக்கும்",
+          "ஒவ்வொரு மாதமும் 15ஆம் தேதி ₹1,000 வரவு வைக்கப்படும்"
+        ]
+      }
+    },
+    "source": {
+      "url": "https://kmut.tn.gov.in/",
+      "origin": "manual"
+    },
+    "verification": {
+      "status": "unverified"
+    },
+    "mutually_exclusive_with": [
+      "ignoaps",
+      "ignwps",
+      "igndps"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "id": "cmchis",
+    "status": "active",
+    "level": "state",
+    "state": "TN",
+    "category": [
+      "health"
+    ],
+    "name": {
+      "en": "CM's Comprehensive Health Insurance Scheme (with PM-JAY)",
+      "ta": "முதலமைச்சரின் விரிவான மருத்துவக் காப்பீட்டுத் திட்டம்",
+      "hi": "मुख्यमंत्री व्यापक स्वास्थ्य बीमा योजना (TN)"
+    },
+    "aliases": [
+      "CMCHIS",
+      "CM health insurance",
+      "Chief Minister's health insurance"
+    ],
+    "benefit": {
+      "summary": {
+        "en": "Cashless treatment up to ₹5 lakh a year per family in empanelled hospitals",
+        "ta": "பதிவு பெற்ற மருத்துவமனைகளில் குடும்பத்துக்கு ஆண்டுக்கு ₹5 லட்சம் வரை இலவச சிகிச்சை"
+      },
+      "annual_cash_value_inr": 0,
+      "cover_highlight": {
+        "en": "₹5 lakh family health cover",
+        "ta": "₹5 லட்சம் குடும்ப மருத்துவக் காப்பீடு"
+      }
+    },
+    "eligibility": {
+      "all": [
+        {
+          "field": "annual_family_income",
+          "op": "lte",
+          "value": 120000
+        }
+      ],
+      "any": [],
+      "none": [],
+      "other": []
+    },
+    "documents": [
+      "ration_card",
+      "income_certificate",
+      "aadhaar"
+    ],
+    "application": {
+      "mode": "offline",
+      "where": {
+        "en": "CMCHIS kiosk at the District Collectorate / government hospital",
+        "ta": "மாவட்ட ஆட்சியர் அலுவலகம் / அரசு மருத்துவமனையில் உள்ள CMCHIS மையம்"
+      },
+      "url": "https://www.cmchistn.com/",
+      "steps": {
+        "en": [
+          "Get an income certificate from the VAO",
+          "Visit the CMCHIS kiosk with ration card and Aadhaar",
+          "Biometric enrolment; the card is issued"
+        ],
+        "ta": [
+          "கிராம நிர்வாக அலுவலரிடம் வருமானச் சான்றிதழ் பெறவும்",
+          "ரேஷன் கார்டு, ஆதாருடன் CMCHIS மையம் செல்லவும்",
+          "பயோமெட்ரிக் பதிவு; அட்டை வழங்கப்படும்"
+        ]
+      }
+    },
+    "source": {
+      "url": "https://www.cmchistn.com/",
+      "origin": "manual"
+    },
+    "verification": {
+      "status": "unverified"
+    },
+    "mutually_exclusive_with": []
+  },
+  {
+    "schema_version": 1,
+    "id": "pudhumai_penn",
+    "status": "active",
+    "level": "state",
+    "state": "TN",
+    "category": [
+      "education",
+      "women"
+    ],
+    "name": {
+      "en": "Pudhumai Penn",
+      "ta": "புதுமைப் பெண் திட்டம்",
+      "hi": "पुदुमई पेण्ण योजना (TN)"
+    },
+    "aliases": [
+      "Puthumai Penn",
+      "Pudhumai Pen",
+      "புதுமைப் பெண்"
+    ],
+    "benefit": {
+      "summary": {
+        "en": "₹1,000 a month during higher education for girls who studied in government schools",
+        "ta": "அரசுப் பள்ளியில் படித்த மாணவிகளுக்கு உயர்கல்வியின்போது மாதம் ₹1,000"
+      },
+      "annual_cash_value_inr": 12000
+    },
+    "eligibility": {
+      "all": [
+        {
+          "field": "gender",
+          "op": "eq",
+          "value": "female"
+        },
+        {
+          "field": "studied_in_govt_school",
+          "op": "is_true"
+        },
+        {
+          "field": "is_student_higher_ed",
+          "op": "is_true"
+        }
+      ],
+      "any": [],
+      "none": [],
+      "other": []
+    },
+    "documents": [
+      "school_certificate",
+      "college_admission_proof",
+      "aadhaar",
+      "bank_passbook"
+    ],
+    "application": {
+      "mode": "online",
+      "where": {
+        "en": "Through your college on the Pudhumai Penn portal",
+        "ta": "உங்கள் கல்லூரி மூலம் புதுமைப் பெண் இணையதளத்தில்"
+      },
+      "url": "https://www.pudhumaipenn.tn.gov.in/",
+      "steps": {
+        "en": [
+          "Apply through your college",
+          "Upload school and admission certificates",
+          "₹1,000 is credited monthly"
+        ]
+      }
+    },
+    "source": {
+      "url": "https://www.pudhumaipenn.tn.gov.in/",
+      "origin": "manual"
+    },
+    "verification": {
+      "status": "unverified"
+    },
+    "mutually_exclusive_with": []
+  },
+  {
+    "schema_version": 1,
+    "id": "tamil_pudhalvan",
+    "status": "active",
+    "level": "state",
+    "state": "TN",
+    "category": [
+      "education"
+    ],
+    "name": {
+      "en": "Tamil Pudhalvan",
+      "ta": "தமிழ்ப் புதல்வன் திட்டம்",
+      "hi": "तमिल पुदल्वन योजना (TN)"
+    },
+    "aliases": [
+      "Tamil Puthalvan",
+      "Thamizh Pudhalvan",
+      "Tamizh Puthalvan",
+      "தமிழ்ப் புதல்வன்"
+    ],
+    "benefit": {
+      "summary": {
+        "en": "₹1,000 a month during higher education for boys who studied in government schools",
+        "ta": "அரசுப் பள்ளியில் படித்த மாணவர்களுக்கு உயர்கல்வியின்போது மாதம் ₹1,000"
+      },
+      "annual_cash_value_inr": 12000
+    },
+    "eligibility": {
+      "all": [
+        {
+          "field": "gender",
+          "op": "eq",
+          "value": "male"
+        },
+        {
+          "field": "studied_in_govt_school",
+          "op": "is_true"
+        },
+        {
+          "field": "is_student_higher_ed",
+          "op": "is_true"
+        }
+      ],
+      "any": [],
+      "none": [],
+      "other": []
+    },
+    "documents": [
+      "school_certificate",
+      "college_admission_proof",
+      "aadhaar",
+      "bank_passbook"
+    ],
+    "application": {
+      "mode": "online",
+      "where": {
+        "en": "Through your college on the state portal",
+        "ta": "உங்கள் கல்லூரி மூலம் மாநில இணையதளத்தில்"
+      },
+      "url": "https://www.pudhumaipenn.tn.gov.in/",
+      "steps": {
+        "en": [
+          "Apply through your college",
+          "Upload school and admission certificates",
+          "₹1,000 is credited monthly"
+        ]
+      }
+    },
+    "source": {
+      "url": "https://www.pudhumaipenn.tn.gov.in/",
+      "origin": "manual"
+    },
+    "verification": {
+      "status": "unverified"
+    },
+    "mutually_exclusive_with": []
+  },
+  {
+    "schema_version": 1,
+    "id": "muthulakshmi_mbs",
+    "status": "active",
+    "level": "state",
+    "state": "TN",
+    "category": [
+      "maternity",
+      "women",
+      "health"
+    ],
+    "name": {
+      "en": "Dr. Muthulakshmi Reddy Maternity Benefit Scheme",
+      "ta": "டாக்டர் முத்துலட்சுமி ரெட்டி மகப்பேறு நிதியுதவித் திட்டம்",
+      "hi": "डॉ. मुत्तुलक्ष्मी रेड्डी मातृत्व लाभ योजना (TN)"
+    },
+    "aliases": [
+      "MRMBS",
+      "Muthulakshmi Reddy scheme",
+      "Maternity benefit TN"
+    ],
+    "benefit": {
+      "summary": {
+        "en": "Up to ₹18,000 (cash + nutrition kits) for pregnant women",
+        "ta": "கர்ப்பிணிகளுக்கு ₹18,000 வரை (பணம் + ஊட்டச்சத்துப் பெட்டகம்)"
+      },
+      "annual_cash_value_inr": 18000
+    },
+    "eligibility": {
+      "all": [
+        {
+          "field": "gender",
+          "op": "eq",
+          "value": "female"
+        },
+        {
+          "field": "is_pregnant",
+          "op": "is_true"
+        },
+        {
+          "field": "age",
+          "op": "gte",
+          "value": 19
+        },
+        {
+          "field": "has_bpl_ration_card",
+          "op": "is_true"
+        }
+      ],
+      "any": [],
+      "none": [],
+      "other": []
+    },
+    "documents": [
+      "pregnancy_registration",
+      "aadhaar",
+      "bank_passbook",
+      "ration_card"
+    ],
+    "application": {
+      "mode": "offline",
+      "where": {
+        "en": "Village Health Nurse / Primary Health Centre",
+        "ta": "கிராம சுகாதார செவிலியர் / ஆரம்ப சுகாதார நிலையம்"
+      },
+      "url": "https://www.tnhealth.tn.gov.in/",
+      "steps": {
+        "en": [
+          "Register the pregnancy with the VHN / PHC to get a PICME number",
+          "Submit Aadhaar and bank details",
+          "Instalments are paid through pregnancy and after delivery"
+        ],
+        "ta": [
+          "கிராம சுகாதார செவிலியரிடம் கர்ப்பத்தைப் பதிந்து PICME எண் பெறவும்",
+          "ஆதார், வங்கி விவரங்களைக் கொடுக்கவும்",
+          "கர்ப்ப காலத்திலும் பிரசவத்துக்குப் பிறகும் தவணைகளாக வழங்கப்படும்"
+        ]
+      }
+    },
+    "source": {
+      "url": "https://www.tnhealth.tn.gov.in/",
+      "origin": "manual"
+    },
+    "verification": {
+      "status": "unverified"
+    },
+    "mutually_exclusive_with": []
+  },
+  {
+    "schema_version": 1,
+    "id": "uyegp",
+    "status": "active",
+    "level": "state",
+    "state": "TN",
+    "category": [
+      "business",
+      "employment"
+    ],
+    "name": {
+      "en": "UYEGP – Unemployed Youth Employment Generation Programme",
+      "ta": "படித்த வேலையற்ற இளைஞர்களுக்கான வேலைவாய்ப்பு உருவாக்கும் திட்டம் (UYEGP)",
+      "hi": "UYEGP (TN)"
+    },
+    "aliases": [
+      "UYEGP"
+    ],
+    "benefit": {
+      "summary": {
+        "en": "25% subsidy (up to ₹3.75 lakh) on a bank loan for a new business",
+        "ta": "புதிய தொழிலுக்கான வங்கிக் கடனில் 25% மானியம் (₹3.75 லட்சம் வரை)"
+      },
+      "annual_cash_value_inr": 0,
+      "cover_highlight": {
+        "en": "25% subsidy up to ₹3.75 lakh",
+        "ta": "25% மானியம் (₹3.75 லட்சம் வரை)"
+      }
+    },
+    "eligibility": {
+      "all": [
+        {
+          "field": "age",
+          "op": "between",
+          "value": [
+            18,
+            45
+          ]
+        },
+        {
+          "field": "occupation",
+          "op": "eq",
+          "value": "unemployed"
+        },
+        {
+          "field": "wants_to_start_business",
+          "op": "is_true"
+        },
+        {
+          "field": "education_level",
+          "op": "gte",
+          "value": "8th"
+        },
+        {
+          "field": "annual_family_income",
+          "op": "lte",
+          "value": 500000
+        }
+      ],
+      "any": [],
+      "none": [],
+      "other": []
+    },
+    "documents": [
+      "educational_certificate",
+      "income_certificate",
+      "project_report",
+      "aadhaar",
+      "community_certificate"
+    ],
+    "application": {
+      "mode": "online",
+      "where": {
+        "en": "msmeonline.tn.gov.in / District Industries Centre",
+        "ta": "msmeonline.tn.gov.in / மாவட்டத் தொழில் மையம்"
+      },
+      "url": "https://www.msmeonline.tn.gov.in/uyegp/",
+      "steps": {
+        "en": [
+          "Apply online with a project report",
+          "Interview at the District Industries Centre",
+          "Bank sanctions the loan; subsidy released after training"
+        ]
+      }
+    },
+    "source": {
+      "url": "https://www.msmeonline.tn.gov.in/uyegp/",
+      "origin": "manual"
+    },
+    "verification": {
+      "status": "unverified"
+    },
+    "mutually_exclusive_with": []
+  },
+  {
+    "schema_version": 1,
+    "id": "needs",
+    "status": "active",
+    "level": "state",
+    "state": "TN",
+    "category": [
+      "business"
+    ],
+    "name": {
+      "en": "NEEDS – New Entrepreneur-cum-Enterprise Development Scheme",
+      "ta": "புதிய தொழில்முனைவோர் மேம்பாட்டுத் திட்டம் (NEEDS)",
+      "hi": "NEEDS (TN)"
+    },
+    "aliases": [
+      "NEEDS"
+    ],
+    "benefit": {
+      "summary": {
+        "en": "Capital subsidy and interest subvention for first-generation educated entrepreneurs",
+        "ta": "முதல் தலைமுறை படித்த தொழில்முனைவோருக்கு மூலதன மானியம் மற்றும் வட்டி மானியம்"
+      },
+      "annual_cash_value_inr": 0,
+      "cover_highlight": {
+        "en": "25% capital subsidy",
+        "ta": "25% மூலதன மானியம்"
+      }
+    },
+    "eligibility": {
+      "all": [
+        {
+          "field": "age",
+          "op": "between",
+          "value": [
+            21,
+            45
+          ]
+        },
+        {
+          "field": "education_level",
+          "op": "in",
+          "value": [
+            "iti",
+            "diploma",
+            "degree",
+            "postgrad"
+          ]
+        },
+        {
+          "field": "wants_to_start_business",
+          "op": "is_true"
+        },
+        {
+          "field": "is_first_gen_entrepreneur",
+          "op": "is_true"
+        }
+      ],
+      "any": [],
+      "none": [],
+      "other": []
+    },
+    "documents": [
+      "educational_certificate",
+      "project_report",
+      "aadhaar",
+      "community_certificate"
+    ],
+    "application": {
+      "mode": "online",
+      "where": {
+        "en": "msmeonline.tn.gov.in / District Industries Centre",
+        "ta": "msmeonline.tn.gov.in / மாவட்டத் தொழில் மையம்"
+      },
+      "url": "https://www.msmeonline.tn.gov.in/needs/",
+      "steps": {
+        "en": [
+          "Apply online with a project report",
+          "Selection interview at the DIC",
+          "Entrepreneurship training",
+          "Bank loan with subsidy"
+        ]
+      }
+    },
+    "source": {
+      "url": "https://www.msmeonline.tn.gov.in/needs/",
+      "origin": "manual"
+    },
+    "verification": {
+      "status": "unverified"
+    },
+    "mutually_exclusive_with": []
+  },
+  {
+    "schema_version": 1,
+    "id": "kalaignar_kanavu_illam",
+    "status": "active",
+    "level": "state",
+    "state": "TN",
+    "category": [
+      "housing"
+    ],
+    "name": {
+      "en": "Kalaignar Kanavu Illam (rural housing)",
+      "ta": "கலைஞரின் கனவு இல்லம்",
+      "hi": "कलैञर कनवु इल्लम (TN)"
+    },
+    "aliases": [
+      "KKI",
+      "Kanavu Illam",
+      "கனவு இல்லம்"
+    ],
+    "benefit": {
+      "summary": {
+        "en": "About ₹3.5 lakh to replace a hut with a concrete house in rural areas",
+        "ta": "கிராமங்களில் குடிசைக்குப் பதில் கான்கிரீட் வீடு கட்ட சுமார் ₹3.5 லட்சம்"
+      },
+      "annual_cash_value_inr": 0,
+      "cover_highlight": {
+        "en": "₹3.5 lakh for a concrete house",
+        "ta": "கான்கிரீட் வீட்டுக்கு ₹3.5 லட்சம்"
+      }
+    },
+    "eligibility": {
+      "all": [
+        {
+          "field": "residence",
+          "op": "eq",
+          "value": "rural"
+        },
+        {
+          "field": "has_pucca_house",
+          "op": "is_false"
+        }
+      ],
+      "any": [],
+      "none": [],
+      "other": []
+    },
+    "documents": [
+      "aadhaar",
+      "ration_card",
+      "land_records",
+      "bank_passbook"
+    ],
+    "application": {
+      "mode": "offline",
+      "where": {
+        "en": "Village Panchayat / Block Development Office",
+        "ta": "கிராம ஊராட்சி / வட்டார வளர்ச்சி அலுவலகம்"
+      },
+      "url": "https://www.tnrd.tn.gov.in/",
+      "steps": {
+        "en": [
+          "Enquire at the Village Panchayat about the hut survey list",
+          "Submit Aadhaar, ration card and patta",
+          "Instalments released as construction progresses"
+        ],
+        "ta": [
+          "குடிசைக் கணக்கெடுப்புப் பட்டியல் பற்றி கிராம ஊராட்சியில் விசாரிக்கவும்",
+          "ஆதார், ரேஷன் கார்டு, பட்டா கொடுக்கவும்",
+          "கட்டுமான முன்னேற்றத்துக்கேற்ப தவணைகள் வழங்கப்படும்"
+        ]
+      }
+    },
+    "source": {
+      "url": "https://www.tnrd.tn.gov.in/",
+      "origin": "manual"
+    },
+    "verification": {
+      "status": "unverified"
+    },
+    "mutually_exclusive_with": [
+      "pmay_g"
+    ]
+  }
+]

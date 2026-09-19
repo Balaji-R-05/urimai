@@ -9,10 +9,12 @@ from __future__ import annotations
 import logging
 
 from telegram import BotCommand, Update
+from telegram.error import TelegramError
 from telegram.ext import Application, CallbackQueryHandler, CommandHandler, MessageHandler, filters
 
 import config
 import handlers
+from strings import BOT_DESCRIPTION, BOT_SHORT_DESCRIPTION
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 logging.getLogger("httpx").setLevel(logging.WARNING)
@@ -31,14 +33,26 @@ COMMANDS = [
 ]
 
 
+async def set_profile_text(bot) -> None:
+    """Description and short description per language. Only changed texts are sent (these calls are rate-limited)."""
+    for lang, text in BOT_DESCRIPTION.items():
+        code = lang or None
+        if (await bot.get_my_description(language_code=code)).description != text:
+            await bot.set_my_description(text, language_code=code)
+            log.info("updated bot description (%s)", lang or "default")
+    for lang, text in BOT_SHORT_DESCRIPTION.items():
+        code = lang or None
+        if (await bot.get_my_short_description(language_code=code)).short_description != text:
+            await bot.set_my_short_description(text, language_code=code)
+            log.info("updated bot short description (%s)", lang or "default")
+
+
 async def post_init(app: Application) -> None:
     await app.bot.set_my_commands(COMMANDS)
-    await app.bot.set_my_description(
-        "Urimai (உரிமை) finds government welfare schemes you may be eligible for. "
-        "Talk in Tamil, English or Hindi, by text or voice note. "
-        "Indicative only; the final decision is the department's."
-    )
-    await app.bot.set_my_short_description("Find government schemes you may be eligible for, in your language.")
+    try:
+        await set_profile_text(app.bot)
+    except TelegramError as e:
+        log.warning("could not update bot description: %s", e)
     try:
         health = await handlers.backend.health()
         log.info("server health: %s", health)

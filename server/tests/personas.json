@@ -1,0 +1,61 @@
+[
+  {
+    "id": "A", "name": "Lakshmi",
+    "profile": {"name": "Lakshmi", "age": 42, "gender": "female", "state": "TN", "district": "Villupuram", "residence": "rural",
+      "marital_status": "widowed", "is_head_of_family": true, "annual_family_income": 60000, "occupation": "agri_labourer",
+      "caste_category": "mbc", "has_bpl_ration_card": true, "owns_agri_land": false, "has_pucca_house": false,
+      "has_lpg_connection": false, "has_bank_account": true, "is_income_tax_payer": false, "is_epfo_member": false,
+      "children": [{"age": 15, "gender": "female", "in_school": true, "school_type": "govt"}, {"age": 8, "gender": "male", "in_school": true, "school_type": "govt"}]},
+    "expect": {
+      "likely": ["kmut", "cmchis", "ignwps", "pmuy", "pmay_g", "kalaignar_kanavu_illam", "pmjjby", "pmsby", "eshram"],
+      "not_eligible": ["apy", "pm_sym", "ssy", "pm_kisan", "ignoaps"]
+    },
+    "conflicts": [["kmut", "ignwps"], ["pmay_g", "kalaignar_kanavu_illam"]],
+    "hints": 1
+  },
+  {
+    "id": "B", "name": "Ravi",
+    "profile": {"name": "Ravi", "age": 24, "gender": "male", "state": "TN", "district": "Coimbatore", "residence": "urban",
+      "marital_status": "single", "annual_family_income": 300000, "occupation": "unemployed", "caste_category": "bc",
+      "education_level": "degree", "wants_to_start_business": true, "is_first_gen_entrepreneur": true,
+      "has_bank_account": true, "is_income_tax_payer": false},
+    "expect": {
+      "likely": ["needs", "uyegp", "pm_mudra", "pmkvy", "apy", "pmjjby", "pmsby"],
+      "not_eligible": ["stand_up_india", "cmchis", "eshram"]
+    }
+  },
+  {
+    "id": "C", "name": "Muniyamma",
+    "profile": {"age": 72, "gender": "female", "marital_status": "widowed", "residence": "rural", "state": "TN",
+      "has_bpl_ration_card": true, "annual_family_income": 0, "occupation": "retired"},
+    "expect": {
+      "likely": ["ignoaps", "pmjay_senior", "ignwps", "cmchis"],
+      "not_eligible": ["pmsby", "apy"]
+    },
+    "conflicts": [["ignoaps", "ignwps"]]
+  },
+  {
+    "id": "D", "name": "Selvi",
+    "profile": {"age": 26, "gender": "female", "marital_status": "married", "residence": "urban", "state": "TN",
+      "is_pregnant": true, "annual_family_income": 100000, "children": [{"age": 3, "gender": "female"}]},
+    "expect": {
+      "likely": ["pmmvy", "ssy", "cmchis", "apy", "pmjjby", "pmsby"],
+      "need_info": ["muthulakshmi_mbs", "kmut"]
+    },
+    "first_question_in": ["has_bpl_ration_card", "occupation", "is_head_of_family"]
+  },
+  {
+    "id": "E", "name": "Murugan",
+    "profile": {"occupation": "farmer", "district": "Thanjavur", "state": "TN"},
+    "expect": {"need_info": ["pm_kisan"]},
+    "first_question_in": ["age", "owns_agri_land", "annual_family_income", "gender"]
+  },
+  {
+    "id": "F", "name": "Priya",
+    "profile": {"age": 19, "gender": "female", "caste_category": "sc", "occupation": "student", "is_student_higher_ed": true,
+      "studied_in_govt_school": true, "state": "TN", "annual_family_income": 150000},
+    "expect": {
+      "likely": ["post_matric_sc", "pudhumai_penn", "pmkvy", "pmjjby", "pmsby", "apy"]
+    }
+  }
+]

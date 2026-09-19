@@ -20,7 +20,7 @@ from strings import t
 
 MAX_LEN = 4000
 STATUS_EMOJI = {"likely": "✅", "need_info": "🟡", "not_eligible": "⚪"}
-CHECK_EMOJI = {"pass": "✅", "fail": "❌", "unknown": "❔"}
+CHECK_EMOJI = {"pass": "✅", "fail": "❌", "unknown": "❔", "manual": "📋"}  # manual: please check yourself
 
 
 def _clip(s: str, n: int = 38) -> str:

@@ -1,0 +1,633 @@
+{
+  "$defs": {
+    "Application": {
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "enum": [
+            "online",
+            "offline",
+            "both"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "where": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Text"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "url": {
+          "anyOf": [
+            {
+              "pattern": "^https?://",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Url"
+        },
+        "steps": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TextList"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "mode"
+      ],
+      "title": "Application",
+      "type": "object"
+    },
+    "Benefit": {
+      "additionalProperties": false,
+      "properties": {
+        "summary": {
+          "$ref": "#/$defs/Text"
+        },
+        "annual_cash_value_inr": {
+          "default": 0,
+          "description": "Cash per year, for ranking; 0 if not cash",
+          "minimum": 0,
+          "title": "Annual Cash Value Inr",
+          "type": "integer"
+        },
+        "cover_highlight": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Text"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Non-cash headline, e.g. '₹5 lakh health cover'"
+        }
+      },
+      "required": [
+        "summary"
+      ],
+      "title": "Benefit",
+      "type": "object"
+    },
+    "Condition": {
+      "additionalProperties": false,
+      "description": "One machine-checkable rule on a profile field, e.g. {\"field\": \"age\", \"op\": \"gte\", \"value\": 60}.",
+      "properties": {
+        "field": {
+          "enum": [
+            "age",
+            "annual_family_income",
+            "caste_category",
+            "caste_is_sc_st",
+            "children",
+            "disability_percent",
+            "district",
+            "education_level",
+            "gender",
+            "has_bank_account",
+            "has_boy_child_in_govt_school_14_17",
+            "has_bpl_ration_card",
+            "has_disability",
+            "has_electricity_connection",
+            "has_girl_child_in_govt_school_14_17",
+            "has_girl_child_under_10",
+            "has_lpg_connection",
+            "has_pucca_house",
+            "is_epfo_member",
+            "is_first_gen_entrepreneur",
+            "is_govt_employee",
+            "is_head_of_family",
+            "is_income_tax_payer",
+            "is_minority",
+            "is_pregnant",
+            "is_student_higher_ed",
+            "land_acres",
+            "marital_status",
+            "name",
+            "occupation",
+            "owns_agri_land",
+            "owns_house",
+            "residence",
+            "state",
+            "studied_in_govt_school",
+            "wants_to_start_business"
+          ],
+          "title": "Field",
+          "type": "string"
+        },
+        "op": {
+          "enum": [
+            "eq",
+            "ne",
+            "in",
+            "not_in",
+            "lt",
+            "lte",
+            "gt",
+            "gte",
+            "between",
+            "is_true",
+            "is_false"
+          ],
+          "title": "Op",
+          "type": "string"
+        },
+        "value": {
+          "default": null,
+          "title": "Value"
+        },
+        "text": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Text"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Override the auto-generated rule text shown to users"
+        }
+      },
+      "required": [
+        "field",
+        "op"
+      ],
+      "title": "Condition",
+      "type": "object"
+    },
+    "CustomDocument": {
+      "additionalProperties": false,
+      "description": "A document not in the standard list (fields.DOC_LABELS).",
+      "properties": {
+        "id": {
+          "pattern": "^[a-z0-9_]{2,64}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "label": {
+          "$ref": "#/$defs/Text"
+        }
+      },
+      "required": [
+        "id",
+        "label"
+      ],
+      "title": "CustomDocument",
+      "type": "object"
+    },
+    "Eligibility": {
+      "additionalProperties": false,
+      "description": "all: every rule must pass. any: at least one must pass. none: none may be true.\nother: requirements the engine can't check (shown to the user as \"please check\").",
+      "properties": {
+        "all": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Condition"
+          },
+          "title": "All",
+          "type": "array"
+        },
+        "any": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Condition"
+          },
+          "title": "Any",
+          "type": "array"
+        },
+        "none": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Condition"
+          },
+          "title": "None",
+          "type": "array"
+        },
+        "other": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Text"
+          },
+          "title": "Other",
+          "type": "array"
+        }
+      },
+      "title": "Eligibility",
+      "type": "object"
+    },
+    "Source": {
+      "additionalProperties": false,
+      "properties": {
+        "url": {
+          "description": "Official page the scheme details come from",
+          "pattern": "^https?://",
+          "title": "Url",
+          "type": "string"
+        },
+        "origin": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Where this record came from, e.g. 'manual', 'myscheme.gov.in'",
+          "title": "Origin"
+        },
+        "external_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The scheme's id at the origin, for re-imports",
+          "title": "External Id"
+        }
+      },
+      "required": [
+        "url"
+      ],
+      "title": "Source",
+      "type": "object"
+    },
+    "Text": {
+      "additionalProperties": false,
+      "description": "User-facing text. English is required; Tamil and Hindi fall back to English when missing.",
+      "properties": {
+        "en": {
+          "minLength": 1,
+          "title": "En",
+          "type": "string"
+        },
+        "ta": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ta"
+        },
+        "hi": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Hi"
+        }
+      },
+      "required": [
+        "en"
+      ],
+      "title": "Text",
+      "type": "object"
+    },
+    "TextList": {
+      "additionalProperties": false,
+      "properties": {
+        "en": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "En",
+          "type": "array"
+        },
+        "ta": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ta"
+        },
+        "hi": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Hi"
+        }
+      },
+      "required": [
+        "en"
+      ],
+      "title": "TextList",
+      "type": "object"
+    },
+    "Verification": {
+      "additionalProperties": false,
+      "description": "draft: stored but never shown to users. unverified: shown with a 'being verified' note. verified: checked.",
+      "properties": {
+        "status": {
+          "default": "draft",
+          "enum": [
+            "draft",
+            "unverified",
+            "verified"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "last_verified": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Last Verified"
+        },
+        "verified_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Verified By"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        }
+      },
+      "title": "Verification",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "id": {
+      "pattern": "^[a-z0-9][a-z0-9_]{1,63}$",
+      "title": "Id",
+      "type": "string"
+    },
+    "status": {
+      "default": "active",
+      "enum": [
+        "active",
+        "closed"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "level": {
+      "enum": [
+        "central",
+        "state"
+      ],
+      "title": "Level",
+      "type": "string"
+    },
+    "state": {
+      "anyOf": [
+        {
+          "enum": [
+            "AN",
+            "AP",
+            "AR",
+            "AS",
+            "BR",
+            "CG",
+            "CH",
+            "DH",
+            "DL",
+            "GA",
+            "GJ",
+            "HP",
+            "HR",
+            "JH",
+            "JK",
+            "KA",
+            "KL",
+            "LA",
+            "LD",
+            "MH",
+            "ML",
+            "MN",
+            "MP",
+            "MZ",
+            "NL",
+            "OD",
+            "PB",
+            "PY",
+            "RJ",
+            "SK",
+            "TG",
+            "TN",
+            "TR",
+            "UK",
+            "UP",
+            "WB"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Required for state schemes, null for central",
+      "title": "State"
+    },
+    "category": {
+      "items": {
+        "enum": [
+          "agriculture",
+          "banking",
+          "business",
+          "child_welfare",
+          "disability",
+          "education",
+          "employment",
+          "energy",
+          "fisheries",
+          "food_security",
+          "health",
+          "housing",
+          "income_support",
+          "insurance",
+          "legal_aid",
+          "livestock",
+          "maternity",
+          "minority_welfare",
+          "pension",
+          "savings",
+          "sc_st_welfare",
+          "senior_citizens",
+          "skill_development",
+          "sports_culture",
+          "transport",
+          "water_sanitation",
+          "women"
+        ],
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Category",
+      "type": "array"
+    },
+    "name": {
+      "$ref": "#/$defs/Text"
+    },
+    "aliases": {
+      "default": [],
+      "description": "Other names people use: abbreviations (KMUT), short forms (PM Kisan), common spellings (Tamil Puthalvan), any language. Used by scheme search",
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 20,
+      "title": "Aliases",
+      "type": "array"
+    },
+    "benefit": {
+      "$ref": "#/$defs/Benefit"
+    },
+    "eligibility": {
+      "$ref": "#/$defs/Eligibility"
+    },
+    "documents": {
+      "default": [],
+      "items": {
+        "anyOf": [
+          {
+            "enum": [
+              "aadhaar",
+              "age_proof",
+              "bank_passbook",
+              "birth_certificate_child",
+              "college_admission_proof",
+              "community_certificate",
+              "death_certificate_spouse",
+              "disability_certificate",
+              "educational_certificate",
+              "electricity_bill",
+              "income_certificate",
+              "land_records",
+              "photo",
+              "pregnancy_registration",
+              "project_report",
+              "ration_card",
+              "residence_proof",
+              "school_certificate",
+              "vending_certificate"
+            ],
+            "type": "string"
+          },
+          {
+            "$ref": "#/$defs/CustomDocument"
+          }
+        ]
+      },
+      "title": "Documents",
+      "type": "array"
+    },
+    "application": {
+      "$ref": "#/$defs/Application"
+    },
+    "source": {
+      "$ref": "#/$defs/Source"
+    },
+    "verification": {
+      "$ref": "#/$defs/Verification",
+      "default": {
+        "status": "draft",
+        "last_verified": null,
+        "verified_by": null,
+        "notes": null
+      }
+    },
+    "mutually_exclusive_with": {
+      "default": [],
+      "description": "Ids of schemes a person can't get together with this",
+      "items": {
+        "type": "string"
+      },
+      "title": "Mutually Exclusive With",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "id",
+    "level",
+    "category",
+    "name",
+    "benefit",
+    "eligibility",
+    "application",
+    "source"
+  ],
+  "title": "Urimai scheme (schema_version 1)",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

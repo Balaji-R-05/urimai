@@ -7,7 +7,7 @@ Built for **AI-INNOVATHON 2026** (Jerusalem College of Engineering, Chennai) · 
 
 **Try the bot:** [t.me/jce_hackathon_bot](https://t.me/jce_hackathon_bot) *(online while the demo server is running)*
 
-> 🚧 **Current status:** this repository contains the **Telegram bot client** only. The **API server** (rule engine, question planner, scheme catalogue and LLM agents) will be added to this repo later. Until then, the bot needs a separately running server to work. The design and feature sections below describe the complete system.
+> **Repository:** the **Telegram bot** (`bot/`) and the **API server** it talks to (`server/`: rule engine, question planner, scheme catalogue, retrieval and LLM agents). The scheme catalogue ships as a JSON seed and can be served from **MongoDB**.
 
 ---
 
@@ -31,7 +31,7 @@ A citizen sends a **voice note in Tamil** (or types in Tamil, English, Hindi or 
 
 ## Design principle: *the AI understands people, the rules decide eligibility*
 
-*Everything in this diagram except the last Telegram step runs on the API server, which is not in this repo yet.*
+*Everything in this diagram except the last Telegram step runs on the API server (`server/`).*
 
 Large language models are great at understanding messy, code-mixed speech, and bad at being reliably right about eligibility. So Urimai separates the two:
 
@@ -43,7 +43,7 @@ flowchart LR
     NUM --> EXT["Extractor (LLM)<br/>facts + evidence quotes<br/>or a scheme question"]
     EXT --> NORM["Validate & normalise<br/><i>deterministic</i>"]
     NORM --> ENG["Rule engine<br/>three-valued logic<br/><i>deterministic</i>"]
-    CAT[("Scheme catalogue<br/>30 schemes · JSON")] --> ENG
+    CAT[("Scheme catalogue<br/>MongoDB or JSON seed")] --> ENG
     ENG --> PLAN["Question planner<br/>highest-value next question<br/><i>deterministic</i>"]
     ENG --> ANS["Answerer (LLM)<br/>only from scheme records"]
     PLAN --> RESP["Responder (LLM)<br/>reply in user's language<br/>sees engine output only"]
@@ -88,14 +88,19 @@ The bot provides the voice, buttons, cards and PDF delivery. The eligibility log
 
 ## This repository
 
-This repo holds the **Telegram bot client**. It is a thin client: it records voice notes, shows results cards and buttons, and plays Tamil voice replies. Every decision comes from the **Urimai API server** (extraction, rule engine, planner, Q&A), which the bot calls over HTTP at `BACKEND_URL`. The server isn't in this repo yet (it will be added later), so for now you need a separately running instance before you start the bot.
+The **Telegram bot** (`bot/`) is a thin client: it records voice notes, shows results cards and buttons, and plays Tamil voice replies. Every decision comes from the **Urimai API server** (`server/`: extraction, rule engine, planner, Q&A), which the bot calls over HTTP at `BACKEND_URL`.
+
+The **scheme catalogue** (central and state schemes) is read once at server start: from MongoDB when `MONGODB_URI` is set, otherwise from the seed file `server/data/schemes.json`. Both sources go through the same validation, so a bad rule fails at startup instead of giving a wrong answer.
 
 | Layer | Technology |
 |---|---|
 | Bot | Python 3.11 · `python-telegram-bot` 22 (long polling, no public URL needed) |
 | HTTP client | `httpx` (async) |
 | Text-to-speech | gTTS (Tamil / Hindi / English, Indian-English accent) |
-| Server (coming later) | FastAPI · Groq `gpt-oss-120b` for language understanding · Groq `whisper-large-v3` for speech-to-text |
+| Server | FastAPI · Groq `gpt-oss-120b` for language understanding · Groq `whisper-large-v3` for speech-to-text |
+| Scheme catalogue | MongoDB (`pymongo`), or the JSON seed |
+| Scheme Q&A retrieval | MongoDB Atlas Vector Search + Atlas Search (in-memory fallback without MongoDB), RRF fusion, jina cross-encoder rerank; multilingual MiniLM embeddings (`fastembed`, ONNX, local) |
+| PDF report | `fpdf2` + HarfBuzz shaping with Noto Sans Tamil / Devanagari |
 
 ---
 
@@ -104,7 +109,8 @@ This repo holds the **Telegram bot client**. It is a thin client: it records voi
 ### Prerequisites
 - Python 3.11+
 - A Telegram bot token from [@BotFather](https://t.me/BotFather)
-- A running Urimai API server (default `http://localhost:8000`). It isn't in this repo yet, so point `BACKEND_URL` at an instance you already run.
+- A [Groq](https://console.groq.com) API key for the server (without it, button answers and the rule engine still work; free-text understanding and voice notes don't)
+- Optional: a MongoDB instance for the scheme catalogue
 
 ### Setup
 ```bash
@@ -113,33 +119,60 @@ cd urimai
 
 python -m venv venv
 # Windows
-venv\Scripts\pip install -r requirements.txt
+venv\Scripts\pip install -r requirements.txt -r server/requirements.txt
 # macOS / Linux
-venv/bin/pip install -r requirements.txt
+venv/bin/pip install -r requirements.txt -r server/requirements.txt
 ```
 
-Create a `.env` file in the project root:
+Copy `.env.example` to `.env` in the project root and fill in `TELEGRAM_BOT_TOKEN` and `GROQ_API_KEY`. The bot and the server share this file, and every other setting has a working default.
 
-```dotenv
-TELEGRAM_BOT_TOKEN=123456:ABC...       # required
-BACKEND_URL=http://localhost:8000      # Urimai API server
-BACKEND_TIMEOUT_S=30                   # seconds per server request
-VOICE_REPLIES_DEFAULT=1                # 1 = send Tamil/Hindi/English voice replies by default
-MAX_VOICE_SECONDS=60                   # longer voice notes are rejected
-DEFAULT_LANG=ta                        # ta | en | hi, used until the user picks a language
-```
+| Variable | Used by | |
+|---|---|---|
+| `TELEGRAM_BOT_TOKEN` | bot | Required |
+| `BACKEND_URL` | bot | Urimai API server, default `http://localhost:8000` |
+| `GROQ_API_KEY` | server | Language understanding and speech-to-text |
+| `MONGODB_URI` | server | Empty = use `server/data/schemes.json` |
+| `MONGODB_DB` / `MONGODB_COLLECTION` | server | Default `urimai` / `schemes` |
+| `RETRIEVAL_ENABLED` | server | `0` skips the retrieval models (Q&A then uses the extractor's scheme pick) |
 
-Only `TELEGRAM_BOT_TOKEN` is required; the rest show their defaults.
-
-### Run
-Start the API server first, then from the project root:
+### Scheme catalogue in MongoDB (optional)
+Set `MONGODB_URI` in `.env`, then load the seed catalogue. It upserts by scheme `id`, so it's safe to re-run:
 
 ```bash
-# Windows
-venv\Scripts\python bot/main.py
-# macOS / Linux
-venv/bin/python bot/main.py
+cd server
+python -m app.catalogue.seed                     # server/data/schemes.json -> MongoDB
+python -m app.catalogue.seed more_schemes.json   # add or update schemes from another file
+python -m app.catalogue.seed --replace           # also delete schemes that are not in the file
 ```
+
+Every field of a scheme document is described in [server/data/SCHEMES.md](server/data/SCHEMES.md). Check a file with `--dry-run` before loading it.
+
+The seed command also keeps **scheme search** up to date: it splits each scheme into sections (overview, eligibility, documents, how to apply) per language, embeds them locally, and stores them in the `scheme_chunks` collection. It creates the Atlas **Vector Search** (`chunks_vector`) and **Atlas Search** (`chunks_text`) indexes on first run. Only changed schemes are re-embedded. Questions like "any housing scheme?" are then answered by `$vectorSearch` plus keyword `$search` in Atlas, filtered to central schemes and the user's state, and reranked locally. Every MongoDB call appears in the server log as `urimai.db: ...`.
+
+Each document has the same shape as an entry in `schemes.json`. A state scheme sets `"state"` (e.g. `"TN"`), and the server adds the residence rule for it. The server reads the catalogue once at startup, so restart it after changing schemes.
+
+### Run
+One command starts both. It checks `.env` and the installed packages, starts the server, waits for `/api/health`, then starts the bot. Both logs appear in one terminal, and Ctrl+C stops both:
+
+```bash
+venv\Scripts\python run.py     # Windows
+venv/bin/python run.py         # macOS / Linux
+```
+
+Or run them separately, in two terminals:
+
+```bash
+# 1. API server (from server/)
+cd server
+../venv/Scripts/python -m uvicorn app.main:app --port 8000     # Windows
+../venv/bin/python -m uvicorn app.main:app --port 8000         # macOS / Linux
+
+# 2. Telegram bot (from the project root)
+venv\Scripts\python bot/main.py     # Windows
+venv/bin/python bot/main.py         # macOS / Linux
+```
+
+`http://localhost:8000/api/health` shows the LLM status, scheme count and catalogue source (`mongodb` or `seed`). On first start the server downloads the retrieval models (~1.3 GB) into `server/.models` in the background. Until they're ready, scheme Q&A uses the extractor's pick.
 
 On startup the bot registers its command menu and logs the server's `/api/health` status. If the server can't be reached it logs a warning and keeps running. Open your bot in Telegram and send `/start`.
 
@@ -174,7 +207,24 @@ urimai/
 │   ├── tts.py         # gTTS voice replies (cached)
 │   ├── state.py       # per-chat UI state
 │   └── config.py      # settings loaded from .env
-├── requirements.txt
+├── server/
+│   ├── app/
+│   │   ├── main.py            # FastAPI app: lifespan + router
+│   │   ├── api/               # routes.py (endpoints used by bot/api.py), schemas.py (request models)
+│   │   ├── core/              # config.py (all settings), session.py (in-memory, 30 min expiry)
+│   │   ├── domain/            # fields.py (profile fields, questions in ta/en/hi), formatting.py
+│   │   ├── catalogue/         # loader.py (MongoDB or JSON seed + validation), seed.py (JSON → MongoDB)
+│   │   ├── engine/            # three-valued rules, derived facts, question planner, summaries
+│   │   ├── agents/            # LLM: Groq client, extractor, responder, answerer
+│   │   ├── nlp/               # number words → digits, value normalisation
+│   │   ├── retrieval/         # chunking, hybrid search, reranking for scheme Q&A (service.py = glue)
+│   │   ├── services/          # orchestrator.py (per-turn pipeline), report.py (PDF)
+│   │   └── assets/fonts/      # Noto Sans fonts for the PDF
+│   ├── data/schemes.json      # seed scheme catalogue
+│   ├── tests/                 # run: cd server && python -m pytest (no LLM, MongoDB or models needed)
+│   └── requirements.txt
+├── requirements.txt   # bot dependencies
+├── .env.example
 └── .env               # not committed
 ```
 

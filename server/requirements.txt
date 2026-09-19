@@ -1,0 +1,14 @@
+# Urimai API server (server/). The Telegram bot's deps are in ../requirements.txt
+fastapi>=0.115
+uvicorn[standard]>=0.30
+pydantic>=2.7
+python-dotenv>=1.0
+groq>=0.11
+python-multipart>=0.0.9
+pymongo>=4.8      # scheme catalogue (optional: without MONGODB_URI the JSON seed in data/ is used)
+fastembed>=0.5    # scheme retrieval: multilingual embedder + cross-encoder reranker (ONNX, no torch)
+numpy>=1.26
+fpdf2>=2.8        # PDF report (with uharfbuzz for Tamil / Hindi shaping)
+uharfbuzz>=0.40
+pytest>=8.0
+httpx>=0.27

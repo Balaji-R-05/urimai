@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+
+# Virtual environments
+venv/
+
+# Testing / Coverage
+.pytest_cache/
+
+# Type checking / Linters
+.ruff_cache/
+
+# Environment Variables
+.env
+.env.*
+!.env.example
+
+# IDEs / Editors
+.vscode/
+
+# Logs
+*.log
+logs/
+
+
+# Temporary files
+tmp/
+temp/
+.cache/

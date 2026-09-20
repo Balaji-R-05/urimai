@@ -9,6 +9,12 @@ Built for **AI-INNOVATHON 2026** (Jerusalem College of Engineering, Chennai) · 
 
 > **Repository:** the **Telegram bot** (`bot/`) and the **API server** it talks to (`server/`: rule engine, question planner, scheme catalogue, retrieval and LLM agents). The scheme catalogue ships as a JSON seed and can be served from **MongoDB**.
 
+<p align="center">
+  <img src="images/urimai_bot_main.jpeg" width="260" alt="Urimai bot info screen">
+  <img src="images/language_choice.jpeg" width="260" alt="Language selection: தமிழ் / English / हिंदी">
+  <img src="images/qrcode.jpeg" width="260" alt="QR code to open the bot on Telegram">
+</p>
+
 ---
 
 ## The problem

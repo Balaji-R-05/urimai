@@ -5,7 +5,8 @@ venv\\Scripts\\python run.py      # Windows
 venv/bin/python run.py          # macOS / Linux
 
 Starts the server (server/, uvicorn), waits until /api/health answers, then starts the bot (bot/main.py).
-Both logs stream here, prefixed [server] / [bot]. Ctrl+C stops both; if either one exits, the other is stopped.
+Both logs stream here, prefixed [server] / [bot].
+Ctrl+C stops both; if either one exits, the other is stopped.
 """
 
 from __future__ import annotations
@@ -45,7 +46,8 @@ def read_env() -> dict[str, str]:
 
 def preflight() -> int:
     """
-    Check .env, dependencies and the port. Returns the server port.
+    Check .env, dependencies and the port.
+    Returns the server port.
     """
     if not (ROOT / ".env").exists():
         fail(".env not found. Copy .env.example to .env and fill in TELEGRAM_BOT_TOKEN and GROQ_API_KEY.")
@@ -75,7 +77,7 @@ def preflight() -> int:
 def stream(name: str, proc: subprocess.Popen) -> None:
     color = COLORS[name] if sys.stdout.isatty() else ""
     prefix = f"{color}[{name}]{RESET if color else ''} "
-    assert proc.stdout is not None  # start() always passes stdout=PIPE
+    assert proc.stdout is not None
     for line in proc.stdout:
         sys.stdout.write(prefix + line)
         sys.stdout.flush()

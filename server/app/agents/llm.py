@@ -1,13 +1,14 @@
-"""Groq wrapper: JSON completions, text completions and speech-to-text, all with timeouts."""
+"""
+Groq wrapper: JSON completions, text completions and speech-to-text, all with timeouts.
+"""
+
 from __future__ import annotations
 
 import asyncio
 import json
 import logging
 import re
-
 from groq import AsyncGroq
-
 from app.core import config
 
 log = logging.getLogger("urimai.llm")
@@ -38,7 +39,9 @@ _RETRY_IN = re.compile(r"try again in ([\d.]+)(ms|s)")
 
 
 def _rate_limit_wait(err: str) -> float | None:
-    """Seconds Groq asks us to wait on a 429, if stated."""
+    """
+    Seconds Groq asks us to wait on a 429, if stated.
+    """
     if "429" not in err and "rate_limit" not in err:
         return None
     m = _RETRY_IN.search(err)
@@ -49,8 +52,10 @@ def _rate_limit_wait(err: str) -> float | None:
 
 
 async def _chat(messages: list[dict], *, json_mode: bool, max_tokens: int, temperature: float) -> str:
-    """Try the primary model, then each fallback. Groq rate limits are per model, so spreading across
-    models multiplies throughput. A short 429 ("try again in 0.8s") is waited out once on the same model."""
+    """
+    Try the primary model, then each fallback. Groq rate limits are per model, so spreading across
+    models multiplies throughput. A short 429 ("try again in 0.8s") is waited out once on the same model.
+    """
     models = [config.LLM_MODEL] + [m for m in config.LLM_FALLBACK_MODELS if m != config.LLM_MODEL]
     last: LLMError | None = None
     for model in models:

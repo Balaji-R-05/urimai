@@ -9,7 +9,6 @@ import asyncio
 import hashlib
 import io
 import logging
-
 from gtts import gTTS
 
 log = logging.getLogger("urimai.tts")
@@ -30,7 +29,8 @@ async def speak(text: str, lang: str) -> bytes | None:
         return _cache[key]
     try:
         audio = await asyncio.wait_for(asyncio.to_thread(_synth, text[:600], lang), timeout=15)
-    except Exception as e:  # network / gTTS failures must never block the text reply
+    except Exception as e:  
+        # Network / gTTS failures must never block the text reply
         log.warning("TTS failed: %s", e)
         return None
     if len(_cache) > 200:

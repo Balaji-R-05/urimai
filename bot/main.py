@@ -5,7 +5,6 @@ Run Command: `python bot/main.py` from the project root (server must be running)
 """
 
 from __future__ import annotations
-
 import logging
 
 from telegram import BotCommand, Update
@@ -16,9 +15,13 @@ import config
 import handlers
 from strings import BOT_DESCRIPTION, BOT_SHORT_DESCRIPTION
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s: %(message)s"
+)
 logging.getLogger("httpx").setLevel(logging.WARNING)
 log = logging.getLogger("urimai.bot")
+
 
 COMMANDS = [
     BotCommand("start", "Start / choose language"),
@@ -34,7 +37,10 @@ COMMANDS = [
 
 
 async def set_profile_text(bot) -> None:
-    """Description and short description per language. Only changed texts are sent (these calls are rate-limited)."""
+    """
+    Description and short description per language. 
+    Only changed texts are sent (these calls are rate-limited).
+    """
     for lang, text in BOT_DESCRIPTION.items():
         code = lang or None
         if (await bot.get_my_description(language_code=code)).description != text:

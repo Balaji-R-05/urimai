@@ -43,7 +43,9 @@ async def _send(ctx, chat_id: int, text: str, markup=None):
                                       disable_web_page_preview=True)
 
 
+# ------------------------------------------------------------------------------
 # ---------- core: render a server response as a sequence of messages ----------
+# ------------------------------------------------------------------------------
 
 async def show_response(ctx, chat_id: int, st: state.ChatState, resp: dict) -> None:
     lang = st.lang
@@ -99,8 +101,9 @@ async def process_text(ctx, chat_id: int, st: state.ChatState, text: str) -> Non
         return
     await show_response(ctx, chat_id, st, resp)
 
-
+# ------------------------------
 # ---------- commands ----------
+# ------------------------------
 
 async def cmd_start(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     chat_id = _chat_id(update)
@@ -176,7 +179,9 @@ async def cmd_report(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
                                 caption=t("report_caption", st.lang), parse_mode=HTML)
 
 
+# ------------------------------
 # ---------- messages ----------
+# ------------------------------
 
 async def on_text(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     msg = update.message
@@ -196,7 +201,7 @@ async def on_voice(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     media = (msg.voice or msg.audio) if msg else None
     if media is None:
         return
-    # newer python-telegram-bot versions report duration as a timedelta
+    
     dur = media.duration
     secs = dur.total_seconds() if isinstance(dur, timedelta) else dur
     if secs and secs > config.MAX_VOICE_SECONDS:
@@ -223,7 +228,9 @@ async def on_other(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         await _send(ctx, _chat_id(update), t("other_type", st.lang))
 
 
+# -----------------------------
 # ---------- buttons ----------
+# ------------------------------
 
 async def _edit(q, text: str, markup=None):
     try:

@@ -25,12 +25,14 @@ class ChatState:
 _states: dict[int, ChatState] = {}
 
 
+# Returns the ChatState for a given chat_id, creating it if necessary.
 def get(chat_id: int) -> ChatState:
     if chat_id not in _states:
         _states[chat_id] = ChatState()
     return _states[chat_id]
 
 
+# Resets the ChatState for a given chat_id, preserving language and voice settings.
 def reset(chat_id: int) -> ChatState:
     old = _states.get(chat_id)
     new = ChatState()
@@ -40,5 +42,6 @@ def reset(chat_id: int) -> ChatState:
     return new
 
 
+# Returns a session_id for the backend, given a chat_id.
 def session_id(chat_id: int) -> str:
     return f"tg:{chat_id}"

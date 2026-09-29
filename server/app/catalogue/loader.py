@@ -7,6 +7,7 @@ Every document is checked against the schema (app/catalogue/schema.py):
 Only active, non-draft schemes are served. Seed MongoDB with:  python -m app.catalogue.seed
 Loaded once per process; restart the server to pick up catalogue changes.
 """
+
 from __future__ import annotations
 
 import json
@@ -36,7 +37,9 @@ READ_ATTEMPTS = 3
 
 
 def _read_mongo() -> list[dict]:
-    """All scheme documents. Retries a few times: a short network drop shouldn't stop the bot starting."""
+    """
+    All scheme documents. Retries a few times: a short network drop shouldn't stop the bot starting.
+    """
     from pymongo.errors import PyMongoError
 
     from app.core import db
@@ -62,12 +65,16 @@ def _read_mongo() -> list[dict]:
 
 
 def served(s: Scheme) -> bool:
-    """Shown to users: active and past draft review."""
+    """
+    Shown to users: active and past draft review.
+    """
     return s.status == "active" and s.verification.status != "draft"
 
 
 def to_engine(s: Scheme, loaded_ids: set[str]) -> dict:
-    """The dict the rule engine, planner and replies read. State schemes get a residence rule prepended."""
+    """
+    The dict the rule engine, planner and replies read. State schemes get a residence rule prepended.
+    """
     d = to_document(s)
     elig = d["eligibility"]
     for block in ("all", "any", "none", "other"):
@@ -85,8 +92,10 @@ def to_engine(s: Scheme, loaded_ids: set[str]) -> dict:
 
 
 def validate(docs: list[dict], strict: bool = True) -> list[dict]:
-    """Validate raw documents and return the served schemes in engine form.
-    strict: raise on any invalid document; otherwise log and skip it."""
+    """
+    Validate raw documents and return the served schemes in engine form.
+    strict: raise on any invalid document; otherwise log and skip it.
+    """
     valid, errors = check(docs)
     if errors:
         lines = [f"{sid}: {e}" for sid, errs in errors.items() for e in errs]
@@ -104,7 +113,9 @@ def validate(docs: list[dict], strict: bool = True) -> list[dict]:
 
 @lru_cache(maxsize=1)
 def load_schemes() -> list[dict]:
-    """The served catalogue, shared by the engine, the extractor and retrieval. Treat as read-only."""
+    """
+    The served catalogue, shared by the engine, the extractor and retrieval. Treat as read-only.
+    """
     if config.MONGODB_URI:
         return validate(_read_mongo(), strict=False)
     return validate(read_seed(), strict=True)

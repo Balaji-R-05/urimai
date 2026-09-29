@@ -1,4 +1,5 @@
-"""Server response JSON -> Telegram HTML messages + inline keyboards.
+"""
+Server response JSON -> Telegram HTML messages + inline keyboards.
 
 callback_data (max 64 bytes):
   l|<lang>          language picker
@@ -9,24 +10,35 @@ callback_data (max 64 bytes):
   a|<qid>|<idx>     answer the pending question with option idx
   r                 retry last message
 """
-from __future__ import annotations
 
+from __future__ import annotations
 from html import escape
+from strings import t
 
 from telegram import InlineKeyboardButton as Btn
 from telegram import InlineKeyboardMarkup as Kb
 
-from strings import t
 
 MAX_LEN = 4000
-STATUS_EMOJI = {"likely": "✅", "need_info": "🟡", "not_eligible": "⚪"}
-CHECK_EMOJI = {"pass": "✅", "fail": "❌", "unknown": "❔", "manual": "📋"}  # manual: please check yourself
+STATUS_EMOJI = {
+    "likely": "✅",
+    "need_info": "🟡",
+    "not_eligible": "⚪"
+}
+CHECK_EMOJI = {
+    "pass": "✅",
+    "fail": "❌",
+    "unknown": "❔",
+    "manual": "📋"
+}
 
 
+# Clips a string to n characters, adding an ellipsis if it was clipped.
 def _clip(s: str, n: int = 38) -> str:
     return s if len(s) <= n else s[: n - 1] + "…"
 
 
+# Formats an integer as Indian rupees, e.g. 1234567 -> ₹12,34,567
 def inr(n: int) -> str:
     s = str(int(n))
     if len(s) > 3:
@@ -41,20 +53,28 @@ def inr(n: int) -> str:
     return "₹" + s
 
 
+# Returns a keyboard with the three supported languages.
 def language_keyboard() -> Kb:
-    return Kb([[Btn("தமிழ்", callback_data="l|ta"), Btn("English", callback_data="l|en"), Btn("हिंदी", callback_data="l|hi")]])
+    return Kb([[
+        Btn("தமிழ்", callback_data="l|ta"), 
+        Btn("English", callback_data="l|en"), 
+        Btn("हिंदी", callback_data="l|hi")
+    ]])
 
 
+# Returns a keyboard with a single "Retry" button.
 def retry_keyboard(lang: str) -> Kb:
     return Kb([[Btn(t("btn_retry", lang), callback_data="r")]])
 
 
+# Returns a signature for the results card.
 def card_signature(resp: dict) -> tuple:
     res = resp["results"]
     return (tuple(r["scheme_id"] for r in res["likely"]), len(res["need_info"]), len(res["not_eligible"]),
             resp["summary"]["annual_cash_value_inr"])
 
 
+# Returns a signature for the profile view.
 def learned_text(resp: dict, lang: str) -> str | None:
     lines = []
     if resp.get("learned"):
@@ -65,6 +85,7 @@ def learned_text(resp: dict, lang: str) -> str | None:
     return "\n".join(lines) or None
 
 
+# Returns a formatted results card.
 def results_card(resp: dict, lang: str) -> tuple[str, Kb]:
     res, summ = resp["results"], resp["summary"]
     n_l, n_n, n_x = len(res["likely"]), len(res["need_info"]), len(res["not_eligible"])
@@ -98,6 +119,7 @@ def results_card(resp: dict, lang: str) -> tuple[str, Kb]:
     return "\n".join(lines), Kb(rows)
 
 
+# Returns a formatted list of schemes in a bucket (likely / need_info / not_eligible).
 def bucket_list(resp: dict, bucket: str, lang: str) -> tuple[str, Kb]:
     items = resp["results"][bucket]
     lines = [f"<b>{STATUS_EMOJI[bucket]} {t(bucket, lang)} ({len(items)})</b>"]
@@ -113,6 +135,7 @@ def bucket_list(resp: dict, bucket: str, lang: str) -> tuple[str, Kb]:
     return "\n".join(lines)[:MAX_LEN], Kb(rows)
 
 
+# Returns the result for a given scheme_id, or None if not found.
 def find_result(resp: dict, scheme_id: str) -> dict | None:
     for bucket in ("likely", "need_info", "not_eligible"):
         for r in resp["results"][bucket]:
@@ -121,6 +144,7 @@ def find_result(resp: dict, scheme_id: str) -> dict | None:
     return None
 
 
+# Returns a formatted scheme detail view.
 def scheme_detail(resp: dict, r: dict, lang: str) -> tuple[str, Kb]:
     st = r["status"]
     lines = [f"{STATUS_EMOJI[st]} <b>{escape(r['name'])}</b>  <i>({t('status_' + st, lang)})</i>",
@@ -156,6 +180,7 @@ def scheme_detail(resp: dict, r: dict, lang: str) -> tuple[str, Kb]:
     return "\n".join(lines)[:MAX_LEN], Kb([[Btn(t("btn_back", lang), callback_data="c")]])
 
 
+# Returns a formatted documents checklist.
 def documents(resp: dict, lang: str) -> str:
     docs = resp.get("documents") or []
     if not docs:
@@ -168,12 +193,14 @@ def documents(resp: dict, lang: str) -> str:
     return "\n".join(lines)
 
 
+# Returns a formatted hints message.
 def hints(resp: dict, lang: str) -> str | None:
     if not resp.get("hints"):
         return None
     return f"<b>{t('hints_title', lang)}</b>\n" + "\n".join(f"• {escape(h)}" for h in resp["hints"])
 
 
+# Returns a formatted profile view.
 def profile(resp: dict | None, lang: str) -> str:
     view = (resp or {}).get("profile_view") or []
     if not view:
@@ -185,8 +212,11 @@ def profile(resp: dict | None, lang: str) -> str:
     return "\n".join(lines)
 
 
+# Returns a formatted learned / corrected message.
 def reply_keyboard(resp: dict, qid: int) -> Kb | None:
-    """Buttons under the bot's reply: schemes the user just asked about (open details), then quick answers."""
+    """
+    Buttons under the bot's reply: schemes the user just asked about (open details), then quick answers.
+    """
     rows = []
     for sid in resp.get("answered_schemes") or []:
         r = find_result(resp, sid)

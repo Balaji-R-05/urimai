@@ -3,9 +3,11 @@
 **Find the government welfare schemes you may be eligible for, by talking in Tamil, English or Hindi.**
 *"உங்கள் உரிமைகள், உங்கள் மொழியில்" · Your entitlements, in your language*
 
-Built for **AI-INNOVATHON 2026** (Jerusalem College of Engineering, Chennai) · Order I: Law & Governance · **PS 1: The Scheme Seeker**
+Built for **AI-INNOVATHON 2026** (Jerusalem College of Engineering, Chennai)
+**Order I: Law & Governance**
+**PS 1: The Scheme Seeker**
 
-**Try the bot:** [t.me/jce_hackathon_bot](https://t.me/jce_hackathon_bot) *(online while the demo server is running)*
+**Try the bot:** [t.me/jce_hackathon_bot](https://t.me/jce_hackathon_bot) *(online while the server is running)*
 
 > **Repository:** the **Telegram bot** (`bot/`) and the **API server** it talks to (`server/`: rule engine, question planner, scheme catalogue, retrieval and LLM agents). The scheme catalogue ships as a JSON seed and can be served from **MongoDB**.
 
@@ -23,10 +25,13 @@ Citizens miss benefits they're entitled to. Scheme information is spread across 
 
 ## What Urimai does
 
-A citizen sends a **voice note in Tamil** (or types in Tamil, English, Hindi or Tanglish). Urimai:
+A citizen sends a **voice note or types** in Tamil, English, Hindi or Tanglish. Urimai:
 
 1. **Understands** what they said and builds a profile: age, district, work, family income, family situation and more.
-2. **Checks eligibility** against a catalogue of **30 central and Tamil Nadu schemes**, and sorts each one as ✅ *likely eligible*, 🟡 *need more information*, or ⚪ *not eligible*.
+2. **Checks eligibility** against a catalogue of **central and Tamil Nadu schemes**, and sorts each one as 
+   ✅ *likely eligible*, 
+   🟡 *need more information*,
+   ⚪ *not eligible*.
 3. **Asks only the questions that matter.** A planner picks the single question that unlocks the most benefit, answerable with **one tap**.
 4. **Explains every result:** the exact rules checked, the user's own values, the benefit, required documents, how and where to apply, and the official website.
 5. **Answers questions** like "கலைஞர் மகளிர் உரிமைத் தொகைக்கு என்ன ஆவணம் வேணும்?" ("What documents do I need for Kalaignar Magalir Urimai Thogai?") or "Why can't I get Atal Pension?", using only the scheme's own record.
@@ -67,26 +72,28 @@ flowchart LR
 
 The bot provides the voice, buttons, cards and PDF delivery. The eligibility logic, questions and answers come from the server.
 
-| | |
-|---|---|
-| 🗣️ **Voice-first, multilingual** | Tamil / English / Hindi and code-mixed speech; voice notes in, Tamil voice replies out |
-| 🧮 **Deterministic eligibility** | 30 schemes (22 central, 8 Tamil Nadu) as validated JSON rules with `all` / `any` / `none` blocks |
-| ❓ **Smart questions** | An information-gain planner asks the question that resolves the most benefit. Irrelevant questions are skipped (e.g. no pregnancy question for a 42-year-old widow) |
-| 👆 **Tap-first** | Yes/no, category and range buttons for every follow-up question, so no typing is needed after the first message |
-| 🔍 **Explainable** | ✅/❌/❔ per rule with the user's value ("Age 18–40 (you: 42)"), evidence quotes for every extracted fact |
-| ✏️ **Live corrections** | "Sorry, I'm actually 38" updates results instantly (Atal Pension becomes likely, Widow Pension drops out) |
-| ⚠️ **Conflict detection** | Flags mutually exclusive schemes and doesn't double-count them in the benefit total |
-| 📄 **One document checklist** | Deduplicated across all likely schemes: "Aadhaar: needed for 7 schemes" |
-| 💬 **Scheme Q&A** | Grounded answers about any scheme, plus the user's own status for it |
-| 🌱 **Family hints** | "Your daughter can get ₹1,000/month under Pudhumai Penn when she joins college" |
-| 🔒 **Privacy by design** | Never asks for Aadhaar, phone or bank numbers; no database; sessions expire after 30 minutes |
-| 🛟 **Resilient** | LLM fallback chain across models, rate-limit backoff, template replies if the LLM is unavailable |
+| Feature | What it actually does | In practice |
+|---|---|---|
+| **Speaks the user's language** | Tamil, English, Hindi and code-mixed speech, spoken or typed; number words are normalised deterministically before anything else touches them, not guessed by the LLM | *ஐயாயிரம்* → `5000`; voice notes in, Tamil voice replies out |
+| **Asks only what changes the answer** | A planner scores every unanswered question by how much benefit it could resolve and asks the single highest-value one, as a tap button wherever possible | A 42-year-old widow is never asked a pregnancy question — it can't change her result |
+| **Shows the reasoning, not just the verdict** | Every rule checked is shown with the user's own value against it, plus the evidence quote it was extracted from | "Age 18–40 · you: 42" |
+| **Updates instantly on correction** | A correction re-runs the rule engine on the spot, no restart needed | "Sorry, I'm actually 38" flips Atal Pension in and Widow Pension out in the same turn |
+| **Catches scheme conflicts** | Mutually exclusive schemes are flagged and never double-counted in a benefit total | — |
+| **Deduplicates paperwork** | Document requirements are merged across every likely scheme into one checklist | "Aadhaar — needed for 7 schemes" |
+| **Surfaces benefits nobody asked about** | The profile covers the whole household, not just the applicant, so the bot can point out schemes for family members | "Your daughter could get ₹1,000/month under Pudhumai Penn once she joins college" |
+| **Answers grounded follow-up questions** | Q&A is answered only from that scheme's own record, never the model's general knowledge | "என்ன ஆவணம் வேணும்?" → pulled from that scheme's document list |
+| **Never asks for sensitive IDs** | No Aadhaar, phone or bank number requested; no persistent database; sessions auto-expire | Sessions expire after 30 minutes |
+| **Keeps working when the LLM doesn't** | Requests fall back across models on rate limits, and to template replies if Groq is unreachable | Button-driven eligibility checks run with zero LLM calls |
 
 ### Schemes covered
 
-**Central:** PM-KISAN · Ayushman Bharat PM-JAY (70+) · PM Ujjwala · PM Awas Yojana (Gramin & Urban) · Sukanya Samriddhi · Atal Pension · PM Jeevan Jyoti Bima · PM Suraksha Bima · PM Shram Yogi Maan-dhan · e-Shram · PM SVANidhi · PM Vishwakarma · Old Age / Widow / Disability Pensions (NSAP) · PM Matru Vandana · Post-Matric Scholarship (SC/ST) · PM Mudra · Stand-Up India · PM Kaushal Vikas · PM Surya Ghar
+The catalogue isn't a fixed list — it's structured JSON, validated against a schema on load, and grows by running the seed script against a new source file (`python -m app.catalogue.seed more_schemes.json`, see [server/data/SCHEMES.md](server/data/SCHEMES.md)). What ships today:
 
-**Tamil Nadu:** Kalaignar Magalir Urimai Thogai · CM's Comprehensive Health Insurance · Pudhumai Penn · Tamil Pudhalvan · Dr. Muthulakshmi Reddy Maternity Benefit · UYEGP · NEEDS · Kalaignar Kanavu Illam
+**Central (19):** PM-KISAN · Ayushman Bharat PM-JAY (70+) · PM Ujjwala · PM Awas Yojana (Gramin & Urban) · Sukanya Samriddhi · Atal Pension · PM Jeevan Jyoti Bima · PM Suraksha Bima · PM Shram Yogi Maan-dhan · e-Shram · PM SVANidhi · PM Vishwakarma · Old Age / Widow / Disability Pensions (NSAP) · PM Matru Vandana · Post-Matric Scholarship (SC/ST) · PM Mudra · Stand-Up India · PM Kaushal Vikas · PM Surya Ghar
+
+**Tamil Nadu (8):** Kalaignar Magalir Urimai Thogai · CM's Comprehensive Health Insurance · Pudhumai Penn · Tamil Pudhalvan · Dr. Muthulakshmi Reddy Maternity Benefit · UYEGP · NEEDS · Kalaignar Kanavu Illam
+
+Each one carries eligibility rules with `all` / `any` / `none` logic, benefit amount, required documents, how-to-apply steps and the official website — the same shape whether it's served from the JSON seed or MongoDB.
 
 > ⚠️ Scheme criteria and amounts are **seed data** being verified against official sources. Each scheme links to its official website and shows a "being verified" note until confirmed.
 

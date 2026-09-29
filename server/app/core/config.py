@@ -1,7 +1,9 @@
-"""All server settings, read from urimai/.env (shared with the Telegram bot) and the environment."""
+"""
+All server settings, read from urimai/.env (shared with the Telegram bot) and the environment.
+"""
+
 import os
 from pathlib import Path
-
 from dotenv import load_dotenv
 
 SERVER_ROOT = Path(__file__).resolve().parents[2]  # urimai/server

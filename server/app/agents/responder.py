@@ -1,5 +1,8 @@
-"""Responder agent: phrases the reply in the user's language. It only sees engine output — it cannot
-invent schemes or eligibility claims. Falls back to templates if the LLM fails."""
+"""
+Responder agent: phrases the reply in the user's language. It only sees engine output — it cannot
+invent schemes or eligibility claims. Falls back to templates if the LLM fails.
+"""
+
 from __future__ import annotations
 
 import json
@@ -13,7 +16,8 @@ LANG_NAME = {
     "hi": 'Hindi (Devanagari script, simple). Say "look likely" as "मिलने की संभावना है"',
 }
 
-SYSTEM = """You are Urimai, a warm and respectful helper that tells Indian citizens which government welfare schemes they may be eligible for.
+SYSTEM = """
+You are Urimai, a warm and respectful helper that tells Indian citizens which government welfare schemes they may be eligible for.
 Write the reply in {language}. Use very simple words. Maximum {max_sentences} short sentences. No markdown, no bullet lists, no emojis.
 
 Structure:

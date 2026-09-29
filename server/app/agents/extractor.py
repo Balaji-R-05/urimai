@@ -1,5 +1,8 @@
-"""Extractor agent: user message (ta/en/hi/code-mixed) -> profile field updates with evidence,
-plus detection of questions ABOUT schemes (answered separately from the scheme records only)."""
+"""
+Extractor agent: user message (ta/en/hi/code-mixed) -> profile field updates with evidence,
+plus detection of questions ABOUT schemes (answered separately from the scheme records only).
+"""
+
 from __future__ import annotations
 
 import json
@@ -41,7 +44,8 @@ def _field_catalogue() -> str:
     return "\n".join(lines)
 
 
-SYSTEM = f"""You extract facts about an Indian citizen from their chat message, for a government welfare scheme finder.
+SYSTEM = f"""
+You extract facts about an Indian citizen from their chat message, for a government welfare scheme finder.
 The message may be in Tamil, Hindi, English, or mixed (e.g. Tanglish). Colloquial speech is normal.
 
 Allowed fields:

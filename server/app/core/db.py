@@ -1,9 +1,9 @@
-"""MongoDB client that logs every database call, e.g.
-
+"""
+MongoDB client that logs every database call, e.g.
     urimai.db: find urimai.schemes -> 10 docs in 38 ms
-
 Connection housekeeping (hello, ping, auth) is not logged. Set LOG_DB_CALLS=0 to turn the log off.
 """
+
 from __future__ import annotations
 
 import logging

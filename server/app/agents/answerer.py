@@ -1,6 +1,9 @@
-"""Scheme Q&A: answers a citizen's question about specific schemes using ONLY those schemes' catalogue
+"""
+Scheme Q&A: answers a citizen's question about specific schemes using ONLY those schemes' catalogue
 records and the engine's evaluation for this user. It cannot invent benefits, rules or documents.
-Falls back to a deterministic template if the LLM fails."""
+Falls back to a deterministic template if the LLM fails.
+"""
+
 from __future__ import annotations
 
 import json
@@ -27,15 +30,25 @@ LABELS = {
     "docs": L("Documents", "ஆவணங்கள்", "दस्तावेज़"),
     "apply": L("Apply at", "விண்ணப்பிக்கும் இடம்", "आवेदन"),
     "status": {
-        "likely": L("looks likely for you", "உங்களுக்குக் கிடைக்க வாய்ப்புள்ளது", "आपके लिए संभावित"),
-        "need_info": L("need a few more details", "இன்னும் சில தகவல்கள் தேவை", "कुछ और जानकारी चाहिए"),
+        "likely": L(
+            "looks likely for you",
+            "உங்களுக்குக் கிடைக்க வாய்ப்புள்ளது",
+            "आपके लिए संभावित",
+        ),
+        "need_info": L(
+            "need a few more details",
+            "இன்னும் சில தகவல்கள் தேவை",
+            "कुछ और जानकारी चाहिए",
+        ),
         "not_eligible": L("not eligible", "தகுதியில்லை", "पात्र नहीं"),
     },
 }
 
 
 def _record(r: dict) -> dict:
-    """Compact, already-localized view of one SchemeResult for the prompt."""
+    """
+    Compact, already-localized view of one SchemeResult for the prompt.
+    """
     return {
         "name": r["name"],
         "benefit": r["benefit_summary"],
@@ -54,18 +67,38 @@ def template_answer(results: list[dict], lang: str) -> str:
     parts = []
     for r in results:
         status = tr(LABELS["status"][r["status"]], lang)
-        extra = f" ({r['fail_reason']})" if r["status"] == "not_eligible" and r.get("fail_reason") else ""
+        extra = (
+            f" ({r['fail_reason']})"
+            if r["status"] == "not_eligible" and r.get("fail_reason")
+            else ""
+        )
         docs = ", ".join(d["label"] for d in r["documents"])
-        parts.append(f"{r['name']}: {r['benefit_summary']}. {status}{extra}. "
-                     f"{tr(LABELS['docs'], lang)}: {docs}. {tr(LABELS['apply'], lang)}: {r['apply'].get('where', '')}.")
+        parts.append(
+            f"{r['name']}: {r['benefit_summary']}. {status}{extra}. "
+            f"{tr(LABELS['docs'], lang)}: {docs}. {tr(LABELS['apply'], lang)}: {r['apply'].get('where', '')}."
+        )
     return " ".join(parts)
 
 
-async def answer(*, question: str, topic: str, results: list[dict], lang: str,
-                 passages: list[dict] | None = None) -> str:
-    payload = {"user_question": question, "topic": topic, "schemes": [_record(r) for r in results]}
-    if passages:  # retrieval's best-matching sections of these same records, most relevant first
+async def answer(
+    *,
+    question: str,
+    topic: str,
+    results: list[dict],
+    lang: str,
+    passages: list[dict] | None = None,
+) -> str:
+    payload = {
+        "user_question": question,
+        "topic": topic,
+        "schemes": [_record(r) for r in results],
+    }
+    if (
+        passages
+    ):  # retrieval's best-matching sections of these same records, most relevant first
         payload["retrieved_passages"] = passages
-    text = await llm.complete_text(SYSTEM.format(language=LANG_NAME.get(lang, "English")),
-                                   json.dumps(payload, ensure_ascii=False))
+    text = await llm.complete_text(
+        SYSTEM.format(language=LANG_NAME.get(lang, "English")),
+        json.dumps(payload, ensure_ascii=False),
+    )
     return text.strip().strip('"')

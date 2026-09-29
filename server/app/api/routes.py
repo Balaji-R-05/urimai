@@ -1,8 +1,9 @@
-"""HTTP endpoints under /api. The Telegram bot calls these through bot/api.py."""
+"""
+HTTP endpoints under /api. The Telegram bot calls these through bot/api.py."""
+
 from __future__ import annotations
 
 import asyncio
-
 from fastapi import APIRouter, File, Form, HTTPException, Response, UploadFile
 
 from app.agents import llm
@@ -17,8 +18,13 @@ router = APIRouter(prefix="/api")
 
 @router.get("/health")
 async def health():
-    return {"ok": True, "llm": "up" if llm.available() else "down", "model": config.LLM_MODEL,
-            "schemes": len(orchestrator.SCHEMES), "catalogue": "mongodb" if config.MONGODB_URI else "seed"}
+    return {
+        "ok": True, 
+        "llm": "up" if llm.available() else "down", 
+        "model": config.LLM_MODEL,
+        "schemes": len(orchestrator.SCHEMES), 
+        "catalogue": "mongodb" if config.MONGODB_URI else "seed"
+    }
 
 
 @router.post("/chat")
@@ -39,7 +45,9 @@ async def answer(req: AnswerRequest):
 
 @router.post("/evaluate")
 async def evaluate(req: EvaluateRequest):
-    """Evaluate a complete profile in one call, without a session or the LLM (testing and debugging)."""
+    """
+    Evaluate a complete profile in one call, without a session or the LLM (testing and debugging).
+    """
     return await orchestrator.evaluate_profile(req.profile, req.lang)
 
 

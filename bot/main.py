@@ -6,6 +6,8 @@ Run Command: `python bot/main.py` from the project root (server must be running)
 
 from __future__ import annotations
 import logging
+from logging.handlers import RotatingFileHandler
+from pathlib import Path
 
 from telegram import BotCommand, Update
 from telegram.error import TelegramError
@@ -16,10 +18,15 @@ import handlers
 from api import BackendError
 from strings import BOT_DESCRIPTION, BOT_SHORT_DESCRIPTION
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s %(name)s: %(message)s"
-)
+# Rotating file so an unattended bot can't fill the disk; console output is kept too.
+LOG_DIR = Path(__file__).resolve().parent / "logs"
+LOG_DIR.mkdir(exist_ok=True)
+_fmt = logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s")
+_console = logging.StreamHandler()
+_console.setFormatter(_fmt)
+_file = RotatingFileHandler(LOG_DIR / "bot.log", maxBytes=5_000_000, backupCount=3, encoding="utf-8")
+_file.setFormatter(_fmt)
+logging.basicConfig(level=logging.INFO, handlers=[_console, _file])
 logging.getLogger("httpx").setLevel(logging.WARNING)
 log = logging.getLogger("urimai.bot")
 

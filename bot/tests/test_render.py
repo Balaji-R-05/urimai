@@ -174,7 +174,7 @@ def test_scheme_detail_includes_benefit_and_checks():
     text, kb = render.scheme_detail(resp, _scheme(), "en")
     assert "₹5000/year" in text
     assert "Age 18-60" in text
-    assert kb.inline_keyboard[0][0].callback_data == "c"
+    assert kb.inline_keyboard[-1][0].callback_data == "c"
 
 
 def test_scheme_detail_shows_fail_reason_when_not_eligible():
@@ -198,6 +198,48 @@ def test_scheme_detail_lists_conflicting_schemes_by_name():
 def test_scheme_detail_includes_official_link_when_present():
     text, _ = render.scheme_detail(_resp(), _scheme(source_url="https://example.gov.in"), "en")
     assert 'href="https://example.gov.in"' in text
+
+
+def test_scheme_detail_shows_priority_groups():
+    text, _ = render.scheme_detail(_resp(), _scheme(priority_groups=["Women", "SC"]), "en")
+    assert "Women, SC" in text
+
+
+def test_scheme_detail_omits_priority_line_when_absent():
+    text, _ = render.scheme_detail(_resp(), _scheme(), "en")
+    assert "Priority" not in text
+
+
+def test_scheme_detail_shows_deadline_and_window():
+    r = _scheme(apply={"where": "CSC", "steps": [], "deadline": "2026-12-31", "window": "Open all year"})
+    text, _ = render.scheme_detail(_resp(), r, "en")
+    assert "2026-12-31" in text
+    assert "Open all year" in text
+
+
+def test_scheme_detail_shows_contact_details():
+    r = _scheme(contact={"phone": "1800-000-0000", "email": "help@example.invalid", "helpline_hours": "9-6"})
+    text, _ = render.scheme_detail(_resp(), r, "en")
+    assert "1800-000-0000" in text
+    assert "help@example.invalid" in text
+    assert "9-6" in text
+
+
+def test_scheme_detail_omits_contact_block_when_absent():
+    text, _ = render.scheme_detail(_resp(), _scheme(), "en")
+    assert "Contact" not in text
+
+
+def test_scheme_detail_has_a_report_wrong_info_button():
+    _, kb = render.scheme_detail(_resp(), _scheme(scheme_id="a"), "en")
+    callbacks = [b.callback_data for row in kb.inline_keyboard for b in row]
+    assert "f|a" in callbacks
+
+
+def test_feedback_category_keyboard_targets_the_scheme():
+    kb = render.feedback_category_keyboard("a", "en")
+    callbacks = [b.callback_data for row in kb.inline_keyboard for b in row]
+    assert callbacks == ["g|a|amount", "g|a|docs", "g|a|other"]
 
 
 # ---------- documents ----------

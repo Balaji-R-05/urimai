@@ -29,6 +29,7 @@ def test_reset_preserves_language_and_voice_but_clears_everything_else():
     st.lang, st.lang_chosen, st.voice_on = "ta", True, False
     st.last = {"x": 1}
     st.card_msg_id = 99
+    st.feedback_for = "pm_kisan"
 
     new = state.reset(1)
 
@@ -36,7 +37,12 @@ def test_reset_preserves_language_and_voice_but_clears_everything_else():
     assert (new.lang, new.lang_chosen, new.voice_on) == ("ta", True, False)
     assert new.last is None
     assert new.card_msg_id is None
+    assert new.feedback_for is None
     assert state.get(1) is new
+
+
+def test_new_state_has_no_pending_feedback():
+    assert state.get(1).feedback_for is None
 
 
 def test_session_id_is_namespaced_by_chat_id():

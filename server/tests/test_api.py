@@ -53,6 +53,16 @@ def test_answer_flow_and_skip(client):
     assert r2["next_question"] is None or r2["next_question"]["field"] != nq["field"]
 
 
+def test_feedback_accepts_known_scheme(client):
+    r = client.post("/api/feedback", json={"scheme_id": "pm_kisan", "lang": "en", "text": "amount looks wrong"})
+    assert r.status_code == 200 and r.json() == {"ok": True}
+
+
+def test_feedback_rejects_unknown_scheme(client):
+    r = client.post("/api/feedback", json={"scheme_id": "not_a_real_scheme"})
+    assert r.status_code == 404
+
+
 def test_bool_question_has_buttons(client):
     sid = "t3"
     for field, value in [("age", 30), ("gender", "female"), ("state", "TN"), ("annual_family_income", 100000),

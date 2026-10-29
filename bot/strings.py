@@ -141,6 +141,50 @@ S: dict[str, dict[str, str]] = {
         "ta": "⚠️ இவற்றில் ஒன்றை மட்டுமே பெற முடியும்: {names}",
         "hi": "⚠️ इनमें से केवल एक मिल सकती है: {names}",
     },
+    "deadline": {
+        "en": "Deadline", "ta": "இறுதி நாள்", "hi": "अंतिम तिथि",
+    },
+    "contact": {
+        "en": "Contact", "ta": "தொடர்பு", "hi": "संपर्क",
+    },
+    "priority_for": {
+        "en": "Priority for", "ta": "முன்னுரிமை", "hi": "प्राथमिकता",
+    },
+    "btn_feedback": {
+        "en": "⚠️ Report wrong info",
+        "ta": "⚠️ தவறான தகவலைப் புகாரளி",
+        "hi": "⚠️ गलत जानकारी की रिपोर्ट करें",
+    },
+    "feedback_prompt": {
+        "en": "What's wrong with this scheme's info?",
+        "ta": "இந்தத் திட்டத் தகவலில் என்ன தவறு?",
+        "hi": "इस योजना की जानकारी में क्या गलत है?",
+    },
+    "feedback_amount_btn": {
+        "en": "💰 Amount / benefit wrong",
+        "ta": "💰 தொகை / பயன் தவறு",
+        "hi": "💰 राशि / लाभ गलत है",
+    },
+    "feedback_docs_btn": {
+        "en": "📄 Documents / eligibility wrong",
+        "ta": "📄 ஆவணங்கள் / தகுதி தவறு",
+        "hi": "📄 दस्तावेज़ / पात्रता गलत है",
+    },
+    "feedback_other_btn": {
+        "en": "✏️ Other",
+        "ta": "✏️ வேறு ஏதேனும்",
+        "hi": "✏️ अन्य",
+    },
+    "feedback_other_prompt": {
+        "en": "Type a short note about what's wrong.",
+        "ta": "என்ன தவறு என்பதை சுருக்கமாகத் தட்டச்சு செய்யவும்.",
+        "hi": "क्या गलत है, यह संक्षेप में लिखें।",
+    },
+    "feedback_thanks": {
+        "en": "🙏 Thanks — this has been noted for review.",
+        "ta": "🙏 நன்றி — இது சரிபார்ப்புக்காகப் பதிவு செய்யப்பட்டது.",
+        "hi": "🙏 धन्यवाद — इसे समीक्षा के लिए दर्ज कर लिया गया है।",
+    },
     "unverified": {
         "en": "ℹ️ Details are being verified against the official source.",
         "ta": "ℹ️ விவரங்கள் அதிகாரப்பூர்வ தகவலுடன் சரிபார்க்கப்படுகின்றன.",

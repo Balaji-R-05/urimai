@@ -198,21 +198,23 @@ Standard ids are shared across schemes, so the bot can say "Aadhaar: needed for 
 
 ## State codes
 
-States: `AP` Andhra Pradesh, `AR` Arunachal Pradesh, `AS` Assam, `BR` Bihar, `CG` Chhattisgarh, `GA` Goa,
+**States:**
+`AP` Andhra Pradesh, `AR` Arunachal Pradesh, `AS` Assam, `BR` Bihar, `CG` Chhattisgarh, `GA` Goa,
 `GJ` Gujarat, `HR` Haryana, `HP` Himachal Pradesh, `JH` Jharkhand, `KA` Karnataka, `KL` Kerala,
 `MP` Madhya Pradesh, `MH` Maharashtra, `MN` Manipur, `ML` Meghalaya, `MZ` Mizoram, `NL` Nagaland, `OD` Odisha,
 `PB` Punjab, `RJ` Rajasthan, `SK` Sikkim, `TN` Tamil Nadu, `TG` Telangana, `TR` Tripura, `UP` Uttar Pradesh,
 `UK` Uttarakhand, `WB` West Bengal.
-Union territories: `AN` Andaman & Nicobar, `CH` Chandigarh, `DH` Dadra & Nagar Haveli and Daman & Diu,
+
+**Union territories:**
+`AN` Andaman & Nicobar, `CH` Chandigarh, `DH` Dadra & Nagar Haveli and Daman & Diu,
 `DL` Delhi, `JK` Jammu & Kashmir, `LA` Ladakh, `LD` Lakshadweep, `PY` Puducherry.
 
 ## Loading schemes: start small
 
 ```bash
 cd server
-python -m app.catalogue.seed --dry-run my_schemes.json   # 1. check only; lists every problem, writes nothing
-python -m app.catalogue.seed test_5.json                 # 2. load a few, try them in the bot
-python -m app.catalogue.seed my_schemes.json             # 3. load the rest (re-running updates by id)
+python -m app.catalogue.seed --dry-run schemes.json  # 1. check only; lists every problem, writes nothing
+python -m app.catalogue.seed schemes.json            # 2. load it (re-running updates by id)
 ```
 
 Invalid schemes are listed with the reason and skipped; the valid ones are written. Each load also updates

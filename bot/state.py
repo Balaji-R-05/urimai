@@ -24,6 +24,7 @@ class ChatState:
     question: dict | None = None
     last_user_text: str | None = None
     hints_shown: set = field(default_factory=set)
+    feedback_for: str | None = None     # scheme_id awaiting a "what's wrong" reply, or None
 
 
 _states: "OrderedDict[int, ChatState]" = OrderedDict()

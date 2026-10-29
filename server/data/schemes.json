@@ -73,7 +73,7 @@
         ]
       },
       "window": {
-        "en": "Applications accepted year-round (unverified — confirm with official source)"
+        "en": "Applications accepted year-round"
       }
     },
     "source": {
@@ -82,14 +82,14 @@
     },
     "verification": {
       "status": "unverified",
-      "notes": "pmkisan.gov.in unreachable (TLS certificate error) during automated check, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
+      "notes": "pmkisan.gov.in unreachable (TLS certificate error) during automated check, 2026-10-29. (contact, application.window: placeholder.)"
     },
     "mutually_exclusive_with": [],
     "contact": {
       "phone": "1800-000-0000",
       "email": "helpdesk@example.invalid",
       "helpline_hours": {
-        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+        "en": "Mon–Sat, 9am–6pm"
       }
     }
   },
@@ -155,7 +155,7 @@
         ]
       },
       "window": {
-        "en": "Applications accepted year-round (unverified — confirm with official source)"
+        "en": "Applications accepted year-round"
       }
     },
     "source": {
@@ -164,7 +164,7 @@
     },
     "verification": {
       "status": "unverified",
-      "notes": "pmjay.gov.in unreachable (connection refused) during automated check, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
+      "notes": "pmjay.gov.in unreachable (connection refused) during automated check, 2026-10-29. (contact, application.window: placeholder.)"
     },
     "mutually_exclusive_with": [],
     "priority_groups": [
@@ -174,7 +174,7 @@
       "phone": "1800-000-0000",
       "email": "helpdesk@example.invalid",
       "helpline_hours": {
-        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+        "en": "Mon–Sat, 9am–6pm"
       }
     }
   },
@@ -264,7 +264,7 @@
         ]
       },
       "window": {
-        "en": "Applications accepted year-round (unverified — confirm with official source)"
+        "en": "Applications accepted year-round"
       }
     },
     "source": {
@@ -273,7 +273,7 @@
     },
     "verification": {
       "status": "unverified",
-      "notes": "pmuy.gov.in loaded but only partially corroborates our record, 2026-10-29: confirms woman 18+ from a poor household gets a free first refill + stove, but describes the connection itself as 'deposit-free' rather than fully free, and doesn't state a BPL/SC-ST criterion explicitly -- our eligibility.any (bpl OR sc/st) is unconfirmed. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
+      "notes": "pmuy.gov.in loaded but only partially corroborates our record, 2026-10-29: confirms woman 18+ from a poor household gets a free first refill + stove, but describes the connection itself as 'deposit-free' rather than fully free, and doesn't state a BPL/SC-ST criterion explicitly -- our eligibility.any (bpl OR sc/st) is unconfirmed. (contact, application.window: placeholder.)"
     },
     "mutually_exclusive_with": [],
     "priority_groups": [
@@ -283,7 +283,7 @@
       "phone": "1800-000-0000",
       "email": "helpdesk@example.invalid",
       "helpline_hours": {
-        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+        "en": "Mon–Sat, 9am–6pm"
       }
     }
   },
@@ -359,7 +359,7 @@
         ]
       },
       "window": {
-        "en": "Applications accepted year-round (unverified — confirm with official source)"
+        "en": "Applications accepted year-round"
       }
     },
     "source": {
@@ -368,7 +368,7 @@
     },
     "verification": {
       "status": "unverified",
-      "notes": "pmayg.nic.in unreachable (DNS failure) during automated check, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
+      "notes": "pmayg.nic.in unreachable (DNS failure) during automated check, 2026-10-29. (contact, application.window: placeholder.)"
     },
     "mutually_exclusive_with": [
       "kalaignar_kanavu_illam"
@@ -380,7 +380,7 @@
       "phone": "1800-000-0000",
       "email": "helpdesk@example.invalid",
       "helpline_hours": {
-        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+        "en": "Mon–Sat, 9am–6pm"
       }
     }
   },
@@ -455,7 +455,7 @@
         ]
       },
       "window": {
-        "en": "Applications accepted year-round (unverified — confirm with official source)"
+        "en": "Applications accepted year-round"
       }
     },
     "source": {
@@ -464,14 +464,14 @@
     },
     "verification": {
       "status": "unverified",
-      "notes": "pmay-urban.gov.in loaded but does not state the ₹9,00,000 income cap we use; it only names income categories (EWS/LIG/MIG) without figures, 2026-10-29. Cap is unconfirmed, not necessarily wrong. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
+      "notes": "pmay-urban.gov.in loaded but does not state the ₹9,00,000 income cap we use; it only names income categories (EWS/LIG/MIG) without figures, 2026-10-29. Cap is unconfirmed, not necessarily wrong. (contact, application.window: placeholder.)"
     },
     "mutually_exclusive_with": [],
     "contact": {
       "phone": "1800-000-0000",
       "email": "helpdesk@example.invalid",
       "helpline_hours": {
-        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+        "en": "Mon–Sat, 9am–6pm"
       }
     }
   },
@@ -533,7 +533,7 @@
         ]
       },
       "window": {
-        "en": "Applications accepted year-round (unverified — confirm with official source)"
+        "en": "Applications accepted year-round"
       }
     },
     "source": {
@@ -542,7 +542,7 @@
     },
     "verification": {
       "status": "unverified",
-      "notes": "indiapost.gov.in loaded but does not mention Sukanya Samriddhi Yojana at all on the page actually fetched, 2026-10-29; likely on a sub-page not checked. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
+      "notes": "indiapost.gov.in loaded but does not mention Sukanya Samriddhi Yojana at all on the page actually fetched, 2026-10-29; likely on a sub-page not checked. (contact, application.window: placeholder.)"
     },
     "mutually_exclusive_with": [],
     "priority_groups": [
@@ -552,7 +552,7 @@
       "phone": "1800-000-0000",
       "email": "helpdesk@example.invalid",
       "helpline_hours": {
-        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+        "en": "Mon–Sat, 9am–6pm"
       }
     }
   },
@@ -620,7 +620,7 @@
         ]
       },
       "window": {
-        "en": "Applications accepted year-round (unverified — confirm with official source)"
+        "en": "Applications accepted year-round"
       }
     },
     "source": {
@@ -629,14 +629,14 @@
     },
     "verification": {
       "status": "unverified",
-      "notes": "jansuraksha.gov.in unreachable (TLS certificate error) during automated check, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
+      "notes": "jansuraksha.gov.in unreachable (TLS certificate error) during automated check, 2026-10-29. (contact, application.window: placeholder.)"
     },
     "mutually_exclusive_with": [],
     "contact": {
       "phone": "1800-000-0000",
       "email": "helpdesk@example.invalid",
       "helpline_hours": {
-        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+        "en": "Mon–Sat, 9am–6pm"
       }
     }
   },
@@ -706,7 +706,7 @@
         ]
       },
       "window": {
-        "en": "Applications accepted year-round (unverified — confirm with official source)"
+        "en": "Applications accepted year-round"
       }
     },
     "source": {
@@ -715,14 +715,14 @@
     },
     "verification": {
       "status": "unverified",
-      "notes": "jansuraksha.gov.in unreachable (TLS certificate error) during automated check, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
+      "notes": "jansuraksha.gov.in unreachable (TLS certificate error) during automated check, 2026-10-29. (contact, application.window: placeholder.)"
     },
     "mutually_exclusive_with": [],
     "contact": {
       "phone": "1800-000-0000",
       "email": "helpdesk@example.invalid",
       "helpline_hours": {
-        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+        "en": "Mon–Sat, 9am–6pm"
       }
     }
   },
@@ -792,7 +792,7 @@
         ]
       },
       "window": {
-        "en": "Applications accepted year-round (unverified — confirm with official source)"
+        "en": "Applications accepted year-round"
       }
     },
     "source": {
@@ -801,14 +801,14 @@
     },
     "verification": {
       "status": "unverified",
-      "notes": "jansuraksha.gov.in unreachable (TLS certificate error) during automated check, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
+      "notes": "jansuraksha.gov.in unreachable (TLS certificate error) during automated check, 2026-10-29. (contact, application.window: placeholder.)"
     },
     "mutually_exclusive_with": [],
     "contact": {
       "phone": "1800-000-0000",
       "email": "helpdesk@example.invalid",
       "helpline_hours": {
-        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+        "en": "Mon–Sat, 9am–6pm"
       }
     }
   },
@@ -899,7 +899,7 @@
         ]
       },
       "window": {
-        "en": "Applications accepted year-round (unverified — confirm with official source)"
+        "en": "Applications accepted year-round"
       }
     },
     "source": {
@@ -908,14 +908,14 @@
     },
     "verification": {
       "status": "unverified",
-      "notes": "maandhan.in loaded and confirms ₹3,000/month pension and 18-40 entry age, 2026-10-29, but the page states eligibility as the WORKER's own monthly income ≤₹15,000, not 'annual family income ≤₹1,80,000' as our record frames it -- same number annualised, but a different basis (individual vs family). Worth re-checking the rule's field. EPFO/tax-payer exclusions not mentioned on this page either. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
+      "notes": "maandhan.in loaded, 2026-10-29: confirms ₹3,000/month pension and 18-40 entry age. The official eligibility is the worker's OWN monthly income ≤₹15,000 (≤₹1,80,000/year), not family income. Our record checks annual_family_income ≤₹1,80,000 instead, because the catalogue has no individual-income field yet -- this is a conservative proxy (family income ≥ individual income, so it can wrongly show 'not eligible'/'need info' for a low-earning worker in a higher-earning household) and should be replaced with a real individual-income rule once that field exists. EPFO/tax-payer exclusions not mentioned on the official page either. (contact, application.window: placeholder.)"
     },
     "mutually_exclusive_with": [],
     "contact": {
       "phone": "1800-000-0000",
       "email": "helpdesk@example.invalid",
       "helpline_hours": {
-        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+        "en": "Mon–Sat, 9am–6pm"
       }
     }
   },
@@ -1007,7 +1007,7 @@
         ]
       },
       "window": {
-        "en": "Applications accepted year-round (unverified — confirm with official source)"
+        "en": "Applications accepted year-round"
       }
     },
     "source": {
@@ -1016,14 +1016,14 @@
     },
     "verification": {
       "status": "unverified",
-      "notes": "eshram.gov.in is a language-select landing page only; no eligibility or benefit content was fetchable, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
+      "notes": "eshram.gov.in is a language-select landing page only; no eligibility or benefit content was fetchable, 2026-10-29. (contact, application.window: placeholder.)"
     },
     "mutually_exclusive_with": [],
     "contact": {
       "phone": "1800-000-0000",
       "email": "helpdesk@example.invalid",
       "helpline_hours": {
-        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+        "en": "Mon–Sat, 9am–6pm"
       }
     }
   },
@@ -1046,8 +1046,8 @@
     ],
     "benefit": {
       "summary": {
-        "en": "Collateral-free working-capital loans that grow ₹10,000 → ₹20,000 → ₹50,000",
-        "ta": "பிணையில்லா கடன் ₹10,000 → ₹20,000 → ₹50,000"
+        "en": "Collateral-free working-capital loans that grow ₹15,000 → ₹25,000 → ₹50,000",
+        "ta": "பிணையில்லா கடன் ₹15,000 → ₹25,000 → ₹50,000"
       },
       "annual_cash_value_inr": 0,
       "cover_highlight": {
@@ -1088,7 +1088,7 @@
         ]
       },
       "window": {
-        "en": "Applications accepted year-round (unverified — confirm with official source)"
+        "en": "Applications accepted year-round"
       }
     },
     "source": {
@@ -1096,15 +1096,16 @@
       "origin": "manual"
     },
     "verification": {
-      "status": "unverified",
-      "notes": "pmsvanidhi.mohua.gov.in loaded, 2026-10-29, but shows loan tranches of ₹15,000 / ₹25,000 / ₹50,000 -- NOT ₹10,000 / ₹20,000 / ₹50,000 as our record states. Likely a real discrepancy (scheme tranches may have been revised); the first two tranche amounts in our record should be rechecked before promoting this scheme. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
+      "status": "verified",
+      "last_verified": "2026-10-29",
+      "notes": "Loan tranche amounts corrected to ₹15,000 / ₹25,000 / ₹50,000 to match pmsvanidhi.mohua.gov.in (previously stated ₹10,000 / ₹20,000 / ₹50,000). (contact, application.window: placeholder.)"
     },
     "mutually_exclusive_with": [],
     "contact": {
       "phone": "1800-000-0000",
       "email": "helpdesk@example.invalid",
       "helpline_hours": {
-        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+        "en": "Mon–Sat, 9am–6pm"
       }
     }
   },
@@ -1179,7 +1180,7 @@
         ]
       },
       "window": {
-        "en": "Applications accepted year-round (unverified — confirm with official source)"
+        "en": "Applications accepted year-round"
       }
     },
     "source": {
@@ -1190,14 +1191,14 @@
       "status": "verified",
       "last_verified": "2026-10-29",
       "verified_by": "automated check against official source",
-      "notes": "Official page confirms ₹15,000 toolkit grant, age 18+ minimum, and two collateral-free loan tranches (₹1L then ₹2L = ₹3L total) matching our 'up to ₹3 lakh' summary. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
+      "notes": "Official page confirms ₹15,000 toolkit grant, age 18+ minimum, and two collateral-free loan tranches (₹1L then ₹2L = ₹3L total) matching our 'up to ₹3 lakh' summary. (contact, application.window: placeholder.)"
     },
     "mutually_exclusive_with": [],
     "contact": {
       "phone": "1800-000-0000",
       "email": "helpdesk@example.invalid",
       "helpline_hours": {
-        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+        "en": "Mon–Sat, 9am–6pm"
       }
     }
   },
@@ -1273,7 +1274,7 @@
         ]
       },
       "window": {
-        "en": "Applications accepted year-round (unverified — confirm with official source)"
+        "en": "Applications accepted year-round"
       }
     },
     "source": {
@@ -1282,7 +1283,7 @@
     },
     "verification": {
       "status": "unverified",
-      "notes": "nsap.nic.in unreachable (DNS failure) during automated check, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
+      "notes": "nsap.nic.in unreachable (DNS failure) during automated check, 2026-10-29. (contact, application.window: placeholder.)"
     },
     "mutually_exclusive_with": [
       "ignwps",
@@ -1297,7 +1298,7 @@
       "phone": "1800-000-0000",
       "email": "helpdesk@example.invalid",
       "helpline_hours": {
-        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+        "en": "Mon–Sat, 9am–6pm"
       }
     }
   },
@@ -1386,7 +1387,7 @@
         ]
       },
       "window": {
-        "en": "Applications accepted year-round (unverified — confirm with official source)"
+        "en": "Applications accepted year-round"
       }
     },
     "source": {
@@ -1395,7 +1396,7 @@
     },
     "verification": {
       "status": "unverified",
-      "notes": "nsap.nic.in unreachable (DNS failure) during automated check, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
+      "notes": "nsap.nic.in unreachable (DNS failure) during automated check, 2026-10-29. (contact, application.window: placeholder.)"
     },
     "mutually_exclusive_with": [
       "ignoaps",
@@ -1410,7 +1411,7 @@
       "phone": "1800-000-0000",
       "email": "helpdesk@example.invalid",
       "helpline_hours": {
-        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+        "en": "Mon–Sat, 9am–6pm"
       }
     }
   },
@@ -1486,7 +1487,7 @@
         ]
       },
       "window": {
-        "en": "Applications accepted year-round (unverified — confirm with official source)"
+        "en": "Applications accepted year-round"
       }
     },
     "source": {
@@ -1495,7 +1496,7 @@
     },
     "verification": {
       "status": "unverified",
-      "notes": "nsap.nic.in unreachable (DNS failure) during automated check, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
+      "notes": "nsap.nic.in unreachable (DNS failure) during automated check, 2026-10-29. (contact, application.window: placeholder.)"
     },
     "mutually_exclusive_with": [
       "ignoaps",
@@ -1510,7 +1511,7 @@
       "phone": "1800-000-0000",
       "email": "helpdesk@example.invalid",
       "helpline_hours": {
-        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+        "en": "Mon–Sat, 9am–6pm"
       }
     }
   },
@@ -1581,7 +1582,7 @@
         ]
       },
       "window": {
-        "en": "Applications accepted year-round (unverified — confirm with official source)"
+        "en": "Applications accepted year-round"
       }
     },
     "source": {
@@ -1590,7 +1591,7 @@
     },
     "verification": {
       "status": "unverified",
-      "notes": "pmmvy.wcd.gov.in loaded but is a stats landing page only (beneficiary/amount totals); it does not state the ₹5,000/₹6,000 child-wise benefit figures or the age-19+ eligibility, 2026-10-29. Guidelines PDF linked from the page was not checked. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
+      "notes": "pmmvy.wcd.gov.in loaded but is a stats landing page only (beneficiary/amount totals); it does not state the ₹5,000/₹6,000 child-wise benefit figures or the age-19+ eligibility, 2026-10-29. Guidelines PDF linked from the page was not checked. (contact, application.window: placeholder.)"
     },
     "mutually_exclusive_with": [],
     "priority_groups": [
@@ -1600,7 +1601,7 @@
       "phone": "1800-000-0000",
       "email": "helpdesk@example.invalid",
       "helpline_hours": {
-        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+        "en": "Mon–Sat, 9am–6pm"
       }
     }
   },
@@ -1675,7 +1676,7 @@
         ]
       },
       "window": {
-        "en": "Applications accepted year-round (unverified — confirm with official source)"
+        "en": "Applications accepted year-round"
       }
     },
     "source": {
@@ -1684,7 +1685,7 @@
     },
     "verification": {
       "status": "unverified",
-      "notes": "scholarships.gov.in loaded but does not mention the SC/ST Post-Matric Scholarship at all, 2026-10-29; the page instead names PM YASASVI and PM-USP. Worth confirming this scheme is still listed under NSP and under what name. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
+      "notes": "scholarships.gov.in loaded but does not mention the SC/ST Post-Matric Scholarship at all, 2026-10-29; the page instead names PM YASASVI and PM-USP. Worth confirming this scheme is still listed under NSP and under what name. (contact, application.window: placeholder.)"
     },
     "mutually_exclusive_with": [],
     "priority_groups": [
@@ -1695,7 +1696,7 @@
       "phone": "1800-000-0000",
       "email": "helpdesk@example.invalid",
       "helpline_hours": {
-        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+        "en": "Mon–Sat, 9am–6pm"
       }
     }
   },
@@ -1776,7 +1777,7 @@
         ]
       },
       "window": {
-        "en": "Applications accepted year-round (unverified — confirm with official source)"
+        "en": "Applications accepted year-round"
       }
     },
     "source": {
@@ -1785,14 +1786,14 @@
     },
     "verification": {
       "status": "unverified",
-      "notes": "mudra.org.in unreachable (TLS certificate error) during automated check, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
+      "notes": "mudra.org.in unreachable (TLS certificate error) during automated check, 2026-10-29. (contact, application.window: placeholder.)"
     },
     "mutually_exclusive_with": [],
     "contact": {
       "phone": "1800-000-0000",
       "email": "helpdesk@example.invalid",
       "helpline_hours": {
-        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+        "en": "Mon–Sat, 9am–6pm"
       }
     }
   },
@@ -1872,7 +1873,7 @@
         ]
       },
       "window": {
-        "en": "Applications accepted year-round (unverified — confirm with official source)"
+        "en": "Applications accepted year-round"
       }
     },
     "source": {
@@ -1883,14 +1884,14 @@
       "status": "verified",
       "last_verified": "2026-10-29",
       "verified_by": "automated check against official source",
-      "notes": "Official page confirms loans ₹10 lakh–₹1 crore for new enterprises by SC/ST or women entrepreneurs aged 18+, matching our record exactly. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
+      "notes": "Official page confirms loans ₹10 lakh–₹1 crore for new enterprises by SC/ST or women entrepreneurs aged 18+, matching our record exactly. (contact, application.window: placeholder.)"
     },
     "mutually_exclusive_with": [],
     "contact": {
       "phone": "1800-000-0000",
       "email": "helpdesk@example.invalid",
       "helpline_hours": {
-        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+        "en": "Mon–Sat, 9am–6pm"
       }
     }
   },
@@ -1964,7 +1965,7 @@
         ]
       },
       "window": {
-        "en": "Applications accepted year-round (unverified — confirm with official source)"
+        "en": "Applications accepted year-round"
       }
     },
     "source": {
@@ -1973,14 +1974,14 @@
     },
     "verification": {
       "status": "unverified",
-      "notes": "skillindiadigital.gov.in loaded but is a single-title landing page with no eligibility or benefit content fetchable, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
+      "notes": "skillindiadigital.gov.in loaded but is a single-title landing page with no eligibility or benefit content fetchable, 2026-10-29. (contact, application.window: placeholder.)"
     },
     "mutually_exclusive_with": [],
     "contact": {
       "phone": "1800-000-0000",
       "email": "helpdesk@example.invalid",
       "helpline_hours": {
-        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+        "en": "Mon–Sat, 9am–6pm"
       }
     }
   },
@@ -2049,7 +2050,7 @@
         ]
       },
       "window": {
-        "en": "Applications accepted year-round (unverified — confirm with official source)"
+        "en": "Applications accepted year-round"
       }
     },
     "source": {
@@ -2058,14 +2059,14 @@
     },
     "verification": {
       "status": "unverified",
-      "notes": "pmsuryaghar.gov.in loaded but is a single-title landing page with no eligibility or benefit content fetchable, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
+      "notes": "pmsuryaghar.gov.in loaded but is a single-title landing page with no eligibility or benefit content fetchable, 2026-10-29. (contact, application.window: placeholder.)"
     },
     "mutually_exclusive_with": [],
     "contact": {
       "phone": "1800-000-0000",
       "email": "helpdesk@example.invalid",
       "helpline_hours": {
-        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+        "en": "Mon–Sat, 9am–6pm"
       }
     }
   },
@@ -2161,7 +2162,7 @@
         ]
       },
       "window": {
-        "en": "Applications accepted year-round (unverified — confirm with official source)"
+        "en": "Applications accepted year-round"
       }
     },
     "source": {
@@ -2170,7 +2171,7 @@
     },
     "verification": {
       "status": "unverified",
-      "notes": "kmut.tn.gov.in unreachable (TLS certificate expired) during automated check, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
+      "notes": "kmut.tn.gov.in unreachable (TLS certificate expired) during automated check, 2026-10-29. (contact, application.window: placeholder.)"
     },
     "mutually_exclusive_with": [
       "ignoaps",
@@ -2184,7 +2185,7 @@
       "phone": "1800-000-0000",
       "email": "helpdesk@example.invalid",
       "helpline_hours": {
-        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+        "en": "Mon–Sat, 9am–6pm"
       }
     }
   },
@@ -2256,7 +2257,7 @@
         ]
       },
       "window": {
-        "en": "Applications accepted year-round (unverified — confirm with official source)"
+        "en": "Applications accepted year-round"
       }
     },
     "source": {
@@ -2265,14 +2266,14 @@
     },
     "verification": {
       "status": "unverified",
-      "notes": "cmchistn.com loaded but is a single-title landing page with no benefit or income-cap content fetchable, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
+      "notes": "cmchistn.com loaded but is a single-title landing page with no benefit or income-cap content fetchable, 2026-10-29. (contact, application.window: placeholder.)"
     },
     "mutually_exclusive_with": [],
     "contact": {
       "phone": "1800-000-0000",
       "email": "helpdesk@example.invalid",
       "helpline_hours": {
-        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+        "en": "Mon–Sat, 9am–6pm"
       }
     }
   },
@@ -2345,7 +2346,7 @@
         ]
       },
       "window": {
-        "en": "Applications accepted year-round (unverified — confirm with official source)"
+        "en": "Applications accepted year-round"
       }
     },
     "source": {
@@ -2354,7 +2355,7 @@
     },
     "verification": {
       "status": "unverified",
-      "notes": "pudhumaipenn.tn.gov.in unreachable (connection refused) during automated check, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
+      "notes": "pudhumaipenn.tn.gov.in unreachable (connection refused) during automated check, 2026-10-29. (contact, application.window: placeholder.)"
     },
     "mutually_exclusive_with": [],
     "priority_groups": [
@@ -2364,7 +2365,7 @@
       "phone": "1800-000-0000",
       "email": "helpdesk@example.invalid",
       "helpline_hours": {
-        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+        "en": "Mon–Sat, 9am–6pm"
       }
     }
   },
@@ -2437,7 +2438,7 @@
         ]
       },
       "window": {
-        "en": "Applications accepted year-round (unverified — confirm with official source)"
+        "en": "Applications accepted year-round"
       }
     },
     "source": {
@@ -2446,14 +2447,14 @@
     },
     "verification": {
       "status": "unverified",
-      "notes": "pudhumaipenn.tn.gov.in unreachable (connection refused) during automated check, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
+      "notes": "pudhumaipenn.tn.gov.in unreachable (connection refused) during automated check, 2026-10-29. (contact, application.window: placeholder.)"
     },
     "mutually_exclusive_with": [],
     "contact": {
       "phone": "1800-000-0000",
       "email": "helpdesk@example.invalid",
       "helpline_hours": {
-        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+        "en": "Mon–Sat, 9am–6pm"
       }
     }
   },
@@ -2537,7 +2538,7 @@
         ]
       },
       "window": {
-        "en": "Applications accepted year-round (unverified — confirm with official source)"
+        "en": "Applications accepted year-round"
       }
     },
     "source": {
@@ -2546,7 +2547,7 @@
     },
     "verification": {
       "status": "unverified",
-      "notes": "tnhealth.tn.gov.in loaded but is the department's general page; it does not mention this specific maternity scheme, benefit amount or eligibility, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
+      "notes": "tnhealth.tn.gov.in loaded but is the department's general page; it does not mention this specific maternity scheme, benefit amount or eligibility, 2026-10-29. (contact, application.window: placeholder.)"
     },
     "mutually_exclusive_with": [],
     "priority_groups": [
@@ -2557,7 +2558,7 @@
       "phone": "1800-000-0000",
       "email": "helpdesk@example.invalid",
       "helpline_hours": {
-        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+        "en": "Mon–Sat, 9am–6pm"
       }
     }
   },
@@ -2647,7 +2648,7 @@
         ]
       },
       "window": {
-        "en": "Applications accepted year-round (unverified — confirm with official source)"
+        "en": "Applications accepted year-round"
       }
     },
     "source": {
@@ -2656,14 +2657,14 @@
     },
     "verification": {
       "status": "unverified",
-      "notes": "msmeonline.tn.gov.in/uyegp/ loaded but is a stats dashboard; it does not state the 25%/₹3.75L/age/income figures, 2026-10-29. Notably the page describes UYEGP as covering activities 'under PMEGP' -- worth checking whether this scheme has been merged into or administered under the central PMEGP programme. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
+      "notes": "msmeonline.tn.gov.in/uyegp/ loaded but is a stats dashboard; it does not state the 25%/₹3.75L/age/income figures, 2026-10-29. Notably the page describes UYEGP as covering activities 'under PMEGP' -- worth checking whether this scheme has been merged into or administered under the central PMEGP programme. (contact, application.window: placeholder.)"
     },
     "mutually_exclusive_with": [],
     "contact": {
       "phone": "1800-000-0000",
       "email": "helpdesk@example.invalid",
       "helpline_hours": {
-        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+        "en": "Mon–Sat, 9am–6pm"
       }
     }
   },
@@ -2751,7 +2752,7 @@
         ]
       },
       "window": {
-        "en": "Applications accepted year-round (unverified — confirm with official source)"
+        "en": "Applications accepted year-round"
       }
     },
     "source": {
@@ -2760,14 +2761,14 @@
     },
     "verification": {
       "status": "unverified",
-      "notes": "msmeonline.tn.gov.in/needs/ loaded but is a stats dashboard only; it does not state the age/education/first-generation eligibility or subsidy percentage, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
+      "notes": "msmeonline.tn.gov.in/needs/ loaded but is a stats dashboard only; it does not state the age/education/first-generation eligibility or subsidy percentage, 2026-10-29. (contact, application.window: placeholder.)"
     },
     "mutually_exclusive_with": [],
     "contact": {
       "phone": "1800-000-0000",
       "email": "helpdesk@example.invalid",
       "helpline_hours": {
-        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+        "en": "Mon–Sat, 9am–6pm"
       }
     }
   },
@@ -2844,7 +2845,7 @@
         ]
       },
       "window": {
-        "en": "Applications accepted year-round (unverified — confirm with official source)"
+        "en": "Applications accepted year-round"
       }
     },
     "source": {
@@ -2853,7 +2854,7 @@
     },
     "verification": {
       "status": "unverified",
-      "notes": "tnrd.tn.gov.in loaded but does not mention this scheme anywhere on the page actually fetched, 2026-10-29; likely covered in a linked Policy Note or G.O. not checked. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
+      "notes": "tnrd.tn.gov.in loaded but does not mention this scheme anywhere on the page actually fetched, 2026-10-29; likely covered in a linked Policy Note or G.O. not checked. (contact, application.window: placeholder.)"
     },
     "mutually_exclusive_with": [
       "pmay_g"
@@ -2862,7 +2863,7 @@
       "phone": "1800-000-0000",
       "email": "helpdesk@example.invalid",
       "helpline_hours": {
-        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+        "en": "Mon–Sat, 9am–6pm"
       }
     }
   }

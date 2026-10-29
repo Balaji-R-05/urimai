@@ -84,18 +84,19 @@ The bot provides the voice, buttons, cards and PDF delivery. The eligibility log
 | **Answers grounded follow-up questions** | Q&A is answered only from that scheme's own record, never the model's general knowledge | "என்ன ஆவணம் வேணும்?" → pulled from that scheme's document list |
 | **Never asks for sensitive IDs** | No Aadhaar, phone or bank number requested; no persistent database; sessions auto-expire | Sessions expire after 30 minutes |
 | **Keeps working when the LLM doesn't** | Requests fall back across models on rate limits, and to template replies if Groq is unreachable | Button-driven eligibility checks run with zero LLM calls |
+| **Lets users flag wrong info** | "⚠️ Report wrong info" on any scheme, then a one-tap reason (amount/benefit, documents/eligibility, or other) | Logged to `server/logs/feedback.log`, no session or user identifier attached, for someone to review and fix the catalogue |
 
 ### Schemes covered
 
 The catalogue isn't a fixed list — it's structured JSON, validated against a schema on load, and grows by running the seed script against a new source file (`python -m app.catalogue.seed more_schemes.json`, see [server/data/SCHEMES.md](server/data/SCHEMES.md)). What ships today:
 
-**Central (19):** PM-KISAN · Ayushman Bharat PM-JAY (70+) · PM Ujjwala · PM Awas Yojana (Gramin & Urban) · Sukanya Samriddhi · Atal Pension · PM Jeevan Jyoti Bima · PM Suraksha Bima · PM Shram Yogi Maan-dhan · e-Shram · PM SVANidhi · PM Vishwakarma · Old Age / Widow / Disability Pensions (NSAP) · PM Matru Vandana · Post-Matric Scholarship (SC/ST) · PM Mudra · Stand-Up India · PM Kaushal Vikas · PM Surya Ghar
+**Central (22):** PM-KISAN · Ayushman Bharat PM-JAY (70+) · PM Ujjwala · PM Awas Yojana – Gramin · PM Awas Yojana – Urban · Sukanya Samriddhi · Atal Pension · PM Jeevan Jyoti Bima · PM Suraksha Bima · PM Shram Yogi Maan-dhan · e-Shram · PM SVANidhi · PM Vishwakarma · Old Age Pension (NSAP) · Widow Pension (NSAP) · Disability Pension (NSAP) · PM Matru Vandana · Post-Matric Scholarship (SC/ST) · PM Mudra · Stand-Up India · PM Kaushal Vikas · PM Surya Ghar
 
 **Tamil Nadu (8):** Kalaignar Magalir Urimai Thogai · CM's Comprehensive Health Insurance · Pudhumai Penn · Tamil Pudhalvan · Dr. Muthulakshmi Reddy Maternity Benefit · UYEGP · NEEDS · Kalaignar Kanavu Illam
 
 Each one carries eligibility rules with `all` / `any` / `none` logic, benefit amount, required documents, how-to-apply steps and the official website — the same shape whether it's served from the JSON seed or MongoDB.
 
-> ⚠️ Scheme criteria and amounts are **seed data** being verified against official sources. Each scheme links to its official website and shows a "being verified" note until confirmed.
+> ⚠️ Scheme criteria and amounts are **seed data**. 3 of the 30 schemes have been checked word-for-word against their official source and are marked verified; the other 27 show a "being verified" note until confirmed. Each scheme links to its official website, and the bot's "⚠️ Report wrong info" button on every scheme lets users flag what's wrong straight from the chat (see [server/data/SCHEMES.md](server/data/SCHEMES.md) for how `verification` is recorded).
 
 ---
 
@@ -132,9 +133,9 @@ cd urimai
 
 python -m venv venv
 # Windows
-venv\Scripts\pip install -r requirements.txt -r server/requirements.txt
+venv\Scripts\pip install -r bot/requirements.txt -r server/requirements.txt
 # macOS / Linux
-venv/bin/pip install -r requirements.txt -r server/requirements.txt
+venv/bin/pip install -r bot/requirements.txt -r server/requirements.txt
 ```
 
 Copy `.env.example` to `.env` in the project root and fill in `TELEGRAM_BOT_TOKEN` and `GROQ_API_KEY`. The bot and the server share this file, and every other setting has a working default.
@@ -189,6 +190,8 @@ venv/bin/python bot/main.py         # macOS / Linux
 
 On startup the bot registers its command menu and logs the server's `/api/health` status. If the server can't be reached it logs a warning and keeps running. Open your bot in Telegram and send `/start`.
 
+Both processes log to the console and to rotating files (not committed): `server/logs/server.log`, plus `server/logs/feedback.log` for user-reported scheme issues, and `bot/logs/bot.log`.
+
 ---
 
 ## Bot commands
@@ -220,24 +223,31 @@ urimai/
 │   ├── tts.py         # gTTS voice replies (cached)
 │   ├── state.py       # per-chat UI state
 │   ├── config.py      # settings loaded from .env
-│   └── tests/         # run: cd bot && python -m pytest
+│   ├── tests/         # run: cd bot && python -m pytest
+│   └── requirements.txt
 ├── server/
 │   ├── app/
 │   │   ├── main.py            # FastAPI app: lifespan + router
-│   │   ├── api/               # routes.py (endpoints used by bot/api.py), schemas.py (request models)
-│   │   ├── core/              # config.py (all settings), session.py (in-memory, 30 min expiry)
-│   │   ├── domain/            # fields.py (profile fields, questions in ta/en/hi), formatting.py
-│   │   ├── catalogue/         # loader.py (MongoDB or JSON seed + validation), seed.py (JSON → MongoDB)
-│   │   ├── engine/            # three-valued rules, derived facts, question planner, summaries
-│   │   ├── agents/            # LLM: Groq client, extractor, responder, answerer
-│   │   ├── nlp/               # number words → digits, value normalisation
-│   │   ├── retrieval/         # chunking, hybrid search, reranking for scheme Q&A (service.py = glue)
-│   │   ├── services/          # orchestrator.py (per-turn pipeline), report.py (PDF)
-│   │   └── assets/fonts/      # Noto Sans fonts for the PDF
-│   ├── data/schemes.json      # seed scheme catalogue
-│   ├── tests/                 # run: cd server && python -m pytest (no LLM, MongoDB or models needed)
+│   │   ├── api/                # routes.py (endpoints used by bot/api.py), schemas.py (request models)
+│   │   ├── core/                # config.py (all settings), db.py (logging MongoDB client), session.py (in-memory, 30 min expiry)
+│   │   ├── domain/             # fields.py (profile fields, questions in ta/en/hi), formatting.py
+│   │   ├── catalogue/          # schema.py (scheme doc schema), loader.py (MongoDB or JSON seed + validation),
+│   │   │                       # seed.py (JSON → MongoDB), import_myscheme.py (LLM-assisted draft import, one-off)
+│   │   ├── engine/              # rules.py, derive.py, planner.py, summary.py: three-valued rules, derived facts,
+│   │   │                       # question planner, summaries
+│   │   ├── agents/              # llm.py (Groq client: JSON/text completions + speech-to-text), extractor.py,
+│   │   │                       # responder.py, answerer.py
+│   │   ├── nlp/                 # numerals.py (number words → digits), normalise.py (value normalisation)
+│   │   ├── retrieval/           # scheme Q&A: chunking.py, docs.py (catalogue → chunks), embed.py, bm25.py,
+│   │   │                       # rerank.py, search.py (in-memory backend), atlas.py (MongoDB Atlas backend),
+│   │   │                       # chunk_store.py (keeps scheme_chunks in sync), service.py (glue), demo.py
+│   │   ├── services/            # orchestrator.py (per-turn pipeline), report.py (PDF)
+│   │   └── assets/fonts/        # Noto Sans fonts for the PDF
+│   ├── data/                    # schemes.json (seed catalogue), scheme.schema.json, SCHEMES.md (field guide)
+│   ├── tests/                   # run: cd server && python -m pytest (some tests need MongoDB/models; see file names)
 │   └── requirements.txt
-├── requirements.txt   # bot dependencies
+├── run.py              # starts the server, waits for /api/health, then starts the bot; both logs in one terminal
+├── compose.yml
 ├── .env.example
 └── .env               # not committed
 ```

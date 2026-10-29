@@ -34,6 +34,9 @@ T = {
     "documents": L("Documents", "ஆவணங்கள்", "दस्तावेज़"),
     "how": L("How to apply", "எப்படி விண்ணப்பிப்பது", "आवेदन कैसे करें"),
     "where": L("Where", "எங்கே", "कहाँ"),
+    "deadline": L("Deadline", "இறுதி நாள்", "अंतिम तिथि"),
+    "contact": L("Contact", "தொடர்பு", "संपर्क"),
+    "priority_for": L("Priority for", "முன்னுரிமை", "प्राथमिकता"),
     "official": L("Official website", "அதிகாரப்பூர்வ இணையதளம்", "आधिकारिक वेबसाइट"),
     "choose_one": L("You can get only one of", "இவற்றில் ஒன்றை மட்டுமே பெற முடியும்", "इनमें से केवल एक मिल सकती है"),
     "unverified": L("Details are being verified against the official source.",
@@ -218,6 +221,8 @@ def _scheme(pdf: ReportPDF, r: dict, by_id: dict):
     pdf.ln(1)
     if r.get("benefit_summary"):
         pdf.para(f"{pdf.t('benefit')}: {r['benefit_summary']}", size=10)
+    if r.get("priority_groups"):
+        pdf.para(f"{pdf.t('priority_for')}: " + ", ".join(r["priority_groups"]), size=9, color=MUTED)
     if r.get("checks"):
         pdf.para(pdf.t("why"), size=9.5, bold=True, color=MUTED)
         for c in r["checks"]:
@@ -237,6 +242,14 @@ def _scheme(pdf: ReportPDF, r: dict, by_id: dict):
             pdf.para(f"{pdf.t('where')}: {app['where']}", size=9.5, indent=4)
         for i, step in enumerate(app.get("steps") or [], 1):
             pdf.para(f"{i}. {step}", size=9.5, indent=4, h=4.9)
+        if app.get("deadline"):
+            pdf.para(f"{pdf.t('deadline')}: {app['deadline']}", size=9.5, indent=4)
+        if app.get("window"):
+            pdf.para(app["window"], size=9.5, indent=4)
+    contact = r.get("contact") or {}
+    contact_bits = [x for x in (contact.get("phone"), contact.get("email"), contact.get("helpline_hours")) if x]
+    if contact_bits:
+        pdf.para(f"{pdf.t('contact')}: " + " · ".join(contact_bits), size=9.5)
     url = r.get("source_url") or app.get("url")
     if url:
         pdf.font(9, color=BRAND)

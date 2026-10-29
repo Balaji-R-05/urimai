@@ -1,4 +1,4 @@
-# Urimai API server (server/). The Telegram bot's deps are in ../requirements.txt
+# Urimai API server (server/). The Telegram bot's deps are in ../bot/requirements.txt
 fastapi>=0.115
 uvicorn[standard]>=0.30
 pydantic>=2.7

@@ -31,3 +31,9 @@ class SessionRequest(BaseModel):
 class EvaluateRequest(BaseModel):
     profile: dict
     lang: Lang = "en"
+
+
+class FeedbackRequest(BaseModel):
+    scheme_id: str = Field(min_length=1, max_length=100)
+    lang: Lang = "en"
+    text: str | None = Field(None, max_length=1000)

@@ -62,7 +62,7 @@ def preflight() -> int:
                if importlib.util.find_spec(m) is None]                                   # loads even w/o MONGODB_URI
     if missing:
         fail(f"missing packages in {PY}: {', '.join(missing)}\n"
-             f"      install with: \"{PY}\" -m pip install -r requirements.txt -r server/requirements.txt")
+             f"      install with: \"{PY}\" -m pip install -r bot/requirements.txt -r server/requirements.txt")
 
     url = urlparse(env.get("BACKEND_URL") or "http://localhost:8000")
     if url.hostname not in ("localhost", "127.0.0.1"):

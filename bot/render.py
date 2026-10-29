@@ -9,6 +9,8 @@ callback_data (max 64 bytes):
   d                 documents checklist
   a|<qid>|<idx>     answer the pending question with option idx
   r                 retry last message
+  f|<scheme_id>                prompt for "what's wrong" feedback on a scheme
+  g|<scheme_id>|<category>     feedback reason: amount | docs | other (other then asks for a note)
 """
 
 from __future__ import annotations
@@ -149,7 +151,10 @@ def find_result(resp: dict, scheme_id: str) -> dict | None:
 def scheme_detail(resp: dict, r: dict, lang: str) -> tuple[str, Kb]:
     st = r["status"]
     lines = [f"{STATUS_EMOJI[st]} <b>{escape(r['name'])}</b>  <i>({t('status_' + st, lang)})</i>",
-             f"💰 {escape(r['benefit_summary'])}", "", f"<b>{t('why', lang)}:</b>"]
+             f"💰 {escape(r['benefit_summary'])}"]
+    if r.get("priority_groups"):
+        lines.append(f"⭐ {t('priority_for', lang)}: {escape(', '.join(r['priority_groups']))}")
+    lines += ["", f"<b>{t('why', lang)}:</b>"]
     group_shown = False
     for c in r["checks"]:
         if c.get("group") and not group_shown:
@@ -172,13 +177,40 @@ def scheme_detail(resp: dict, r: dict, lang: str) -> tuple[str, Kb]:
         lines.append(f"📍 {escape(app['where'])}")
     for i, step in enumerate(app.get("steps", []), 1):
         lines.append(f"{i}. {escape(step)}")
+    if app.get("deadline"):
+        lines.append(f"📅 {t('deadline', lang)}: {escape(app['deadline'])}")
+    if app.get("window"):
+        lines.append(f"🗓️ {escape(app['window'])}")
+    contact = r.get("contact") or {}
+    if contact.get("phone") or contact.get("email") or contact.get("helpline_hours"):
+        lines.append(f"\n<b>{t('contact', lang)}:</b>")
+        if contact.get("phone"):
+            lines.append(f"📞 {escape(contact['phone'])}")
+        if contact.get("email"):
+            lines.append(f"✉️ {escape(contact['email'])}")
+        if contact.get("helpline_hours"):
+            lines.append(f"🕑 {escape(contact['helpline_hours'])}")
     url = r.get("source_url") or app.get("url")
     if url:
         lines.append(f'\n🔗 <a href="{escape(url, quote=True)}">{t("official", lang)}</a>')
     if r.get("unverified"):
         lines.append(t("unverified", lang))
     lines.append(f"\n⚠️ <i>{escape(resp.get('disclaimer') or t('disclaimer', lang))}</i>")
-    return "\n".join(lines)[:MAX_LEN], Kb([[Btn(t("btn_back", lang), callback_data="c")]])
+    rows = [
+        [Btn(t("btn_feedback", lang), callback_data=f"f|{r['scheme_id']}")],
+        [Btn(t("btn_back", lang), callback_data="c")],
+    ]
+    return "\n".join(lines)[:MAX_LEN], Kb(rows)
+
+
+# Returns the three one-tap feedback reasons shown after "Report wrong info": amount/benefit,
+# documents/eligibility, or other (which then asks for a short typed note).
+def feedback_category_keyboard(scheme_id: str, lang: str) -> Kb:
+    return Kb([
+        [Btn(t("feedback_amount_btn", lang), callback_data=f"g|{scheme_id}|amount")],
+        [Btn(t("feedback_docs_btn", lang), callback_data=f"g|{scheme_id}|docs")],
+        [Btn(t("feedback_other_btn", lang), callback_data=f"g|{scheme_id}|other")],
+    ])
 
 
 # Returns a formatted documents checklist.

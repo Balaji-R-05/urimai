@@ -1,13 +1,14 @@
 """Build the user-facing result payload: localized scheme results, headline, documents, hints."""
 from __future__ import annotations
 
-from app.domain.fields import DOC_LABELS, UI, tr
+from app.domain.fields import DOC_LABELS, PRIORITY_LABELS, UI, tr
 from app.domain.formatting import field_label
 
 
 def localize_result(r: dict, scheme: dict, lang: str) -> dict:
     app = scheme["application"]
     b = scheme["benefit"]
+    contact = scheme.get("contact") or {}
     return {
         **r,
         "missing_labels": [field_label(f, lang) for f in r["missing_fields"]],
@@ -24,7 +25,16 @@ def localize_result(r: dict, scheme: dict, lang: str) -> dict:
             "where": tr(app.get("where"), lang),
             "steps": app.get("steps", {}).get(lang) or app.get("steps", {}).get("en", []),
             "url": app.get("url"),
+            "deadline": app.get("deadline"),
+            "window": tr(app.get("window"), lang) or None,
         },
+        "contact": {
+            "phone": contact.get("phone"),
+            "email": contact.get("email"),
+            "helpline_hours": tr(contact.get("helpline_hours"), lang) or None,
+        } if contact else None,
+        "priority_groups": [tr(PRIORITY_LABELS.get(p), lang) or p.replace("_", " ")
+                             for p in scheme.get("priority_groups") or []],
         "unverified": scheme.get("unverified", True),
         "source_url": scheme.get("source_url"),
     }

@@ -27,6 +27,10 @@ log = logging.getLogger("urimai.bot")
 backend = Backend()
 HTML = ParseMode.HTML
 
+# Fixed English text sent with each preset feedback category, so logs stay triageable
+# regardless of the reporting user's language.
+FEEDBACK_CATEGORY_TEXT = {"amount": "Amount/benefit wrong", "docs": "Documents/eligibility wrong"}
+
 
 # Returns the chat ID for an update, raising if the update has no chat.
 def _chat_id(update: Update) -> int:
@@ -109,9 +113,18 @@ async def show_response(ctx, chat_id: int, st: state.ChatState, resp: dict) -> N
                     pass
 
 
-# Sends a free-text query to the backend and renders the reply; on backend failure, shows a retry prompt instead 
+# Sends a free-text query to the backend and renders the reply; on backend failure, shows a retry prompt instead
 # (st.last_user_text lets the retry button resend `text`).
+# If a feedback prompt is pending (st.feedback_for), the text is sent as that scheme's feedback instead.
 async def process_text(ctx, chat_id: int, st: state.ChatState, text: str) -> None:
+    if st.feedback_for:
+        scheme_id, st.feedback_for = st.feedback_for, None
+        try:
+            await backend.feedback(scheme_id, st.lang, text)
+        except BackendError as e:
+            log.warning("feedback failed: %s", e)
+        await _send(ctx, chat_id, t("feedback_thanks", st.lang))
+        return
     st.last_user_text = text
     await ctx.bot.send_chat_action(chat_id, ChatAction.TYPING)
     try:
@@ -295,7 +308,8 @@ async def _edit(q, text: str, markup=None):
 
 # Dispatches every inline-button press by its "<kind>|<rest>" callback_data prefix:
 # l=language pick, r=retry last query, a=answer a follow-up question, s/b/c/d=card
-# navigation (scheme detail / eligibility bucket / card / documents).
+# navigation (scheme detail / eligibility bucket / card / documents), f/g=report
+# wrong info on a scheme (prompt for details / flag without details).
 @_serialized
 async def on_callback(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     q = update.callback_query
@@ -343,6 +357,25 @@ async def on_callback(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
             await _send(ctx, chat_id, t("error", st.lang))
             return
         await show_response(ctx, chat_id, st, resp)
+        return
+
+    if kind == "f":
+        await q.answer()
+        await _send(ctx, chat_id, t("feedback_prompt", st.lang), render.feedback_category_keyboard(rest, st.lang))
+        return
+
+    if kind == "g":
+        await q.answer()
+        scheme_id, _, category = rest.partition("|")
+        if category == "other":
+            st.feedback_for = scheme_id
+            await _send(ctx, chat_id, t("feedback_other_prompt", st.lang))
+            return
+        try:
+            await backend.feedback(scheme_id, st.lang, FEEDBACK_CATEGORY_TEXT.get(category, category))
+        except BackendError as e:
+            log.warning("feedback failed: %s", e)
+        await _send(ctx, chat_id, t("feedback_thanks", st.lang))
         return
 
     await q.answer()

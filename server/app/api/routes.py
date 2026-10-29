@@ -4,16 +4,18 @@ HTTP endpoints under /api. The Telegram bot calls these through bot/api.py."""
 from __future__ import annotations
 
 import asyncio
+import logging
 from fastapi import APIRouter, File, Form, HTTPException, Response, UploadFile
 
 from app.agents import llm
-from app.api.schemas import AnswerRequest, ChatRequest, EvaluateRequest, Lang, SessionRequest
+from app.api.schemas import AnswerRequest, ChatRequest, EvaluateRequest, FeedbackRequest, Lang, SessionRequest
 from app.core import config, session
 from app.domain.fields import FIELDS, tr
 from app.retrieval import service as retrieval
 from app.services import orchestrator, report
 
 router = APIRouter(prefix="/api")
+feedback_log = logging.getLogger("urimai.feedback")
 
 
 @router.get("/health")
@@ -100,6 +102,18 @@ async def scheme(scheme_id: str):
     if not s:
         raise HTTPException(404, "unknown scheme")
     return s
+
+
+@router.post("/feedback")
+async def feedback(req: FeedbackRequest):
+    """
+    Reports an issue with a scheme's info. Written only to the server log -- no session or user
+    identifier is recorded, matching the rest of the app's no-persistence design.
+    """
+    if req.scheme_id not in orchestrator.SCHEMES_BY_ID:
+        raise HTTPException(404, "unknown scheme")
+    feedback_log.info("scheme=%s lang=%s text=%r", req.scheme_id, req.lang, (req.text or "").strip() or None)
+    return {"ok": True}
 
 
 @router.post("/transcribe")

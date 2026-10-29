@@ -362,6 +362,19 @@ DOC_LABELS: dict[str, dict] = {
     "vending_certificate": L("Vending certificate / ULB letter", "வியாபாரச் சான்று / நகராட்சி கடிதம்", "वेंडिंग प्रमाण पत्र"),
 }
 
+PRIORITY_LABELS: dict[str, dict] = {
+    "sc": L("SC", "தாழ்த்தப்பட்ட வகுப்பு (SC)", "अनुसूचित जाति (SC)"),
+    "st": L("ST", "பழங்குடியினர் (ST)", "अनुसूचित जनजाति (ST)"),
+    "obc": L("OBC", "பிற்படுத்தப்பட்ட வகுப்பு (OBC)", "अन्य पिछड़ा वर्ग (OBC)"),
+    "mbc": L("MBC", "மிகவும் பிற்படுத்தப்பட்ட வகுப்பு (MBC)", "अति पिछड़ा वर्ग (MBC)"),
+    "bc": L("BC", "பிற்படுத்தப்பட்ட வகுப்பு (BC)", "पिछड़ा वर्ग (BC)"),
+    "minority": L("Minority", "சிறுபான்மையினர்", "अल्पसंख्यक"),
+    "women": L("Women", "பெண்கள்", "महिलाएँ"),
+    "disability": L("Persons with disability", "மாற்றுத்திறனாளிகள்", "दिव्यांगजन"),
+    "senior_citizen": L("Senior citizens", "மூத்த குடிமக்கள்", "वरिष्ठ नागरिक"),
+    "bpl": L("Below poverty line (BPL)", "வறுமைக் கோட்டிற்குக் கீழ் (BPL)", "गरीबी रेखा से नीचे (BPL)"),
+}
+
 TN_DISTRICTS = {
     "ariyalur", "chengalpattu", "chennai", "coimbatore", "cuddalore", "dharmapuri", "dindigul", "erode",
     "kallakurichi", "kanchipuram", "kancheepuram", "kanyakumari", "karur", "krishnagiri", "madurai",

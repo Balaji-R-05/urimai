@@ -59,6 +59,12 @@ class Backend:
             },
         )
 
+    async def feedback(self, scheme_id: str, lang: str, text: str | None = None) -> None:
+        """
+        Reports an issue with a scheme's info.
+        """
+        await self._post("/api/feedback", json={"scheme_id": scheme_id, "lang": lang, "text": text})
+
     async def reset(self, session_id: str) -> None:
         """
         Reset the session, deleting all answers and profile.

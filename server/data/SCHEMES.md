@@ -23,7 +23,8 @@ editors and tools is [`scheme.schema.json`](scheme.schema.json) (regenerate with
   "name": { "en": "Kalaignar Magalir Urimai Thogai", "ta": "கலைஞர் மகளிர் உரிமைத் தொகை" },
   "benefit": {
     "summary": { "en": "₹1,000 a month to women heads of family", "ta": "குடும்பத் தலைவிகளுக்கு மாதம் ₹1,000" },
-    "annual_cash_value_inr": 12000
+    "annual_cash_value_inr": 12000,
+    "frequency": "monthly"
   },
   "eligibility": {
     "all":  [ { "field": "gender", "op": "eq", "value": "female" },
@@ -39,11 +40,14 @@ editors and tools is [`scheme.schema.json`](scheme.schema.json) (regenerate with
     "mode": "both",
     "where": { "en": "Special camps / ration shop area, or kmut.tn.gov.in" },
     "url": "https://kmut.tn.gov.in/",
-    "steps": { "en": ["Collect the form at your ration shop or camp", "Submit it at the camp"] }
+    "steps": { "en": ["Collect the form at your ration shop or camp", "Submit it at the camp"] },
+    "window": { "en": "Special camps run each quarter; apply online any time" }
   },
+  "contact": { "phone": "+91 1800-111-222", "helpline_hours": { "en": "Mon–Sat, 9am–6pm" } },
   "source": { "url": "https://kmut.tn.gov.in/", "origin": "manual" },
   "verification": { "status": "unverified", "last_verified": null },
-  "mutually_exclusive_with": ["ignoaps", "ignwps", "igndps"]
+  "mutually_exclusive_with": ["ignoaps", "ignwps", "igndps"],
+  "priority_groups": ["women"]
 }
 ```
 
@@ -62,12 +66,18 @@ editors and tools is [`scheme.schema.json`](scheme.schema.json) (regenerate with
 | `benefit.summary` | Text | yes | One line: what the person gets |
 | `benefit.annual_cash_value_inr` | number ≥ 0 | no (`0`) | Cash per year, used to rank schemes and total the benefit. `0` for non-cash benefits |
 | `benefit.cover_highlight` | Text | no | Headline for non-cash benefits, e.g. "₹5 lakh health cover" |
+| `benefit.frequency` | `one_time` \| `monthly` \| `quarterly` \| `annual` \| `ongoing` | no | How the benefit recurs; `ongoing` for a standing cover (e.g. insurance) rather than a payment |
 | `eligibility` | object | yes | Rules, see [Eligibility](#eligibility) |
 | `documents` | list | no | Documents to apply, see [Documents](#documents) |
 | `application.mode` | `online` \| `offline` \| `both` | yes | How to apply |
 | `application.where` | Text | one of where/url/steps | Office or website in words |
 | `application.url` | URL | one of where/url/steps | Where to apply online |
 | `application.steps` | `{"en": [..], "ta": [..], "hi": [..]}` | one of where/url/steps | Steps in order |
+| `application.deadline` | `YYYY-MM-DD` | no | Hard cutoff date to apply, if the scheme has one |
+| `application.window` | Text | no | Recurring application period in words, for schemes not open year-round, e.g. "June–August each year" |
+| `contact.phone` | phone number | one of phone/email/helpline_hours | `+91` or plain digits, 7–15 digits |
+| `contact.email` | email | one of phone/email/helpline_hours | |
+| `contact.helpline_hours` | Text | one of phone/email/helpline_hours | e.g. "Mon–Sat, 9am–6pm" |
 | `source.url` | URL | yes | Official page the details come from (shown to users) |
 | `source.origin` | text | no | Where this record came from: `manual`, `myscheme.gov.in`, … |
 | `source.external_id` | text | no | The scheme's id at the origin, so re-imports update instead of duplicating |
@@ -76,6 +86,9 @@ editors and tools is [`scheme.schema.json`](scheme.schema.json) (regenerate with
 | `verification.verified_by` | text | no | Who checked it |
 | `verification.notes` | text | no | Reviewer notes |
 | `mutually_exclusive_with` | list of ids | no | Schemes a person can't get together with this one (e.g. two pensions). Every id must exist |
+| `priority_groups` | list, see below | no | Display/filter tags for quotas or reservations this scheme targets. **Informational only** — it never affects eligibility; the actual rule still belongs in `eligibility.all` / `any` / `none` |
+
+`priority_groups` values: `sc`, `st`, `obc`, `mbc`, `bc`, `minority`, `women`, `disability`, `senior_citizen`, `bpl`.
 
 ### Added by the server (don't write these)
 

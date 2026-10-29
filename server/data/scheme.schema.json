@@ -46,6 +46,32 @@
             }
           ],
           "default": null
+        },
+        "deadline": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Hard cutoff date (YYYY-MM-DD) to apply, if one exists",
+          "title": "Deadline"
+        },
+        "window": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Text"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Recurring application period in words, for schemes that aren't open year-round, e.g. 'Admission season: June–August each year'"
         }
       },
       "required": [
@@ -78,6 +104,26 @@
           ],
           "default": null,
           "description": "Non-cash headline, e.g. '₹5 lakh health cover'"
+        },
+        "frequency": {
+          "anyOf": [
+            {
+              "enum": [
+                "one_time",
+                "monthly",
+                "quarterly",
+                "annual",
+                "ongoing"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "How the benefit recurs: one_time, monthly, quarterly, annual, or ongoing (e.g. insurance cover)",
+          "title": "Frequency"
         }
       },
       "required": [
@@ -171,6 +217,52 @@
         "op"
       ],
       "title": "Condition",
+      "type": "object"
+    },
+    "Contact": {
+      "additionalProperties": false,
+      "description": "A human help channel, for schemes where a phone call or office visit matters.",
+      "properties": {
+        "phone": {
+          "anyOf": [
+            {
+              "pattern": "^\\+?[0-9][0-9\\- ]{6,14}[0-9]$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Phone"
+        },
+        "email": {
+          "anyOf": [
+            {
+              "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Email"
+        },
+        "helpline_hours": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Text"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "e.g. 'Mon–Sat, 9am–6pm'"
+        }
+      },
+      "title": "Contact",
       "type": "object"
     },
     "CustomDocument": {
@@ -594,6 +686,18 @@
     "application": {
       "$ref": "#/$defs/Application"
     },
+    "contact": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Contact"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Human help channel: phone, email and/or helpline hours"
+    },
     "source": {
       "$ref": "#/$defs/Source"
     },
@@ -613,6 +717,27 @@
         "type": "string"
       },
       "title": "Mutually Exclusive With",
+      "type": "array"
+    },
+    "priority_groups": {
+      "default": [],
+      "description": "Display/filter tags for quotas or reservations this scheme targets. Informational only: it does not affect eligibility — put the actual rule in eligibility.all / any / none as well",
+      "items": {
+        "enum": [
+          "sc",
+          "st",
+          "obc",
+          "mbc",
+          "bc",
+          "minority",
+          "women",
+          "disability",
+          "senior_citizen",
+          "bpl"
+        ],
+        "type": "string"
+      },
+      "title": "Priority Groups",
       "type": "array"
     }
   },

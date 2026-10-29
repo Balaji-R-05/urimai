@@ -14,7 +14,7 @@ from app.catalogue.loader import load_schemes
 from app.core import config
 from app.retrieval.chunking import recursive_split
 
-CHUNK_FORMAT = 2  # bump when the chunk text layout changes, so stored chunks are re-embedded
+CHUNK_FORMAT = 3  # bump when the chunk text layout changes, so stored chunks are re-embedded
 MAX_HEADER_ALIASES = 6
 SECTIONS = ("overview", "eligibility", "documents", "how_to_apply")
 LANGS = ("en", "ta", "hi")
@@ -58,14 +58,22 @@ def scheme_sections(s: dict) -> list[dict]:
     base = {"scheme_id": s["id"], "level": s.get("level") or "", "category": ",".join(s.get("category", [])),
             "aliases": s.get("aliases", [])[:MAX_HEADER_ALIASES]}
     app = s.get("application", {})
+    contact = s.get("contact") or {}
+    benefit_meta = s.get("benefit", {})
+    priority = s.get("priority_groups") or []
     for lang in LANGS:
         name = _loc(s["name"], lang)
         if not name:
             continue
         body: dict[str, str] = {}
-        benefit = _loc(s.get("benefit", {}).get("summary"), lang)
+        benefit = _loc(benefit_meta.get("summary"), lang)
         if benefit:
-            body["overview"] = f"{benefit}.\nCategories: {base['category'].replace(',', ', ').replace('_', ' ')}."
+            lines = [f"{benefit}.", f"Categories: {base['category'].replace(',', ', ').replace('_', ' ')}."]
+            if benefit_meta.get("frequency"):
+                lines.append(f"Paid: {benefit_meta['frequency'].replace('_', ' ')}.")
+            if priority:
+                lines.append(f"Priority groups: {', '.join(p.replace('_', ' ') for p in priority)}.")
+            body["overview"] = "\n".join(lines)
         if lang == "en":  # rules and document ids are English-only in the catalogue
             rules = _block(s.get("eligibility", {}))
             if rules:
@@ -74,9 +82,22 @@ def scheme_sections(s: dict) -> list[dict]:
                 body["documents"] = "\n".join(f"- {d.replace('_', ' ')}" for d in s["documents"])
         where = _loc(app.get("where"), lang)
         steps = _loc(app.get("steps"), lang) or []
-        if where or steps:
+        window = _loc(app.get("window"), lang)
+        extra = []
+        if app.get("deadline"):
+            extra.append(f"Deadline: {app['deadline']}.")
+        if window:
+            extra.append(f"Apply during: {window}.")
+        if contact.get("phone"):
+            extra.append(f"Helpline: {contact['phone']}.")
+        if contact.get("email"):
+            extra.append(f"Email: {contact['email']}.")
+        helpline_hours = _loc(contact.get("helpline_hours"), lang)
+        if helpline_hours:
+            extra.append(f"Helpline hours: {helpline_hours}.")
+        if where or steps or extra:
             head = f"Mode: {app.get('mode', '')}. Where: {where}." if where else f"Mode: {app.get('mode', '')}."
-            body["how_to_apply"] = "\n".join([head] + [f"{i}. {st}" for i, st in enumerate(steps, 1)])
+            body["how_to_apply"] = "\n".join([head] + [f"{i}. {st}" for i, st in enumerate(steps, 1)] + extra)
         for section, text in body.items():
             out.append({**base, "id": f"{s['id']}#{section}#{lang}", "section": section, "lang": lang,
                         "name": name, "text": text})

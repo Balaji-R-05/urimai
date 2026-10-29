@@ -26,10 +26,13 @@ CATEGORIES = (
     "sports_culture", "transport", "water_sanitation", "women",
 )
 OP_NAMES = ("eq", "ne", "in", "not_in", "lt", "lte", "gt", "gte", "between", "is_true", "is_false")
+BENEFIT_FREQUENCIES = ("one_time", "monthly", "quarterly", "annual", "ongoing")
+PRIORITY_GROUPS = ("sc", "st", "obc", "mbc", "bc", "minority", "women", "disability", "senior_citizen", "bpl")
 FieldName = Literal[tuple(sorted(set(FIELDS) | set(DERIVED)))]  # type: ignore[valid-type]
 DocId = Literal[tuple(sorted(DOC_LABELS))]  # type: ignore[valid-type]
 Category = Literal[CATEGORIES]  # type: ignore[valid-type]
 StateCode = Literal[STATES]  # type: ignore[valid-type]
+PriorityGroup = Literal[PRIORITY_GROUPS]  # type: ignore[valid-type]
 SchemeId = Field(pattern=r"^[a-z0-9][a-z0-9_]{1,63}$")
 
 # Keys the server adds to stored documents; stripped before validation
@@ -133,6 +136,8 @@ class Benefit(Strict):
     summary: Text
     annual_cash_value_inr: int = Field(0, ge=0, description="Cash per year, for ranking; 0 if not cash")
     cover_highlight: Text | None = Field(None, description="Non-cash headline, e.g. '₹5 lakh health cover'")
+    frequency: Literal[BENEFIT_FREQUENCIES] | None = Field(None, description=(  # type: ignore[valid-type]
+        "How the benefit recurs: one_time, monthly, quarterly, annual, or ongoing (e.g. insurance cover)"))
 
 
 class CustomDocument(Strict):
@@ -146,11 +151,28 @@ class Application(Strict):
     where: Text | None = None
     url: str | None = Field(None, pattern=r"^https?://")
     steps: TextList | None = None
+    deadline: dt.date | None = Field(None, description="Hard cutoff date (YYYY-MM-DD) to apply, if one exists")
+    window: Text | None = Field(None, description=(
+        "Recurring application period in words, for schemes that aren't open year-round, "
+        "e.g. 'Admission season: June–August each year'"))
 
     @model_validator(mode="after")
     def _says_how(self):
         if not (self.where or self.url or self.steps):
             raise ValueError("needs at least one of where / url / steps")
+        return self
+
+
+class Contact(Strict):
+    """A human help channel, for schemes where a phone call or office visit matters."""
+    phone: str | None = Field(None, pattern=r"^\+?[0-9][0-9\- ]{6,14}[0-9]$")
+    email: str | None = Field(None, pattern=r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+    helpline_hours: Text | None = Field(None, description="e.g. 'Mon–Sat, 9am–6pm'")
+
+    @model_validator(mode="after")
+    def _has_a_channel(self):
+        if not (self.phone or self.email or self.helpline_hours):
+            raise ValueError("needs at least one of phone / email / helpline_hours")
         return self
 
 
@@ -189,9 +211,13 @@ class Scheme(Strict):
     eligibility: Eligibility
     documents: list[Union[DocId, CustomDocument]] = []
     application: Application
+    contact: Contact | None = Field(None, description="Human help channel: phone, email and/or helpline hours")
     source: Source
     verification: Verification = Verification()
     mutually_exclusive_with: list[str] = Field([], description="Ids of schemes a person can't get together with this")
+    priority_groups: list[PriorityGroup] = Field([], description=(  # type: ignore[valid-type]
+        "Display/filter tags for quotas or reservations this scheme targets. Informational only: it does not "
+        "affect eligibility — put the actual rule in eligibility.all / any / none as well"))
 
     @model_validator(mode="after")
     def _state_matches_level(self):

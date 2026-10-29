@@ -106,7 +106,7 @@ def retrieve(query: str, k: int = 5, lang: str | None = None, section: str | Non
     dense = dense_local(query, n, lang, section)
     bm = sparse(query, n, lang, section)
     fused = rrf(dense, bm)
-    pool = [by_id[cid] for cid in list(fused)[:n] if cid in by_id]
+    pool = [by_id[cid] for cid in list(fused)[:config.RERANK_POOL] if cid in by_id]
 
     rr = rerank(query, [c["text"] for c in pool]) if use_rerank else None
     hits = [{"scheme_id": c["scheme_id"], "section": c["section"], "lang": c["lang"],

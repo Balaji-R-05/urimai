@@ -24,10 +24,13 @@ def _model():
         return None
 
 
+MIN_POOL = 4  # fewer candidates than this isn't worth the cross-encoder's cost; RRF order is used instead
+
+
 def rerank(query: str, texts: list[str]) -> list[float] | None:
-    """Relevance in [0, 1] per text, or None if reranking is off / failed."""
+    """Relevance in [0, 1] per text, or None if reranking is off / too few candidates / failed."""
     model = _model()
-    if model is None or not texts:
+    if model is None or len(texts) < MIN_POOL:
         return None
     try:
         return [1 / (1 + math.exp(-s)) for s in model.rerank(query, texts, batch_size=16)]

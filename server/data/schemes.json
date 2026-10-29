@@ -23,7 +23,8 @@
         "en": "₹6,000 a year in 3 instalments to farmer families",
         "ta": "விவசாயக் குடும்பங்களுக்கு ஆண்டுக்கு ₹6,000 (3 தவணைகளில்)"
       },
-      "annual_cash_value_inr": 6000
+      "annual_cash_value_inr": 6000,
+      "frequency": "quarterly"
     },
     "eligibility": {
       "all": [
@@ -70,6 +71,9 @@
           "Verification by the state",
           "Money is credited to the bank account"
         ]
+      },
+      "window": {
+        "en": "Applications accepted year-round (unverified — confirm with official source)"
       }
     },
     "source": {
@@ -77,9 +81,17 @@
       "origin": "manual"
     },
     "verification": {
-      "status": "unverified"
+      "status": "unverified",
+      "notes": "pmkisan.gov.in unreachable (TLS certificate error) during automated check, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
     },
-    "mutually_exclusive_with": []
+    "mutually_exclusive_with": [],
+    "contact": {
+      "phone": "1800-000-0000",
+      "email": "helpdesk@example.invalid",
+      "helpline_hours": {
+        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+      }
+    }
   },
   {
     "schema_version": 1,
@@ -110,7 +122,8 @@
       "cover_highlight": {
         "en": "₹5 lakh health cover",
         "ta": "₹5 லட்சம் மருத்துவக் காப்பீடு"
-      }
+      },
+      "frequency": "ongoing"
     },
     "eligibility": {
       "all": [
@@ -140,6 +153,9 @@
           "Verify with Aadhaar e-KYC",
           "Download the Ayushman Vay Vandana card"
         ]
+      },
+      "window": {
+        "en": "Applications accepted year-round (unverified — confirm with official source)"
       }
     },
     "source": {
@@ -147,9 +163,20 @@
       "origin": "manual"
     },
     "verification": {
-      "status": "unverified"
+      "status": "unverified",
+      "notes": "pmjay.gov.in unreachable (connection refused) during automated check, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
     },
-    "mutually_exclusive_with": []
+    "mutually_exclusive_with": [],
+    "priority_groups": [
+      "senior_citizen"
+    ],
+    "contact": {
+      "phone": "1800-000-0000",
+      "email": "helpdesk@example.invalid",
+      "helpline_hours": {
+        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+      }
+    }
   },
   {
     "schema_version": 1,
@@ -179,7 +206,8 @@
       "cover_highlight": {
         "en": "Free LPG connection",
         "ta": "இலவச கேஸ் இணைப்பு"
-      }
+      },
+      "frequency": "one_time"
     },
     "eligibility": {
       "all": [
@@ -234,6 +262,9 @@
           "ஆதார், ரேஷன் கார்டுடன் KYC கொடுக்கவும்",
           "சரிபார்ப்புக்குப் பின் இணைப்பு வழங்கப்படும்"
         ]
+      },
+      "window": {
+        "en": "Applications accepted year-round (unverified — confirm with official source)"
       }
     },
     "source": {
@@ -241,9 +272,20 @@
       "origin": "manual"
     },
     "verification": {
-      "status": "unverified"
+      "status": "unverified",
+      "notes": "pmuy.gov.in loaded but only partially corroborates our record, 2026-10-29: confirms woman 18+ from a poor household gets a free first refill + stove, but describes the connection itself as 'deposit-free' rather than fully free, and doesn't state a BPL/SC-ST criterion explicitly -- our eligibility.any (bpl OR sc/st) is unconfirmed. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
     },
-    "mutually_exclusive_with": []
+    "mutually_exclusive_with": [],
+    "priority_groups": [
+      "women"
+    ],
+    "contact": {
+      "phone": "1800-000-0000",
+      "email": "helpdesk@example.invalid",
+      "helpline_hours": {
+        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+      }
+    }
   },
   {
     "schema_version": 1,
@@ -273,7 +315,8 @@
       "cover_highlight": {
         "en": "₹1.2 lakh housing help",
         "ta": "₹1.2 லட்சம் வீட்டு உதவி"
-      }
+      },
+      "frequency": "one_time"
     },
     "eligibility": {
       "all": [
@@ -314,6 +357,9 @@
           "Geo-tagged verification",
           "Instalments paid as construction progresses"
         ]
+      },
+      "window": {
+        "en": "Applications accepted year-round (unverified — confirm with official source)"
       }
     },
     "source": {
@@ -321,11 +367,22 @@
       "origin": "manual"
     },
     "verification": {
-      "status": "unverified"
+      "status": "unverified",
+      "notes": "pmayg.nic.in unreachable (DNS failure) during automated check, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
     },
     "mutually_exclusive_with": [
       "kalaignar_kanavu_illam"
-    ]
+    ],
+    "priority_groups": [
+      "bpl"
+    ],
+    "contact": {
+      "phone": "1800-000-0000",
+      "email": "helpdesk@example.invalid",
+      "helpline_hours": {
+        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+      }
+    }
   },
   {
     "schema_version": 1,
@@ -354,7 +411,8 @@
       "cover_highlight": {
         "en": "Urban housing help",
         "ta": "நகர வீட்டு உதவி"
-      }
+      },
+      "frequency": "one_time"
     },
     "eligibility": {
       "all": [
@@ -395,6 +453,9 @@
           "Upload Aadhaar and income details",
           "Verification by the urban local body"
         ]
+      },
+      "window": {
+        "en": "Applications accepted year-round (unverified — confirm with official source)"
       }
     },
     "source": {
@@ -402,9 +463,17 @@
       "origin": "manual"
     },
     "verification": {
-      "status": "unverified"
+      "status": "unverified",
+      "notes": "pmay-urban.gov.in loaded but does not state the ₹9,00,000 income cap we use; it only names income categories (EWS/LIG/MIG) without figures, 2026-10-29. Cap is unconfirmed, not necessarily wrong. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
     },
-    "mutually_exclusive_with": []
+    "mutually_exclusive_with": [],
+    "contact": {
+      "phone": "1800-000-0000",
+      "email": "helpdesk@example.invalid",
+      "helpline_hours": {
+        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+      }
+    }
   },
   {
     "schema_version": 1,
@@ -430,7 +499,8 @@
         "en": "High-interest, tax-free savings account for a daughter under 10",
         "ta": "10 வயதுக்குட்பட்ட மகளுக்கு அதிக வட்டி சேமிப்புக் கணக்கு"
       },
-      "annual_cash_value_inr": 0
+      "annual_cash_value_inr": 0,
+      "frequency": "annual"
     },
     "eligibility": {
       "all": [
@@ -461,6 +531,9 @@
           "Fill the SSY form with the daughter's birth certificate",
           "Deposit at least ₹250"
         ]
+      },
+      "window": {
+        "en": "Applications accepted year-round (unverified — confirm with official source)"
       }
     },
     "source": {
@@ -468,9 +541,20 @@
       "origin": "manual"
     },
     "verification": {
-      "status": "unverified"
+      "status": "unverified",
+      "notes": "indiapost.gov.in loaded but does not mention Sukanya Samriddhi Yojana at all on the page actually fetched, 2026-10-29; likely on a sub-page not checked. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
     },
-    "mutually_exclusive_with": []
+    "mutually_exclusive_with": [],
+    "priority_groups": [
+      "women"
+    ],
+    "contact": {
+      "phone": "1800-000-0000",
+      "email": "helpdesk@example.invalid",
+      "helpline_hours": {
+        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+      }
+    }
   },
   {
     "schema_version": 1,
@@ -494,7 +578,8 @@
         "en": "Guaranteed ₹1,000–5,000 monthly pension from age 60 for a small monthly contribution",
         "ta": "சிறு மாதச் செலுத்தலுக்கு 60 வயது முதல் மாதம் ₹1,000–5,000 ஓய்வூதியம்"
       },
-      "annual_cash_value_inr": 0
+      "annual_cash_value_inr": 0,
+      "frequency": "monthly"
     },
     "eligibility": {
       "all": [
@@ -533,6 +618,9 @@
           "Fill the APY form and choose a pension amount",
           "Monthly auto-debit starts"
         ]
+      },
+      "window": {
+        "en": "Applications accepted year-round (unverified — confirm with official source)"
       }
     },
     "source": {
@@ -540,9 +628,17 @@
       "origin": "manual"
     },
     "verification": {
-      "status": "unverified"
+      "status": "unverified",
+      "notes": "jansuraksha.gov.in unreachable (TLS certificate error) during automated check, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
     },
-    "mutually_exclusive_with": []
+    "mutually_exclusive_with": [],
+    "contact": {
+      "phone": "1800-000-0000",
+      "email": "helpdesk@example.invalid",
+      "helpline_hours": {
+        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+      }
+    }
   },
   {
     "schema_version": 1,
@@ -570,7 +666,8 @@
       "cover_highlight": {
         "en": "₹2 lakh life cover",
         "ta": "₹2 லட்சம் ஆயுள் காப்பீடு"
-      }
+      },
+      "frequency": "ongoing"
     },
     "eligibility": {
       "all": [
@@ -607,6 +704,9 @@
           "வங்கியில் ஒப்புதல் படிவம் கொடுக்கவும்",
           "ஆண்டுக்கு ஒருமுறை பிரீமியம் தானாகப் பிடிக்கப்படும்"
         ]
+      },
+      "window": {
+        "en": "Applications accepted year-round (unverified — confirm with official source)"
       }
     },
     "source": {
@@ -614,9 +714,17 @@
       "origin": "manual"
     },
     "verification": {
-      "status": "unverified"
+      "status": "unverified",
+      "notes": "jansuraksha.gov.in unreachable (TLS certificate error) during automated check, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
     },
-    "mutually_exclusive_with": []
+    "mutually_exclusive_with": [],
+    "contact": {
+      "phone": "1800-000-0000",
+      "email": "helpdesk@example.invalid",
+      "helpline_hours": {
+        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+      }
+    }
   },
   {
     "schema_version": 1,
@@ -644,7 +752,8 @@
       "cover_highlight": {
         "en": "₹2 lakh accident cover",
         "ta": "₹2 லட்சம் விபத்துக் காப்பீடு"
-      }
+      },
+      "frequency": "ongoing"
     },
     "eligibility": {
       "all": [
@@ -681,6 +790,9 @@
           "வங்கியில் ஒப்புதல் படிவம் கொடுக்கவும்",
           "ஆண்டுக்கு ஒருமுறை ₹20 தானாகப் பிடிக்கப்படும்"
         ]
+      },
+      "window": {
+        "en": "Applications accepted year-round (unverified — confirm with official source)"
       }
     },
     "source": {
@@ -688,9 +800,17 @@
       "origin": "manual"
     },
     "verification": {
-      "status": "unverified"
+      "status": "unverified",
+      "notes": "jansuraksha.gov.in unreachable (TLS certificate error) during automated check, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
     },
-    "mutually_exclusive_with": []
+    "mutually_exclusive_with": [],
+    "contact": {
+      "phone": "1800-000-0000",
+      "email": "helpdesk@example.invalid",
+      "helpline_hours": {
+        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+      }
+    }
   },
   {
     "schema_version": 1,
@@ -716,7 +836,8 @@
         "en": "₹3,000 monthly pension from age 60 for unorganised workers",
         "ta": "அமைப்புசாரா தொழிலாளர்களுக்கு 60 வயது முதல் மாதம் ₹3,000 ஓய்வூதியம்"
       },
-      "annual_cash_value_inr": 0
+      "annual_cash_value_inr": 0,
+      "frequency": "monthly"
     },
     "eligibility": {
       "all": [
@@ -776,6 +897,9 @@
           "Enrol and set up auto-debit",
           "Get the Shram Yogi pension card"
         ]
+      },
+      "window": {
+        "en": "Applications accepted year-round (unverified — confirm with official source)"
       }
     },
     "source": {
@@ -783,9 +907,17 @@
       "origin": "manual"
     },
     "verification": {
-      "status": "unverified"
+      "status": "unverified",
+      "notes": "maandhan.in loaded and confirms ₹3,000/month pension and 18-40 entry age, 2026-10-29, but the page states eligibility as the WORKER's own monthly income ≤₹15,000, not 'annual family income ≤₹1,80,000' as our record frames it -- same number annualised, but a different basis (individual vs family). Worth re-checking the rule's field. EPFO/tax-payer exclusions not mentioned on this page either. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
     },
-    "mutually_exclusive_with": []
+    "mutually_exclusive_with": [],
+    "contact": {
+      "phone": "1800-000-0000",
+      "email": "helpdesk@example.invalid",
+      "helpline_hours": {
+        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+      }
+    }
   },
   {
     "schema_version": 1,
@@ -812,7 +944,8 @@
         "en": "e-Shram (UAN) card, access to worker welfare schemes and accident cover",
         "ta": "இ-ஷ்ரம் அட்டை, தொழிலாளர் நலத் திட்டங்கள் மற்றும் விபத்துக் காப்பீடு"
       },
-      "annual_cash_value_inr": 0
+      "annual_cash_value_inr": 0,
+      "frequency": "ongoing"
     },
     "eligibility": {
       "all": [
@@ -872,6 +1005,9 @@
           "வேலை மற்றும் வங்கி விவரங்களை நிரப்பவும்",
           "இ-ஷ்ரம் அட்டையைப் பதிவிறக்கவும்"
         ]
+      },
+      "window": {
+        "en": "Applications accepted year-round (unverified — confirm with official source)"
       }
     },
     "source": {
@@ -879,9 +1015,17 @@
       "origin": "manual"
     },
     "verification": {
-      "status": "unverified"
+      "status": "unverified",
+      "notes": "eshram.gov.in is a language-select landing page only; no eligibility or benefit content was fetchable, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
     },
-    "mutually_exclusive_with": []
+    "mutually_exclusive_with": [],
+    "contact": {
+      "phone": "1800-000-0000",
+      "email": "helpdesk@example.invalid",
+      "helpline_hours": {
+        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+      }
+    }
   },
   {
     "schema_version": 1,
@@ -909,7 +1053,8 @@
       "cover_highlight": {
         "en": "Loan up to ₹50,000",
         "ta": "₹50,000 வரை கடன்"
-      }
+      },
+      "frequency": "one_time"
     },
     "eligibility": {
       "all": [
@@ -941,6 +1086,9 @@
           "Get a Letter of Recommendation from the municipality if you have no vending certificate",
           "Bank sanctions the loan"
         ]
+      },
+      "window": {
+        "en": "Applications accepted year-round (unverified — confirm with official source)"
       }
     },
     "source": {
@@ -948,9 +1096,17 @@
       "origin": "manual"
     },
     "verification": {
-      "status": "unverified"
+      "status": "unverified",
+      "notes": "pmsvanidhi.mohua.gov.in loaded, 2026-10-29, but shows loan tranches of ₹15,000 / ₹25,000 / ₹50,000 -- NOT ₹10,000 / ₹20,000 / ₹50,000 as our record states. Likely a real discrepancy (scheme tranches may have been revised); the first two tranche amounts in our record should be rechecked before promoting this scheme. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
     },
-    "mutually_exclusive_with": []
+    "mutually_exclusive_with": [],
+    "contact": {
+      "phone": "1800-000-0000",
+      "email": "helpdesk@example.invalid",
+      "helpline_hours": {
+        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+      }
+    }
   },
   {
     "schema_version": 1,
@@ -978,7 +1134,8 @@
       "cover_highlight": {
         "en": "Loan up to ₹3 lakh",
         "ta": "₹3 லட்சம் வரை கடன்"
-      }
+      },
+      "frequency": "one_time"
     },
     "eligibility": {
       "all": [
@@ -1020,6 +1177,9 @@
           "Verification by the Gram Panchayat / ULB",
           "Attend skill training and receive toolkit support"
         ]
+      },
+      "window": {
+        "en": "Applications accepted year-round (unverified — confirm with official source)"
       }
     },
     "source": {
@@ -1027,9 +1187,19 @@
       "origin": "manual"
     },
     "verification": {
-      "status": "unverified"
+      "status": "verified",
+      "last_verified": "2026-10-29",
+      "verified_by": "automated check against official source",
+      "notes": "Official page confirms ₹15,000 toolkit grant, age 18+ minimum, and two collateral-free loan tranches (₹1L then ₹2L = ₹3L total) matching our 'up to ₹3 lakh' summary. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
     },
-    "mutually_exclusive_with": []
+    "mutually_exclusive_with": [],
+    "contact": {
+      "phone": "1800-000-0000",
+      "email": "helpdesk@example.invalid",
+      "helpline_hours": {
+        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+      }
+    }
   },
   {
     "schema_version": 1,
@@ -1055,7 +1225,8 @@
         "en": "Monthly pension (about ₹1,200/month in Tamil Nadu)",
         "ta": "மாத ஓய்வூதியம் (தமிழ்நாட்டில் சுமார் மாதம் ₹1,200)"
       },
-      "annual_cash_value_inr": 14400
+      "annual_cash_value_inr": 14400,
+      "frequency": "monthly"
     },
     "eligibility": {
       "all": [
@@ -1100,6 +1271,9 @@
           "கிராம நிர்வாக அலுவலர் சரிபார்ப்பு",
           "ஒவ்வொரு மாதமும் வங்கியில் ஓய்வூதியம்"
         ]
+      },
+      "window": {
+        "en": "Applications accepted year-round (unverified — confirm with official source)"
       }
     },
     "source": {
@@ -1107,13 +1281,25 @@
       "origin": "manual"
     },
     "verification": {
-      "status": "unverified"
+      "status": "unverified",
+      "notes": "nsap.nic.in unreachable (DNS failure) during automated check, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
     },
     "mutually_exclusive_with": [
       "ignwps",
       "igndps",
       "kmut"
-    ]
+    ],
+    "priority_groups": [
+      "senior_citizen",
+      "bpl"
+    ],
+    "contact": {
+      "phone": "1800-000-0000",
+      "email": "helpdesk@example.invalid",
+      "helpline_hours": {
+        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+      }
+    }
   },
   {
     "schema_version": 1,
@@ -1139,7 +1325,8 @@
         "en": "Monthly pension (about ₹1,200/month in Tamil Nadu)",
         "ta": "மாத ஓய்வூதியம் (தமிழ்நாட்டில் சுமார் மாதம் ₹1,200)"
       },
-      "annual_cash_value_inr": 14400
+      "annual_cash_value_inr": 14400,
+      "frequency": "monthly"
     },
     "eligibility": {
       "all": [
@@ -1197,6 +1384,9 @@
           "கிராம நிர்வாக அலுவலர் சரிபார்ப்பு",
           "ஒவ்வொரு மாதமும் வங்கியில் ஓய்வூதியம்"
         ]
+      },
+      "window": {
+        "en": "Applications accepted year-round (unverified — confirm with official source)"
       }
     },
     "source": {
@@ -1204,13 +1394,25 @@
       "origin": "manual"
     },
     "verification": {
-      "status": "unverified"
+      "status": "unverified",
+      "notes": "nsap.nic.in unreachable (DNS failure) during automated check, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
     },
     "mutually_exclusive_with": [
       "ignoaps",
       "igndps",
       "kmut"
-    ]
+    ],
+    "priority_groups": [
+      "women",
+      "bpl"
+    ],
+    "contact": {
+      "phone": "1800-000-0000",
+      "email": "helpdesk@example.invalid",
+      "helpline_hours": {
+        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+      }
+    }
   },
   {
     "schema_version": 1,
@@ -1236,7 +1438,8 @@
         "en": "Monthly pension for persons with severe disability",
         "ta": "கடுமையான மாற்றுத்திறனாளிகளுக்கு மாத ஓய்வூதியம்"
       },
-      "annual_cash_value_inr": 14400
+      "annual_cash_value_inr": 14400,
+      "frequency": "monthly"
     },
     "eligibility": {
       "all": [
@@ -1281,6 +1484,9 @@
           "Field verification",
           "Pension credited monthly"
         ]
+      },
+      "window": {
+        "en": "Applications accepted year-round (unverified — confirm with official source)"
       }
     },
     "source": {
@@ -1288,13 +1494,25 @@
       "origin": "manual"
     },
     "verification": {
-      "status": "unverified"
+      "status": "unverified",
+      "notes": "nsap.nic.in unreachable (DNS failure) during automated check, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
     },
     "mutually_exclusive_with": [
       "ignoaps",
       "ignwps",
       "kmut"
-    ]
+    ],
+    "priority_groups": [
+      "disability",
+      "bpl"
+    ],
+    "contact": {
+      "phone": "1800-000-0000",
+      "email": "helpdesk@example.invalid",
+      "helpline_hours": {
+        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+      }
+    }
   },
   {
     "schema_version": 1,
@@ -1319,7 +1537,8 @@
         "en": "₹5,000 for the first child (₹6,000 for a second child if a girl)",
         "ta": "முதல் குழந்தைக்கு ₹5,000 (இரண்டாவது பெண் குழந்தைக்கு ₹6,000)"
       },
-      "annual_cash_value_inr": 5000
+      "annual_cash_value_inr": 5000,
+      "frequency": "one_time"
     },
     "eligibility": {
       "all": [
@@ -1360,6 +1579,9 @@
           "Submit the PMMVY form with Aadhaar and bank details",
           "Money is paid to the bank account"
         ]
+      },
+      "window": {
+        "en": "Applications accepted year-round (unverified — confirm with official source)"
       }
     },
     "source": {
@@ -1367,9 +1589,20 @@
       "origin": "manual"
     },
     "verification": {
-      "status": "unverified"
+      "status": "unverified",
+      "notes": "pmmvy.wcd.gov.in loaded but is a stats landing page only (beneficiary/amount totals); it does not state the ₹5,000/₹6,000 child-wise benefit figures or the age-19+ eligibility, 2026-10-29. Guidelines PDF linked from the page was not checked. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
     },
-    "mutually_exclusive_with": []
+    "mutually_exclusive_with": [],
+    "priority_groups": [
+      "women"
+    ],
+    "contact": {
+      "phone": "1800-000-0000",
+      "email": "helpdesk@example.invalid",
+      "helpline_hours": {
+        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+      }
+    }
   },
   {
     "schema_version": 1,
@@ -1397,7 +1630,8 @@
       "cover_highlight": {
         "en": "Full fee + allowance",
         "ta": "முழுக் கட்டணம் + உதவித்தொகை"
-      }
+      },
+      "frequency": "annual"
     },
     "eligibility": {
       "all": [
@@ -1439,6 +1673,9 @@
           "College and department verify",
           "Money is paid to the bank account"
         ]
+      },
+      "window": {
+        "en": "Applications accepted year-round (unverified — confirm with official source)"
       }
     },
     "source": {
@@ -1446,9 +1683,21 @@
       "origin": "manual"
     },
     "verification": {
-      "status": "unverified"
+      "status": "unverified",
+      "notes": "scholarships.gov.in loaded but does not mention the SC/ST Post-Matric Scholarship at all, 2026-10-29; the page instead names PM YASASVI and PM-USP. Worth confirming this scheme is still listed under NSP and under what name. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
     },
-    "mutually_exclusive_with": []
+    "mutually_exclusive_with": [],
+    "priority_groups": [
+      "sc",
+      "st"
+    ],
+    "contact": {
+      "phone": "1800-000-0000",
+      "email": "helpdesk@example.invalid",
+      "helpline_hours": {
+        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+      }
+    }
   },
   {
     "schema_version": 1,
@@ -1477,7 +1726,8 @@
       "cover_highlight": {
         "en": "Business loan up to ₹10 lakh+",
         "ta": "₹10 லட்சம் வரை தொழில் கடன்"
-      }
+      },
+      "frequency": "one_time"
     },
     "eligibility": {
       "all": [
@@ -1524,6 +1774,9 @@
           "Apply at a bank or on udyamimitra.in",
           "Bank appraises and sanctions the loan"
         ]
+      },
+      "window": {
+        "en": "Applications accepted year-round (unverified — confirm with official source)"
       }
     },
     "source": {
@@ -1531,9 +1784,17 @@
       "origin": "manual"
     },
     "verification": {
-      "status": "unverified"
+      "status": "unverified",
+      "notes": "mudra.org.in unreachable (TLS certificate error) during automated check, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
     },
-    "mutually_exclusive_with": []
+    "mutually_exclusive_with": [],
+    "contact": {
+      "phone": "1800-000-0000",
+      "email": "helpdesk@example.invalid",
+      "helpline_hours": {
+        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+      }
+    }
   },
   {
     "schema_version": 1,
@@ -1561,7 +1822,8 @@
       "cover_highlight": {
         "en": "Loan ₹10 lakh–₹1 crore",
         "ta": "₹10 லட்சம் – ₹1 கோடி கடன்"
-      }
+      },
+      "frequency": "one_time"
     },
     "eligibility": {
       "all": [
@@ -1608,6 +1870,9 @@
           "Submit the project proposal",
           "Bank appraises and sanctions"
         ]
+      },
+      "window": {
+        "en": "Applications accepted year-round (unverified — confirm with official source)"
       }
     },
     "source": {
@@ -1615,9 +1880,19 @@
       "origin": "manual"
     },
     "verification": {
-      "status": "unverified"
+      "status": "verified",
+      "last_verified": "2026-10-29",
+      "verified_by": "automated check against official source",
+      "notes": "Official page confirms loans ₹10 lakh–₹1 crore for new enterprises by SC/ST or women entrepreneurs aged 18+, matching our record exactly. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
     },
-    "mutually_exclusive_with": []
+    "mutually_exclusive_with": [],
+    "contact": {
+      "phone": "1800-000-0000",
+      "email": "helpdesk@example.invalid",
+      "helpline_hours": {
+        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+      }
+    }
   },
   {
     "schema_version": 1,
@@ -1643,7 +1918,8 @@
         "en": "Free short-term skill training with a certificate and placement support",
         "ta": "சான்றிதழுடன் இலவசத் திறன் பயிற்சி மற்றும் வேலைவாய்ப்பு உதவி"
       },
-      "annual_cash_value_inr": 0
+      "annual_cash_value_inr": 0,
+      "frequency": "one_time"
     },
     "eligibility": {
       "all": [
@@ -1686,6 +1962,9 @@
           "Pick a course and training centre",
           "Complete training and assessment to get the certificate"
         ]
+      },
+      "window": {
+        "en": "Applications accepted year-round (unverified — confirm with official source)"
       }
     },
     "source": {
@@ -1693,9 +1972,17 @@
       "origin": "manual"
     },
     "verification": {
-      "status": "unverified"
+      "status": "unverified",
+      "notes": "skillindiadigital.gov.in loaded but is a single-title landing page with no eligibility or benefit content fetchable, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
     },
-    "mutually_exclusive_with": []
+    "mutually_exclusive_with": [],
+    "contact": {
+      "phone": "1800-000-0000",
+      "email": "helpdesk@example.invalid",
+      "helpline_hours": {
+        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+      }
+    }
   },
   {
     "schema_version": 1,
@@ -1720,6 +2007,7 @@
         "en": "Subsidy for rooftop solar and up to 300 free units of electricity a month",
         "ta": "கூரை சோலார் மானியம் மற்றும் மாதம் 300 யூனிட் வரை இலவச மின்சாரம்"
       },
+      "frequency": "monthly",
       "annual_cash_value_inr": 0,
       "cover_highlight": {
         "en": "Rooftop solar subsidy",
@@ -1759,6 +2047,9 @@
           "Choose a registered vendor and install",
           "Subsidy is credited after inspection"
         ]
+      },
+      "window": {
+        "en": "Applications accepted year-round (unverified — confirm with official source)"
       }
     },
     "source": {
@@ -1766,9 +2057,17 @@
       "origin": "manual"
     },
     "verification": {
-      "status": "unverified"
+      "status": "unverified",
+      "notes": "pmsuryaghar.gov.in loaded but is a single-title landing page with no eligibility or benefit content fetchable, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
     },
-    "mutually_exclusive_with": []
+    "mutually_exclusive_with": [],
+    "contact": {
+      "phone": "1800-000-0000",
+      "email": "helpdesk@example.invalid",
+      "helpline_hours": {
+        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+      }
+    }
   },
   {
     "schema_version": 1,
@@ -1796,7 +2095,8 @@
         "en": "₹1,000 a month to women heads of family",
         "ta": "குடும்பத் தலைவிகளுக்கு மாதம் ₹1,000"
       },
-      "annual_cash_value_inr": 12000
+      "annual_cash_value_inr": 12000,
+      "frequency": "monthly"
     },
     "eligibility": {
       "all": [
@@ -1859,6 +2159,9 @@
           "முகாமில் சமர்ப்பிக்கவும்; களச் சரிபார்ப்பு நடக்கும்",
           "ஒவ்வொரு மாதமும் 15ஆம் தேதி ₹1,000 வரவு வைக்கப்படும்"
         ]
+      },
+      "window": {
+        "en": "Applications accepted year-round (unverified — confirm with official source)"
       }
     },
     "source": {
@@ -1866,13 +2169,24 @@
       "origin": "manual"
     },
     "verification": {
-      "status": "unverified"
+      "status": "unverified",
+      "notes": "kmut.tn.gov.in unreachable (TLS certificate expired) during automated check, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
     },
     "mutually_exclusive_with": [
       "ignoaps",
       "ignwps",
       "igndps"
-    ]
+    ],
+    "priority_groups": [
+      "women"
+    ],
+    "contact": {
+      "phone": "1800-000-0000",
+      "email": "helpdesk@example.invalid",
+      "helpline_hours": {
+        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+      }
+    }
   },
   {
     "schema_version": 1,
@@ -1902,7 +2216,8 @@
       "cover_highlight": {
         "en": "₹5 lakh family health cover",
         "ta": "₹5 லட்சம் குடும்ப மருத்துவக் காப்பீடு"
-      }
+      },
+      "frequency": "ongoing"
     },
     "eligibility": {
       "all": [
@@ -1939,6 +2254,9 @@
           "ரேஷன் கார்டு, ஆதாருடன் CMCHIS மையம் செல்லவும்",
           "பயோமெட்ரிக் பதிவு; அட்டை வழங்கப்படும்"
         ]
+      },
+      "window": {
+        "en": "Applications accepted year-round (unverified — confirm with official source)"
       }
     },
     "source": {
@@ -1946,9 +2264,17 @@
       "origin": "manual"
     },
     "verification": {
-      "status": "unverified"
+      "status": "unverified",
+      "notes": "cmchistn.com loaded but is a single-title landing page with no benefit or income-cap content fetchable, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
     },
-    "mutually_exclusive_with": []
+    "mutually_exclusive_with": [],
+    "contact": {
+      "phone": "1800-000-0000",
+      "email": "helpdesk@example.invalid",
+      "helpline_hours": {
+        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+      }
+    }
   },
   {
     "schema_version": 1,
@@ -1975,7 +2301,8 @@
         "en": "₹1,000 a month during higher education for girls who studied in government schools",
         "ta": "அரசுப் பள்ளியில் படித்த மாணவிகளுக்கு உயர்கல்வியின்போது மாதம் ₹1,000"
       },
-      "annual_cash_value_inr": 12000
+      "annual_cash_value_inr": 12000,
+      "frequency": "monthly"
     },
     "eligibility": {
       "all": [
@@ -2016,6 +2343,9 @@
           "Upload school and admission certificates",
           "₹1,000 is credited monthly"
         ]
+      },
+      "window": {
+        "en": "Applications accepted year-round (unverified — confirm with official source)"
       }
     },
     "source": {
@@ -2023,9 +2353,20 @@
       "origin": "manual"
     },
     "verification": {
-      "status": "unverified"
+      "status": "unverified",
+      "notes": "pudhumaipenn.tn.gov.in unreachable (connection refused) during automated check, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
     },
-    "mutually_exclusive_with": []
+    "mutually_exclusive_with": [],
+    "priority_groups": [
+      "women"
+    ],
+    "contact": {
+      "phone": "1800-000-0000",
+      "email": "helpdesk@example.invalid",
+      "helpline_hours": {
+        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+      }
+    }
   },
   {
     "schema_version": 1,
@@ -2052,7 +2393,8 @@
         "en": "₹1,000 a month during higher education for boys who studied in government schools",
         "ta": "அரசுப் பள்ளியில் படித்த மாணவர்களுக்கு உயர்கல்வியின்போது மாதம் ₹1,000"
       },
-      "annual_cash_value_inr": 12000
+      "annual_cash_value_inr": 12000,
+      "frequency": "monthly"
     },
     "eligibility": {
       "all": [
@@ -2093,6 +2435,9 @@
           "Upload school and admission certificates",
           "₹1,000 is credited monthly"
         ]
+      },
+      "window": {
+        "en": "Applications accepted year-round (unverified — confirm with official source)"
       }
     },
     "source": {
@@ -2100,9 +2445,17 @@
       "origin": "manual"
     },
     "verification": {
-      "status": "unverified"
+      "status": "unverified",
+      "notes": "pudhumaipenn.tn.gov.in unreachable (connection refused) during automated check, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
     },
-    "mutually_exclusive_with": []
+    "mutually_exclusive_with": [],
+    "contact": {
+      "phone": "1800-000-0000",
+      "email": "helpdesk@example.invalid",
+      "helpline_hours": {
+        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+      }
+    }
   },
   {
     "schema_version": 1,
@@ -2130,7 +2483,8 @@
         "en": "Up to ₹18,000 (cash + nutrition kits) for pregnant women",
         "ta": "கர்ப்பிணிகளுக்கு ₹18,000 வரை (பணம் + ஊட்டச்சத்துப் பெட்டகம்)"
       },
-      "annual_cash_value_inr": 18000
+      "annual_cash_value_inr": 18000,
+      "frequency": "one_time"
     },
     "eligibility": {
       "all": [
@@ -2181,6 +2535,9 @@
           "ஆதார், வங்கி விவரங்களைக் கொடுக்கவும்",
           "கர்ப்ப காலத்திலும் பிரசவத்துக்குப் பிறகும் தவணைகளாக வழங்கப்படும்"
         ]
+      },
+      "window": {
+        "en": "Applications accepted year-round (unverified — confirm with official source)"
       }
     },
     "source": {
@@ -2188,9 +2545,21 @@
       "origin": "manual"
     },
     "verification": {
-      "status": "unverified"
+      "status": "unverified",
+      "notes": "tnhealth.tn.gov.in loaded but is the department's general page; it does not mention this specific maternity scheme, benefit amount or eligibility, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
     },
-    "mutually_exclusive_with": []
+    "mutually_exclusive_with": [],
+    "priority_groups": [
+      "women",
+      "bpl"
+    ],
+    "contact": {
+      "phone": "1800-000-0000",
+      "email": "helpdesk@example.invalid",
+      "helpline_hours": {
+        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+      }
+    }
   },
   {
     "schema_version": 1,
@@ -2219,7 +2588,8 @@
       "cover_highlight": {
         "en": "25% subsidy up to ₹3.75 lakh",
         "ta": "25% மானியம் (₹3.75 லட்சம் வரை)"
-      }
+      },
+      "frequency": "one_time"
     },
     "eligibility": {
       "all": [
@@ -2275,6 +2645,9 @@
           "Interview at the District Industries Centre",
           "Bank sanctions the loan; subsidy released after training"
         ]
+      },
+      "window": {
+        "en": "Applications accepted year-round (unverified — confirm with official source)"
       }
     },
     "source": {
@@ -2282,9 +2655,17 @@
       "origin": "manual"
     },
     "verification": {
-      "status": "unverified"
+      "status": "unverified",
+      "notes": "msmeonline.tn.gov.in/uyegp/ loaded but is a stats dashboard; it does not state the 25%/₹3.75L/age/income figures, 2026-10-29. Notably the page describes UYEGP as covering activities 'under PMEGP' -- worth checking whether this scheme has been merged into or administered under the central PMEGP programme. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
     },
-    "mutually_exclusive_with": []
+    "mutually_exclusive_with": [],
+    "contact": {
+      "phone": "1800-000-0000",
+      "email": "helpdesk@example.invalid",
+      "helpline_hours": {
+        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+      }
+    }
   },
   {
     "schema_version": 1,
@@ -2312,7 +2693,8 @@
       "cover_highlight": {
         "en": "25% capital subsidy",
         "ta": "25% மூலதன மானியம்"
-      }
+      },
+      "frequency": "one_time"
     },
     "eligibility": {
       "all": [
@@ -2367,6 +2749,9 @@
           "Entrepreneurship training",
           "Bank loan with subsidy"
         ]
+      },
+      "window": {
+        "en": "Applications accepted year-round (unverified — confirm with official source)"
       }
     },
     "source": {
@@ -2374,9 +2759,17 @@
       "origin": "manual"
     },
     "verification": {
-      "status": "unverified"
+      "status": "unverified",
+      "notes": "msmeonline.tn.gov.in/needs/ loaded but is a stats dashboard only; it does not state the age/education/first-generation eligibility or subsidy percentage, 2026-10-29. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
     },
-    "mutually_exclusive_with": []
+    "mutually_exclusive_with": [],
+    "contact": {
+      "phone": "1800-000-0000",
+      "email": "helpdesk@example.invalid",
+      "helpline_hours": {
+        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+      }
+    }
   },
   {
     "schema_version": 1,
@@ -2406,7 +2799,8 @@
       "cover_highlight": {
         "en": "₹3.5 lakh for a concrete house",
         "ta": "கான்கிரீட் வீட்டுக்கு ₹3.5 லட்சம்"
-      }
+      },
+      "frequency": "one_time"
     },
     "eligibility": {
       "all": [
@@ -2448,6 +2842,9 @@
           "ஆதார், ரேஷன் கார்டு, பட்டா கொடுக்கவும்",
           "கட்டுமான முன்னேற்றத்துக்கேற்ப தவணைகள் வழங்கப்படும்"
         ]
+      },
+      "window": {
+        "en": "Applications accepted year-round (unverified — confirm with official source)"
       }
     },
     "source": {
@@ -2455,10 +2852,18 @@
       "origin": "manual"
     },
     "verification": {
-      "status": "unverified"
+      "status": "unverified",
+      "notes": "tnrd.tn.gov.in loaded but does not mention this scheme anywhere on the page actually fetched, 2026-10-29; likely covered in a linked Policy Note or G.O. not checked. contact and application.window are PLACEHOLDER values, not sourced from any real record -- do not present as fact; replace with real info or remove before going live."
     },
     "mutually_exclusive_with": [
       "pmay_g"
-    ]
+    ],
+    "contact": {
+      "phone": "1800-000-0000",
+      "email": "helpdesk@example.invalid",
+      "helpline_hours": {
+        "en": "Mon–Sat, 9am–6pm (unverified — confirm with official source)"
+      }
+    }
   }
 ]

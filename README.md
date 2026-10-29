@@ -194,6 +194,20 @@ Both processes log to the console and to rotating files (not committed): `server
 
 ---
 
+## Deploying
+
+```bash
+cp .env.example .env   # fill in TELEGRAM_BOT_TOKEN and GROQ_API_KEY
+docker compose up --build -d
+```
+
+Builds the server and bot images and starts both; the bot waits for the server's `/api/health` to pass before
+starting. Named volumes persist the retrieval models (`models`) and both services' logs (`server_logs`,
+`bot_logs`) across restarts and rebuilds. For a cloud host (a VM, or a managed container platform), see
+[DEPLOYMENT.md](DEPLOYMENT.md).
+
+---
+
 ## Bot commands
 
 | Command | |
@@ -248,6 +262,7 @@ urimai/
 │   └── requirements.txt
 ├── run.py              # starts the server, waits for /api/health, then starts the bot; both logs in one terminal
 ├── compose.yml
+├── DEPLOYMENT.md       # cloud deployment: VM, managed container platforms, env/secrets, persistence
 ├── .env.example
 └── .env               # not committed
 ```

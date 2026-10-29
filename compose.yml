@@ -9,6 +9,7 @@ services:
       - "8000:8000"
     volumes:
       - models:/app/server/.models
+      - server_logs:/app/server/logs
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health', timeout=3)"]
       interval: 10s
@@ -25,6 +26,8 @@ services:
       - .env
     environment:
       BACKEND_URL: http://server:8000
+    volumes:
+      - bot_logs:/app/bot/logs
     depends_on:
       server:
         condition: service_healthy
@@ -32,3 +35,5 @@ services:
 
 volumes:
   models:
+  server_logs:
+  bot_logs:

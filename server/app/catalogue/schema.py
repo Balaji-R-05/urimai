@@ -9,7 +9,7 @@ from __future__ import annotations
 import datetime as dt
 import json
 import sys
-from typing import Any, Literal, Union
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator, model_validator
 
@@ -100,7 +100,7 @@ class Condition(Strict):
 
 def _check_value(field: str, t: str, meta: dict, x) -> None:
     if t in ("int", "float"):
-        if isinstance(x, bool) or not isinstance(x, (int, float)):
+        if isinstance(x, bool) or not isinstance(x, int | float):
             raise ValueError(f"'{field}' needs a number, got {x!r}")
         lo, hi = meta.get("min"), meta.get("max")
         if (lo is not None and x < lo) or (hi is not None and x > hi):
@@ -209,7 +209,7 @@ class Scheme(Strict):
         "any language. Used by scheme search"))
     benefit: Benefit
     eligibility: Eligibility
-    documents: list[Union[DocId, CustomDocument]] = []
+    documents: list[DocId | CustomDocument] = []
     application: Application
     contact: Contact | None = Field(None, description="Human help channel: phone, email and/or helpline hours")
     source: Source
@@ -242,7 +242,9 @@ class Scheme(Strict):
                 try:
                     CustomDocument.model_validate(x)
                 except ValidationError as e:
-                    raise ValueError(f"[{i}] custom document: " + "; ".join(_message(err) for err in e.errors()))
+                    raise ValueError(
+                        f"[{i}] custom document: " + "; ".join(_message(err) for err in e.errors())
+                    ) from e
             else:
                 raise ValueError(f"[{i}] must be a document id or an object with id and label")
         return v

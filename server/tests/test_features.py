@@ -1,12 +1,11 @@
 """Feature tests: tap-friendly questions (#4) and scheme Q&A (#1). No network needed."""
 import pytest
-from fastapi.testclient import TestClient
-
 from app.agents import answerer, extractor, llm
 from app.core import config
 from app.engine.planner import question_payload
 from app.main import app
 from app.services import orchestrator
+from fastapi.testclient import TestClient
 
 
 @pytest.fixture

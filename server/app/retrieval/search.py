@@ -80,7 +80,7 @@ def dense_local(query: str, n: int, lang: str | None, section: str | None) -> li
 
 def sparse(query: str, n: int, lang: str | None, section: str | None) -> list[str]:
     chunks, _, bm25 = _corpus()
-    scored = [(s, c["id"]) for s, c in zip(bm25.scores(query), chunks) if s > 0 and _keep(c, lang, section)]
+    scored = [(s, c["id"]) for s, c in zip(bm25.scores(query), chunks, strict=False) if s > 0 and _keep(c, lang, section)]
     return [cid for _, cid in sorted(scored, reverse=True)[:n]]
 
 

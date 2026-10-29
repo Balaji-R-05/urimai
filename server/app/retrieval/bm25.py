@@ -34,7 +34,7 @@ class BM25:
     def scores(self, query: str) -> list[float]:
         q = [t for t in set(tokenize(query)) if t in self.idf]
         out = []
-        for tf, dl in zip(self.tf, self.len):
+        for tf, dl in zip(self.tf, self.len, strict=False):
             s = 0.0
             for t in q:
                 f = tf.get(t)

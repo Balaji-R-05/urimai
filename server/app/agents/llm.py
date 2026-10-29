@@ -8,7 +8,9 @@ import asyncio
 import json
 import logging
 import re
+
 from groq import AsyncGroq
+
 from app.core import config
 
 log = logging.getLogger("urimai.llm")
@@ -82,12 +84,12 @@ def _strip_think(text: str) -> str:
 
 
 async def _chat_once(model: str, messages: list[dict], *, json_mode: bool, max_tokens: int, temperature: float) -> str:
-    kwargs = dict(
-        model=model,
-        messages=messages,
-        temperature=temperature,
-        max_completion_tokens=max_tokens,
-    )
+    kwargs = {
+        "model": model,
+        "messages": messages,
+        "temperature": temperature,
+        "max_completion_tokens": max_tokens,
+    }
     if json_mode:
         kwargs["response_format"] = {"type": "json_object"}
     if "gpt-oss" in model:
@@ -101,7 +103,7 @@ async def _chat_once(model: str, messages: list[dict], *, json_mode: bool, max_t
             client().chat.completions.create(**kwargs, extra_body=extra or None),
             timeout=config.LLM_TIMEOUT_S,
         )
-    except asyncio.TimeoutError as e:
+    except TimeoutError as e:
         raise LLMError("LLM timeout") from e
     except LLMError:
         raise
@@ -128,7 +130,7 @@ async def complete_json(system: str, user: str, max_tokens: int = 2000) -> dict:
                 return json.loads(m.group(0))
             except json.JSONDecodeError:
                 pass
-        raise LLMError(f"non-JSON response: {text[:200]}")
+        raise LLMError(f"non-JSON response: {text[:200]}") from None
 
 
 async def complete_text(system: str, user: str, max_tokens: int = 1200) -> str:
@@ -137,12 +139,17 @@ async def complete_text(system: str, user: str, max_tokens: int = 1200) -> str:
 
 
 async def transcribe(audio: bytes, filename: str, lang: str | None) -> str:
-    kwargs = dict(file=(filename, audio), model=config.STT_MODEL, response_format="json", temperature=0.0)
+    kwargs = {
+        "file": (filename, audio),
+        "model": config.STT_MODEL,
+        "response_format": "json",
+        "temperature": 0.0,
+    }
     if lang in ("ta", "hi", "en"):
         kwargs["language"] = lang
     try:
         resp = await asyncio.wait_for(client().audio.transcriptions.create(**kwargs), timeout=30)
-    except asyncio.TimeoutError as e:
+    except TimeoutError as e:
         raise LLMError("STT timeout") from e
     except LLMError:
         raise

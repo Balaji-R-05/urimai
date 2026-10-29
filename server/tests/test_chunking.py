@@ -18,7 +18,7 @@ def test_chunks_respect_size_and_split_at_coarsest_boundary():
 def test_overlap_carries_text_into_next_chunk():
     chunks = recursive_split(" ".join(f"w{i}" for i in range(40)), 40, 12)
     assert all(len(c) <= 40 for c in chunks)
-    assert all(a.split()[-1] in b for a, b in zip(chunks, chunks[1:]))
+    assert all(a.split()[-1] in b for a, b in zip(chunks, chunks[1:], strict=False))
 
 
 def test_numbered_steps_are_not_split_from_their_text():

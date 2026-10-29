@@ -8,13 +8,9 @@ from __future__ import annotations
 import functools
 import io
 import logging
+from contextlib import suppress
 from datetime import timedelta
 from html import escape
-
-from telegram import Message, Update
-from telegram.constants import ChatAction, ParseMode
-from telegram.error import BadRequest, NetworkError, TelegramError
-from telegram.ext import ContextTypes
 
 import config
 import render
@@ -22,6 +18,10 @@ import state
 import tts
 from api import Backend, BackendError
 from strings import t
+from telegram import Message, Update
+from telegram.constants import ChatAction, ParseMode
+from telegram.error import BadRequest, NetworkError, TelegramError
+from telegram.ext import ContextTypes
 
 log = logging.getLogger("urimai.bot")
 backend = Backend()
@@ -60,9 +60,9 @@ def _lang_from_user(update: Update) -> str:
 # Sends an HTML-formatted message to a chat, with link previews disabled.
 async def _send(ctx, chat_id: int, text: str, markup=None):
     return await ctx.bot.send_message(
-        chat_id, 
-        text, 
-        parse_mode=HTML, 
+        chat_id,
+        text,
+        parse_mode=HTML,
         reply_markup=markup,
         disable_web_page_preview=True
     )
@@ -81,10 +81,8 @@ async def show_response(ctx, chat_id: int, st: state.ChatState, resp: dict) -> N
     sig = render.card_signature(resp)
     if sig != st.card_sig:
         if st.card_msg_id:
-            try:
+            with suppress(TelegramError):
                 await ctx.bot.delete_message(chat_id, st.card_msg_id)
-            except TelegramError:
-                pass
         text, kb = render.results_card(resp, lang)
         msg = await _send(ctx, chat_id, text, kb)
         st.card_msg_id, st.card_sig = msg.message_id, sig
@@ -107,10 +105,8 @@ async def show_response(ctx, chat_id: int, st: state.ChatState, resp: dict) -> N
                 await ctx.bot.send_voice(chat_id, voice=io.BytesIO(audio), filename="urimai.mp3")
             except TelegramError as e:
                 log.warning("send_voice failed (%s); sending as audio", e)
-                try:
+                with suppress(TelegramError):
                     await ctx.bot.send_audio(chat_id, audio=io.BytesIO(audio), filename="urimai.mp3")
-                except TelegramError:
-                    pass
 
 
 # Sends a free-text query to the backend and renders the reply; on backend failure, shows a retry prompt instead
@@ -147,10 +143,8 @@ async def cmd_start(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     chat_id = _chat_id(update)
     st = state.reset(chat_id)
     st.lang = _lang_from_user(update) if not st.lang_chosen else st.lang
-    try:
+    with suppress(BackendError):
         await backend.reset(state.session_id(chat_id))
-    except BackendError:
-        pass
     await _send(ctx, chat_id, t("welcome", "en"), render.language_keyboard())
 
 
@@ -165,10 +159,8 @@ async def cmd_lang(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
 async def cmd_reset(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     chat_id = _chat_id(update)
     st = state.reset(chat_id)
-    try:
+    with suppress(BackendError):
         await backend.reset(state.session_id(chat_id))
-    except BackendError:
-        pass
     await _send(ctx, chat_id, f"{t('reset_done', st.lang)}\n\n{t('intro', st.lang)}")
 
 
@@ -262,7 +254,7 @@ async def on_voice(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     media = (msg.voice or msg.audio) if msg else None
     if media is None:
         return
-    
+
     dur = media.duration
     secs = dur.total_seconds() if isinstance(dur, timedelta) else dur
     if secs and secs > config.MAX_VOICE_SECONDS:
@@ -343,10 +335,8 @@ async def on_callback(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         opt = st.question["options"][int(idx_s)]
         # show the chosen answer and remove the buttons (old messages come back as inaccessible)
         if isinstance(msg, Message):
-            try:
+            with suppress(TelegramError):
                 await q.edit_message_text(f"{msg.text_html}\n\n➜ <b>{escape(opt['label'])}</b>", parse_mode=HTML)
-            except TelegramError:
-                pass
         st.question = None
         await ctx.bot.send_chat_action(chat_id, ChatAction.TYPING)
         try:

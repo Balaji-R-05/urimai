@@ -28,7 +28,7 @@ _MULT = {"k": 1_000, "thousand": 1_000, "l": 100_000, "lakh": 100_000, "lakhs": 
 def parse_amount(v) -> float | None:
     if isinstance(v, bool):
         return None
-    if isinstance(v, (int, float)):
+    if isinstance(v, int | float):
         return float(v)
     if not isinstance(v, str):
         return None
@@ -158,6 +158,6 @@ def side_effects(profile: dict, field: str, value) -> list[dict]:
         put("is_govt_employee", True)
     if field == "has_disability" and value is False:
         put("disability_percent", 0)
-    if field == "disability_percent" and isinstance(value, (int, float)):
+    if field == "disability_percent" and isinstance(value, int | float):
         put("has_disability", value > 0)
     return extra

@@ -5,18 +5,25 @@ Run Command: `python bot/main.py` from the project root (server must be running)
 """
 
 from __future__ import annotations
+
 import logging
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
-
-from telegram import BotCommand, Update
-from telegram.error import TelegramError
-from telegram.ext import AIORateLimiter, Application, CallbackQueryHandler, CommandHandler, MessageHandler, filters
 
 import config
 import handlers
 from api import BackendError
 from strings import BOT_DESCRIPTION, BOT_SHORT_DESCRIPTION
+from telegram import BotCommand, Update
+from telegram.error import TelegramError
+from telegram.ext import (
+    AIORateLimiter,
+    Application,
+    CallbackQueryHandler,
+    CommandHandler,
+    MessageHandler,
+    filters,
+)
 
 # Rotating file so an unattended bot can't fill the disk; console output is kept too.
 LOG_DIR = Path(__file__).resolve().parent / "logs"
@@ -48,7 +55,7 @@ COMMANDS = [
 # language, but only the ones that differ from what's live (these API calls are rate-limited).
 async def set_profile_text(bot) -> None:
     """
-    Description and short description per language. 
+    Description and short description per language.
     Only changed texts are sent (these calls are rate-limited).
     """
     for lang, text in BOT_DESCRIPTION.items():

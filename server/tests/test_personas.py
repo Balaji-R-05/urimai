@@ -3,7 +3,6 @@ import json
 from pathlib import Path
 
 import pytest
-
 from app.catalogue.loader import load_schemes
 from app.engine.derive import derive
 from app.engine.planner import next_field

@@ -2,7 +2,6 @@
 import copy
 
 import pytest
-
 from app.catalogue import loader
 from app.catalogue.loader import CatalogueError, load_schemes, read_seed
 from app.core import config, db

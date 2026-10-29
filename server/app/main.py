@@ -27,9 +27,12 @@ logging.getLogger("urimai.feedback").addHandler(_feedback_file)
 
 import asyncio
 from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
+
 from app.api.routes import router
 from app.retrieval import service as retrieval
+
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):

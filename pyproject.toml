@@ -1,0 +1,26 @@
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+exclude = ["venv", ".venv", "server/.models"]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "F",   # pyflakes
+    "W",   # pycodestyle warnings
+    "I",   # isort
+    "UP",  # pyupgrade
+    "B",   # bugbear
+    "C4",  # comprehensions
+    "SIM", # simplify
+]
+ignore = ["E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["bot", "server"]
+
+[tool.ruff.lint.per-file-ignores]
+# Logging is configured before these imports on purpose, so modules that log on import use it.
+"server/app/main.py" = ["E402"]
+# File(...)/Form(...) in defaults is FastAPI's documented DI pattern, not a mutable-default bug.
+"server/app/api/routes.py" = ["B008"]

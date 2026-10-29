@@ -1,7 +1,6 @@
 """Atlas scheme search without a cluster: chunk documents, change detection, and the fuse / rerank / dedupe
 logic in atlas.retrieve with the two Atlas queries stubbed."""
 import pytest
-
 from app.catalogue.loader import load_schemes
 from app.retrieval import atlas, chunk_store
 

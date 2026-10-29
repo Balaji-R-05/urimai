@@ -1,7 +1,6 @@
 """Retrieval wiring for scheme Q&A: merge rules (pure) and the orchestrator path with the search stubbed.
 The ranking quality itself is measured by `python -m app.retrieval.demo` (needs the models)."""
 import pytest
-
 from app.agents import answerer, extractor, llm
 from app.core import config
 from app.core.session import Session

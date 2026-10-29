@@ -5,10 +5,18 @@ from __future__ import annotations
 
 import asyncio
 import logging
+
 from fastapi import APIRouter, File, Form, HTTPException, Response, UploadFile
 
 from app.agents import llm
-from app.api.schemas import AnswerRequest, ChatRequest, EvaluateRequest, FeedbackRequest, Lang, SessionRequest
+from app.api.schemas import (
+    AnswerRequest,
+    ChatRequest,
+    EvaluateRequest,
+    FeedbackRequest,
+    Lang,
+    SessionRequest,
+)
 from app.core import config, session
 from app.domain.fields import FIELDS, tr
 from app.retrieval import service as retrieval
@@ -21,10 +29,10 @@ feedback_log = logging.getLogger("urimai.feedback")
 @router.get("/health")
 async def health():
     return {
-        "ok": True, 
-        "llm": "up" if llm.available() else "down", 
+        "ok": True,
+        "llm": "up" if llm.available() else "down",
         "model": config.LLM_MODEL,
-        "schemes": len(orchestrator.SCHEMES), 
+        "schemes": len(orchestrator.SCHEMES),
         "catalogue": "mongodb" if config.MONGODB_URI else "seed"
     }
 
@@ -87,7 +95,7 @@ async def search(q: str, k: int = 5, state: str | None = None):
     if hits is None:
         raise HTTPException(503, "retrieval unavailable")
     return {"query": q, "hits": [{**t, "chunk": h["chunk"], "context": h["context"]}
-                                 for t, h in zip(retrieval.trace_view(hits), hits)][:k]}
+                                 for t, h in zip(retrieval.trace_view(hits), hits, strict=False)][:k]}
 
 
 @router.get("/schemes")
@@ -126,5 +134,5 @@ async def transcribe(file: UploadFile = File(...), lang: str = Form("ta")):
     try:
         text = await llm.transcribe(audio, file.filename or "voice.ogg", lang)
     except llm.LLMError as e:
-        raise HTTPException(502, f"transcription failed: {e}")
+        raise HTTPException(502, f"transcription failed: {e}") from e
     return {"text": text}

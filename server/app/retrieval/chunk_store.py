@@ -117,7 +117,7 @@ def sync(client) -> dict:
     t = time.perf_counter()
     for i in range(0, len(docs), EMBED_BATCH):
         batch = docs[i:i + EMBED_BATCH]
-        for d, vec in zip(batch, emb.embed([d["text"] for d in batch])):
+        for d, vec in zip(batch, emb.embed([d["text"] for d in batch]), strict=False):
             d["embedding"] = Binary.from_vector(vec, BinaryVectorDtype.FLOAT32)
         coll.insert_many(batch, ordered=False)
     if docs:

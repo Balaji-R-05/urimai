@@ -4,9 +4,11 @@ Profile data lives on the server.
 """
 
 from __future__ import annotations
+
 import asyncio
 from collections import OrderedDict
 from dataclasses import dataclass, field
+
 import config
 
 MAX_CHATS = 20_000  # bound long-running memory use; evicts the least-recently-touched chat
@@ -27,7 +29,7 @@ class ChatState:
     feedback_for: str | None = None     # scheme_id awaiting a "what's wrong" reply, or None
 
 
-_states: "OrderedDict[int, ChatState]" = OrderedDict()
+_states: OrderedDict[int, ChatState] = OrderedDict()
 _locks: dict[int, asyncio.Lock] = {}
 
 

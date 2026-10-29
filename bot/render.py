@@ -14,12 +14,12 @@ callback_data (max 64 bytes):
 """
 
 from __future__ import annotations
-from html import escape
-from strings import t
 
+from html import escape
+
+from strings import t
 from telegram import InlineKeyboardButton as Btn
 from telegram import InlineKeyboardMarkup as Kb
-
 
 MAX_LEN = 4000
 STATUS_EMOJI = {
@@ -58,8 +58,8 @@ def inr(n: int) -> str:
 # Returns a keyboard with the three supported languages.
 def language_keyboard() -> Kb:
     return Kb([[
-        Btn("தமிழ்", callback_data="l|ta"), 
-        Btn("English", callback_data="l|en"), 
+        Btn("தமிழ்", callback_data="l|ta"),
+        Btn("English", callback_data="l|en"),
         Btn("हिंदी", callback_data="l|hi")
     ]])
 

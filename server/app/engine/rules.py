@@ -123,7 +123,7 @@ def evaluate_scheme(facts: dict, scheme: dict, lang: str = "en") -> dict:
     any_vals = [eval_condition(facts, c) for c in any_conds]
     any_result = k_any(any_vals)
     group = tr(UI["one_of"], lang) if any_conds else None
-    for cond, v in zip(any_conds, any_vals):
+    for cond, v in zip(any_conds, any_vals, strict=False):
         add_check(cond, v, group=group)
         if any_result == U and v == U:
             missing.append(_source_field(cond["field"]))

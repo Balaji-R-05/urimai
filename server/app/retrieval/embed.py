@@ -26,7 +26,7 @@ def _features(text: str):
         for n in (3, 4):
             for i in range(len(padded) - n + 1):
                 yield f"c{n}:" + padded[i:i + n], 0.5
-    for a, b in zip(words, words[1:]):
+    for a, b in zip(words, words[1:], strict=False):
         yield f"b:{a}_{b}", 0.7
 
 
@@ -40,7 +40,7 @@ def hash_embed(text: str, dim: int = config.HASH_DIM) -> list[float]:
 
 
 def cosine(a: list[float], b: list[float]) -> float:
-    return sum(x * y for x, y in zip(a, b))  # vectors are L2-normalised
+    return sum(x * y for x, y in zip(a, b, strict=False))  # vectors are L2-normalised
 
 
 class Embedder:

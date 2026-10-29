@@ -3,10 +3,9 @@ import json
 from pathlib import Path
 
 import pytest
-from fastapi.testclient import TestClient
-
 from app.core import config
 from app.main import app
+from fastapi.testclient import TestClient
 
 PERSONA_A = json.loads((Path(__file__).parent / "personas.json").read_text(encoding="utf-8"))[0]["profile"]
 

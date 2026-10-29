@@ -4,8 +4,9 @@ The bot never decides anything itself.
 """
 
 from __future__ import annotations
-import httpx
+
 import config
+import httpx
 
 
 class BackendError(RuntimeError):
@@ -77,7 +78,7 @@ class Backend:
         """
         try:
             response = await self.client.get(
-                f"/api/session/{session_id}/report", 
+                f"/api/session/{session_id}/report",
                 params={"lang": lang}
             )
             if response.status_code == 404:

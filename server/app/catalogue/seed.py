@@ -81,7 +81,7 @@ def main() -> int:
     from pymongo.errors import PyMongoError
 
     from app.core import db
-    now = dt.datetime.now(dt.timezone.utc)
+    now = dt.datetime.now(dt.UTC)
     try:
         return _write(a, valid, errors, now)
     except PyMongoError as e:

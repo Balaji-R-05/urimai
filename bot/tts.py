@@ -10,11 +10,12 @@ import hashlib
 import io
 import logging
 from collections import OrderedDict
+
 from gtts import gTTS
 
 log = logging.getLogger("urimai.tts")
 MAX_CACHE = 200
-_cache: "OrderedDict[str, bytes]" = OrderedDict()
+_cache: OrderedDict[str, bytes] = OrderedDict()
 
 
 def _synth(text: str, lang: str) -> bytes:

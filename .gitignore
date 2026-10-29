@@ -30,3 +30,6 @@ logs/
 tmp/
 temp/
 .cache/
+
+# Local reference docs, not part of the repo
+docs/

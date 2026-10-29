@@ -1,10 +1,12 @@
-"""Load the scheme catalogue (central and state schemes) and turn it into the form the engine uses.
+"""
+Load the scheme catalogue (central and state schemes) and turn it into the form the engine uses.
 
 Source: the MongoDB collection when MONGODB_URI is set, otherwise the bundled seed file data/schemes.json.
 Every document is checked against the schema (app/catalogue/schema.py):
   - seed file: any error stops startup (the bundled data must be clean);
   - MongoDB: invalid documents are logged and skipped, so one bad record can't take the bot down.
-Only active, non-draft schemes are served. Seed MongoDB with:  python -m app.catalogue.seed
+Only active, non-draft schemes are served.
+Seed MongoDB with:  python -m app.catalogue.seed
 Loaded once per process; restart the server to pick up catalogue changes.
 """
 

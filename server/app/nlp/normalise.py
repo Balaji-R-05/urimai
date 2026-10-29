@@ -1,4 +1,6 @@
-"""Validate and normalise LLM-extracted values into the canonical profile (app/domain/fields.py)."""
+"""
+Validate and normalise LLM-extracted values into the canonical profile (app/domain/fields.py).
+"""
 from __future__ import annotations
 
 import re

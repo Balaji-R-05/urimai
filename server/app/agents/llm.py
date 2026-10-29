@@ -124,7 +124,10 @@ async def complete_json(system: str, user: str, max_tokens: int = 2000) -> dict:
     except json.JSONDecodeError:
         m = re.search(r"\{.*\}", text, re.S)
         if m:
-            return json.loads(m.group(0))
+            try:
+                return json.loads(m.group(0))
+            except json.JSONDecodeError:
+                pass
         raise LLMError(f"non-JSON response: {text[:200]}")
 
 

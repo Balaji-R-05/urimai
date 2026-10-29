@@ -60,12 +60,13 @@ async def search(text: str, state: str | None = None) -> list[dict] | None:
         return None
 
 
-def confident(hits: list[dict], min_score: float = config.RETRIEVAL_MIN_SCORE) -> list[dict]:
+def confident(hits: list[dict], min_score: float | None = None) -> list[dict]:
     """Hits we trust enough to act on: reranker relevance >= min_score; without a reranker, only the top hit."""
     if not hits:
         return []
     if not hits[0].get("reranked"):
         return hits[:1]
+    min_score = config.RETRIEVAL_MIN_SCORE if min_score is None else min_score
     return [h for h in hits if h["score"] >= min_score]
 
 

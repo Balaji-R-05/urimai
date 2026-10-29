@@ -99,11 +99,14 @@ def condition_text(cond: dict, lang: str, negate: bool = False) -> str:
         want = (op == "is_true") != negate
         return bool_phrase(field, want, lang)
 
-    if negate:  # only simple negations needed for the catalogue
-        op = {"eq": "ne", "ne": "eq", "in": "not_in", "not_in": "in"}.get(op, op)
-
     if op == "between":
-        return f"{label} {_val(field, v[0], lang)}–{_val(field, v[1], lang)}"
+        lo, hi = _val(field, v[0], lang), _val(field, v[1], lang)
+        return f"{label} not {lo}–{hi}" if negate else f"{label} {lo}–{hi}"
+
+    if negate:
+        op = {"eq": "ne", "ne": "eq", "in": "not_in", "not_in": "in",
+              "gte": "lt", "gt": "lte", "lte": "gt", "lt": "gte"}.get(op, op)
+
     if op in ("gte", "gt", "lte", "lt"):
         sym = {"gte": "≥", "gt": ">", "lte": "≤", "lt": "<"}[op]
         return f"{label} {sym} {_val(field, v, lang)}"

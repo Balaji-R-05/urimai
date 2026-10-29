@@ -57,8 +57,9 @@ def preflight() -> int:
     if not env.get("GROQ_API_KEY"):
         print("[run] warning: GROQ_API_KEY is empty; only button answers will work (no free text or voice)")
 
-    missing = [m for m in ("telegram", "gtts", "fastapi", "uvicorn", "groq", "fpdf", "fastembed")
-               if importlib.util.find_spec(m) is None]
+    missing = [m for m in ("telegram", "gtts", "httpx", "dotenv",                       # bot/
+                           "fastapi", "uvicorn", "groq", "fpdf", "fastembed", "pymongo")  # server/ (pymongo
+               if importlib.util.find_spec(m) is None]                                   # loads even w/o MONGODB_URI
     if missing:
         fail(f"missing packages in {PY}: {', '.join(missing)}\n"
              f"      install with: \"{PY}\" -m pip install -r requirements.txt -r server/requirements.txt")

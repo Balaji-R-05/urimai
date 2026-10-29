@@ -219,7 +219,8 @@ urimai/
 │   ├── strings.py     # UI text in Tamil, English and Hindi
 │   ├── tts.py         # gTTS voice replies (cached)
 │   ├── state.py       # per-chat UI state
-│   └── config.py      # settings loaded from .env
+│   ├── config.py      # settings loaded from .env
+│   └── tests/         # run: cd bot && python -m pytest
 ├── server/
 │   ├── app/
 │   │   ├── main.py            # FastAPI app: lifespan + router

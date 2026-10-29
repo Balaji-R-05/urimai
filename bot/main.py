@@ -9,10 +9,11 @@ import logging
 
 from telegram import BotCommand, Update
 from telegram.error import TelegramError
-from telegram.ext import Application, CallbackQueryHandler, CommandHandler, MessageHandler, filters
+from telegram.ext import AIORateLimiter, Application, CallbackQueryHandler, CommandHandler, MessageHandler, filters
 
 import config
 import handlers
+from api import BackendError
 from strings import BOT_DESCRIPTION, BOT_SHORT_DESCRIPTION
 
 logging.basicConfig(
@@ -36,6 +37,8 @@ COMMANDS = [
 ]
 
 
+# Pushes the bot's Telegram profile description/short description for each supported
+# language, but only the ones that differ from what's live (these API calls are rate-limited).
 async def set_profile_text(bot) -> None:
     """
     Description and short description per language. 
@@ -53,6 +56,14 @@ async def set_profile_text(bot) -> None:
             log.info("updated bot short description (%s)", lang or "default")
 
 
+# Closes the shared backend HTTP client when the bot shuts down.
+async def post_shutdown(app: Application) -> None:
+    await handlers.backend.aclose()
+
+
+# Runs once after the bot starts: registers the /command menu, syncs profile text,
+# and pings the backend so a misconfigured/unreachable server is obvious at startup
+# (non-fatal either way — the bot still starts and handlers report errors per-request).
 async def post_init(app: Application) -> None:
     await app.bot.set_my_commands(COMMANDS)
     try:
@@ -62,10 +73,11 @@ async def post_init(app: Application) -> None:
     try:
         health = await handlers.backend.health()
         log.info("server health: %s", health)
-    except Exception as e:
+    except BackendError as e:
         log.warning("server not reachable at %s (%s). Start the server first.", config.BACKEND_URL, e)
 
 
+# Builds the Application, wires up all handlers, and runs long polling until killed.
 def main() -> None:
     if not config.TELEGRAM_BOT_TOKEN:
         raise SystemExit("TELEGRAM_BOT_TOKEN is not set in .env")
@@ -75,7 +87,11 @@ def main() -> None:
         .token(config.TELEGRAM_BOT_TOKEN)
         .connect_timeout(30).read_timeout(40).write_timeout(40).pool_timeout(30)
         .get_updates_connect_timeout(30).get_updates_read_timeout(40)
+        # Throttles outgoing calls to Telegram's limits and retries on 429, so a reply
+        # never silently drops just because a user is messaging faster than the limit.
+        .rate_limiter(AIORateLimiter())
         .post_init(post_init)
+        .post_shutdown(post_shutdown)
         .concurrent_updates(True)
         .build()
     )
@@ -92,6 +108,8 @@ def main() -> None:
     app.add_handler(CallbackQueryHandler(handlers.on_callback))
     app.add_handler(MessageHandler(filters.UpdateType.MESSAGE & filters.TEXT & ~filters.COMMAND, handlers.on_text))
     app.add_handler(MessageHandler(filters.UpdateType.MESSAGE & (filters.VOICE | filters.AUDIO), handlers.on_voice))
+    # Catch-all must stay last: within a group PTB dispatches to the first handler
+    # whose filters match, so text/voice are claimed above before reaching on_other.
     app.add_handler(MessageHandler(filters.UpdateType.MESSAGE & ~filters.COMMAND, handlers.on_other))
     app.add_error_handler(handlers.on_error)
 

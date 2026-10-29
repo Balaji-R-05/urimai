@@ -74,7 +74,8 @@ def card_signature(resp: dict) -> tuple:
             resp["summary"]["annual_cash_value_inr"])
 
 
-# Returns a signature for the profile view.
+# Returns the "got it / updated" message for newly learned or corrected fields, or
+# None if the response has neither.
 def learned_text(resp: dict, lang: str) -> str | None:
     lines = []
     if resp.get("learned"):
@@ -212,11 +213,9 @@ def profile(resp: dict | None, lang: str) -> str:
     return "\n".join(lines)
 
 
-# Returns a formatted learned / corrected message.
+# Returns the keyboard under the bot's reply: buttons for schemes just discussed
+# (opens their detail view), then quick-answer options for the next question, if any.
 def reply_keyboard(resp: dict, qid: int) -> Kb | None:
-    """
-    Buttons under the bot's reply: schemes the user just asked about (open details), then quick answers.
-    """
     rows = []
     for sid in resp.get("answered_schemes") or []:
         r = find_result(resp, sid)

@@ -5,6 +5,7 @@ Thin client: every decision comes from the server response.
 
 from __future__ import annotations
 
+import functools
 import io
 import logging
 from datetime import timedelta
@@ -27,26 +28,44 @@ backend = Backend()
 HTML = ParseMode.HTML
 
 
+# Returns the chat ID for an update, raising if the update has no chat.
 def _chat_id(update: Update) -> int:
-    # handlers are only registered for updates that come from a chat
-    assert update.effective_chat is not None
+    if update.effective_chat is None:
+        raise ValueError("update has no effective_chat")
     return update.effective_chat.id
 
 
+# Serializes a handler's run per chat, so a double-tapped button or a message that
+# arrives while a voice note is still being transcribed can't race on the same ChatState.
+def _serialized(fn):
+    @functools.wraps(fn)
+    async def wrapper(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
+        if update.effective_chat is None:  # let fn apply its own no-op for chatless updates
+            return await fn(update, ctx)
+        async with state.lock(update.effective_chat.id):
+            return await fn(update, ctx)
+    return wrapper
+
+
+# Returns the user's Telegram language code if it's one we support, else the default.
 def _lang_from_user(update: Update) -> str:
     code = (update.effective_user.language_code or "") if update.effective_user else ""
     return code[:2] if code[:2] in ("ta", "hi", "en") else config.DEFAULT_LANG
 
 
+# Sends an HTML-formatted message to a chat, with link previews disabled.
 async def _send(ctx, chat_id: int, text: str, markup=None):
-    return await ctx.bot.send_message(chat_id, text, parse_mode=HTML, reply_markup=markup,
-                                      disable_web_page_preview=True)
+    return await ctx.bot.send_message(
+        chat_id, 
+        text, 
+        parse_mode=HTML, 
+        reply_markup=markup,
+        disable_web_page_preview=True
+    )
 
 
-# ------------------------------------------------------------------------------
-# ---------- core: render a server response as a sequence of messages ----------
-# ------------------------------------------------------------------------------
-
+# Renders a server response as a sequence of messages.
+# The results card is replaced only when its content signature changes, and each hint fires at most once per chat, so repeated/unchanged responses don't spam the chat.
 async def show_response(ctx, chat_id: int, st: state.ChatState, resp: dict) -> None:
     lang = st.lang
     st.last = resp
@@ -90,6 +109,8 @@ async def show_response(ctx, chat_id: int, st: state.ChatState, resp: dict) -> N
                     pass
 
 
+# Sends a free-text query to the backend and renders the reply; on backend failure, shows a retry prompt instead 
+# (st.last_user_text lets the retry button resend `text`).
 async def process_text(ctx, chat_id: int, st: state.ChatState, text: str) -> None:
     st.last_user_text = text
     await ctx.bot.send_chat_action(chat_id, ChatAction.TYPING)
@@ -101,10 +122,14 @@ async def process_text(ctx, chat_id: int, st: state.ChatState, text: str) -> Non
         return
     await show_response(ctx, chat_id, st, resp)
 
+
+
 # ------------------------------
 # ---------- commands ----------
 # ------------------------------
 
+# /start: resets chat + backend session, then asks the user to pick a language.
+@_serialized
 async def cmd_start(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     chat_id = _chat_id(update)
     st = state.reset(chat_id)
@@ -116,10 +141,14 @@ async def cmd_start(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     await _send(ctx, chat_id, t("welcome", "en"), render.language_keyboard())
 
 
+# /lang: re-shows the language picker without resetting any other chat/session state.
+@_serialized
 async def cmd_lang(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     await _send(ctx, _chat_id(update), t("welcome", "en"), render.language_keyboard())
 
 
+# /reset: clears chat + backend session but keeps the current language.
+@_serialized
 async def cmd_reset(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     chat_id = _chat_id(update)
     st = state.reset(chat_id)
@@ -130,22 +159,30 @@ async def cmd_reset(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     await _send(ctx, chat_id, f"{t('reset_done', st.lang)}\n\n{t('intro', st.lang)}")
 
 
+# /help: static help text plus the standard disclaimer.
+@_serialized
 async def cmd_help(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     st = state.get(_chat_id(update))
     await _send(ctx, _chat_id(update), f"{t('help', st.lang)}\n\n⚠️ <i>{t('disclaimer', st.lang)}</i>")
 
 
+# /voice: toggles TTS replies on/off for this chat.
+@_serialized
 async def cmd_voice(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     st = state.get(_chat_id(update))
     st.voice_on = not st.voice_on
     await _send(ctx, _chat_id(update), t("voice_on" if st.voice_on else "voice_off", st.lang))
 
 
+# /profile: shows a summary built from the last backend response, if any.
+@_serialized
 async def cmd_profile(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     st = state.get(_chat_id(update))
-    await _send(ctx, _chat_id(update), render.profile(st.last, st.lang))
+    await _send(ctx, _chat_id(update), render.profile(st.last or {}, st.lang))
 
 
+# /schemes: re-sends the results card from the last response, tracking it like show_response does.
+@_serialized
 async def cmd_schemes(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     chat_id = _chat_id(update)
     st = state.get(chat_id)
@@ -157,11 +194,15 @@ async def cmd_schemes(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     st.card_msg_id, st.card_sig = msg.message_id, render.card_signature(st.last)
 
 
+# /docs: lists the documents needed for the schemes in the last response, if any.
+@_serialized
 async def cmd_docs(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     st = state.get(_chat_id(update))
     await _send(ctx, _chat_id(update), render.documents(st.last or {}, st.lang))
 
 
+# /report: generates and sends a PDF summary of the user's session as a document.
+@_serialized
 async def cmd_report(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     chat_id = _chat_id(update)
     st = state.get(chat_id)
@@ -179,10 +220,14 @@ async def cmd_report(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
                                 caption=t("report_caption", st.lang), parse_mode=HTML)
 
 
+
 # ------------------------------
 # ---------- messages ----------
 # ------------------------------
 
+# Plain text messages. Before the user has explicitly chosen a language (and before any backend response exists),
+# infer it from Telegram's reported client language.
+@_serialized
 async def on_text(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     msg = update.message
     if msg is None or not msg.text:
@@ -194,6 +239,9 @@ async def on_text(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     await process_text(ctx, chat_id, st, msg.text.strip())
 
 
+# Voice/audio messages: enforces a duration cap, transcribes via the backend, echoes
+# back what was heard, then feeds the transcript through the normal text pipeline.
+@_serialized
 async def on_voice(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     chat_id = _chat_id(update)
     st = state.get(chat_id)
@@ -222,16 +270,21 @@ async def on_voice(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     await process_text(ctx, chat_id, st, text)
 
 
+# Catch-all for unsupported message types (photos, stickers, etc.).
+@_serialized
 async def on_other(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     if update.effective_chat:
         st = state.get(_chat_id(update))
         await _send(ctx, _chat_id(update), t("other_type", st.lang))
 
 
+
 # -----------------------------
 # ---------- buttons ----------
 # ------------------------------
 
+# Edits a message in place, swallowing Telegram's harmless "message is not modified" error
+# (raised when the new text/markup is identical to what's already shown).
 async def _edit(q, text: str, markup=None):
     try:
         await q.edit_message_text(text, parse_mode=HTML, reply_markup=markup, disable_web_page_preview=True)
@@ -240,6 +293,10 @@ async def _edit(q, text: str, markup=None):
             raise
 
 
+# Dispatches every inline-button press by its "<kind>|<rest>" callback_data prefix:
+# l=language pick, r=retry last query, a=answer a follow-up question, s/b/c/d=card
+# navigation (scheme detail / eligibility bucket / card / documents).
+@_serialized
 async def on_callback(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     q = update.callback_query
     if q is None or q.message is None:
@@ -308,6 +365,8 @@ async def on_callback(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         await _send(ctx, chat_id, render.documents(st.last, st.lang))
 
 
+# Global error handler registered with the Application: logs unexpected exceptions,
+# but treats transient network blips as routine (python-telegram-bot retries them).
 async def on_error(update: object, ctx: ContextTypes.DEFAULT_TYPE):
     if isinstance(ctx.error, NetworkError):  # transient Telegram connectivity blip; the library retries
         log.warning("Telegram network blip: %s", ctx.error)

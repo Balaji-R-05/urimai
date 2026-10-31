@@ -1,5 +1,7 @@
 # Urimai (உரிமை)
 
+[![CI](https://github.com/Balaji-R-05/urimai/actions/workflows/ci.yml/badge.svg)](https://github.com/Balaji-R-05/urimai/actions/workflows/ci.yml)
+
 **Find the government welfare schemes you may be eligible for, by talking in Tamil, English or Hindi.**
 *"உங்கள் உரிமைகள், உங்கள் மொழியில்" · Your entitlements, in your language*
 
@@ -9,7 +11,7 @@ Built for **AI-INNOVATHON 2026** (Jerusalem College of Engineering, Chennai)
 
 **Try the bot:** [t.me/jce_hackathon_bot](https://t.me/jce_hackathon_bot) *(online while the server is running)*
 
-> **Repository:** the **Telegram bot** (`bot/`) and the **API server** it talks to (`server/`: rule engine, question planner, scheme catalogue, retrieval and LLM agents). The scheme catalogue ships as a JSON seed and can be served from **MongoDB**.
+> **Repository:** the **Telegram bot** (`bot/`) and the **API server** it talks to (`server/`: rule engine, question planner, scheme catalogue, retrieval and LLM agents). The scheme catalogue runs **in-memory from a JSON seed** by default, or from **MongoDB** when configured.
 
 <p align="center">
   <img src="images/urimai_bot_main.jpeg" width="260" alt="Urimai bot info screen">
@@ -40,7 +42,7 @@ A citizen sends a **voice note or types** in Tamil, English, Hindi or Tanglish. 
 > ⚖️ **Indicative only.** Urimai never says "you are eligible". It says a scheme *looks likely* based on what the user shared. **Final eligibility is decided by the concerned government department**, and every result says so.
 
 
-## Design principle: *the AI understands people, the rules decide eligibility*
+## Design principle: *The AI understands people, the rules decide eligibility*
 
 *Everything in this diagram except the last Telegram step runs on the API server (`server/`).*
 
@@ -88,15 +90,11 @@ The bot provides the voice, buttons, cards and PDF delivery. The eligibility log
 
 ### Schemes covered
 
-The catalogue isn't a fixed list — it's structured JSON, validated against a schema on load, and grows by running the seed script against a new source file (`python -m app.catalogue.seed more_schemes.json`, see [server/data/SCHEMES.md](server/data/SCHEMES.md)). What ships today:
+**30 schemes today** — 22 central, 8 Tamil Nadu — each with eligibility rules, benefit amount, documents, how to apply and the official website. See the full list and field guide in [server/data/SCHEMES.md](server/data/SCHEMES.md).
 
-**Central (22):** PM-KISAN · Ayushman Bharat PM-JAY (70+) · PM Ujjwala · PM Awas Yojana – Gramin · PM Awas Yojana – Urban · Sukanya Samriddhi · Atal Pension · PM Jeevan Jyoti Bima · PM Suraksha Bima · PM Shram Yogi Maan-dhan · e-Shram · PM SVANidhi · PM Vishwakarma · Old Age Pension (NSAP) · Widow Pension (NSAP) · Disability Pension (NSAP) · PM Matru Vandana · Post-Matric Scholarship (SC/ST) · PM Mudra · Stand-Up India · PM Kaushal Vikas · PM Surya Ghar
+The catalogue isn't fixed: adding schemes is just running the seed script against a new source file (`python -m app.catalogue.seed more_schemes.json`).
 
-**Tamil Nadu (8):** Kalaignar Magalir Urimai Thogai · CM's Comprehensive Health Insurance · Pudhumai Penn · Tamil Pudhalvan · Dr. Muthulakshmi Reddy Maternity Benefit · UYEGP · NEEDS · Kalaignar Kanavu Illam
-
-Each one carries eligibility rules with `all` / `any` / `none` logic, benefit amount, required documents, how-to-apply steps and the official website — the same shape whether it's served from the JSON seed or MongoDB.
-
-> ⚠️ Scheme criteria and amounts are **seed data**. 3 of the 30 schemes have been checked word-for-word against their official source and are marked verified; the other 27 show a "being verified" note until confirmed. Each scheme links to its official website, and the bot's "⚠️ Report wrong info" button on every scheme lets users flag what's wrong straight from the chat (see [server/data/SCHEMES.md](server/data/SCHEMES.md) for how `verification` is recorded).
+> ⚠️ Criteria and amounts are seed data, mostly not yet verified against official sources. Each scheme links to its official site, and users can flag wrong info with one tap in the bot.
 
 ---
 
@@ -124,7 +122,8 @@ The **scheme catalogue** (central and state schemes) is read once at server star
 - Python 3.11+
 - A Telegram bot token from [@BotFather](https://t.me/BotFather)
 - A [Groq](https://console.groq.com) API key for the server (without it, button answers and the rule engine still work; free-text understanding and voice notes don't)
-- Optional: a MongoDB instance for the scheme catalogue
+
+No database to provision: the scheme catalogue loads straight from the JSON seed (`server/data/schemes.json`) into memory at server start, and scheme Q&A runs its retrieval in-memory too. A MongoDB instance is a drop-in upgrade, not a requirement — set `MONGODB_URI` and the server serves the catalogue from it instead, with Atlas Vector Search + Atlas Search backing scheme Q&A.
 
 ### Setup
 ```bash
@@ -149,7 +148,7 @@ Copy `.env.example` to `.env` in the project root and fill in `TELEGRAM_BOT_TOKE
 | `MONGODB_DB` / `MONGODB_COLLECTION` | server | Default `urimai` / `schemes` |
 | `RETRIEVAL_ENABLED` | server | `0` skips the retrieval models (Q&A then uses the extractor's scheme pick) |
 
-### Scheme catalogue in MongoDB (optional)
+### Switching the scheme catalogue to MongoDB
 Set `MONGODB_URI` in `.env`, then load the seed catalogue. It upserts by scheme `id`, so it's safe to re-run:
 
 ```bash
@@ -190,7 +189,20 @@ venv/bin/python bot/main.py         # macOS / Linux
 
 On startup the bot registers its command menu and logs the server's `/api/health` status. If the server can't be reached it logs a warning and keeps running. Open your bot in Telegram and send `/start`.
 
-Both processes log to the console and to rotating files (not committed): `server/logs/server.log`, plus `server/logs/feedback.log` for user-reported scheme issues, and `bot/logs/bot.log`.
+Both processes log to the console and to rotating files: `server/logs/server.log`, plus `server/logs/feedback.log` for user-reported scheme issues, and `bot/logs/bot.log`.
+
+### Linting and tests
+
+CI (`.github/workflows/ci.yml`) runs `ruff check .` plus both test suites on every push and PR. To run the same checks locally:
+
+```bash
+venv\Scripts\pip install -r requirements-dev.txt   # Windows
+venv/bin/pip install -r requirements-dev.txt       # macOS / Linux
+
+ruff check .
+cd bot && python -m pytest && cd ..
+cd server && python -m pytest && cd ..
+```
 
 ---
 

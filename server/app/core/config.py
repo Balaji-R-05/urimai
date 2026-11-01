@@ -19,6 +19,7 @@ LLM_FALLBACK_MODELS = [m.strip() for m in os.getenv(
 LLM_REASONING_EFFORT = os.getenv("LLM_REASONING_EFFORT", "low")
 LLM_TIMEOUT_S = float(os.getenv("LLM_TIMEOUT_S", "8"))
 STT_MODEL = os.getenv("STT_MODEL", "whisper-large-v3")
+STT_TIMEOUT_S = float(os.getenv("STT_TIMEOUT_S", "30"))
 SESSION_TTL_S = int(os.getenv("SESSION_TTL_S", "1800"))
 
 # Scheme catalogue: MongoDB when MONGODB_URI is set, else the JSON seed in server/data/schemes.json

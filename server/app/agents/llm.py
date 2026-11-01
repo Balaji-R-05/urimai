@@ -148,7 +148,7 @@ async def transcribe(audio: bytes, filename: str, lang: str | None) -> str:
     if lang in ("ta", "hi", "en"):
         kwargs["language"] = lang
     try:
-        resp = await asyncio.wait_for(client().audio.transcriptions.create(**kwargs), timeout=30)
+        resp = await asyncio.wait_for(client().audio.transcriptions.create(**kwargs), timeout=config.STT_TIMEOUT_S)
     except TimeoutError as e:
         raise LLMError("STT timeout") from e
     except LLMError:

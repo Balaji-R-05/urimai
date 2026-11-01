@@ -231,6 +231,18 @@ starting. Named volumes persist the retrieval models (`models`) and both service
 `bot_logs`) across restarts and rebuilds. For a cloud host (a VM, or a managed container platform), see
 [DEPLOYMENT.md](DEPLOYMENT.md).
 
+### Load testing
+
+The production Docker image was load-tested under `--cpus=2 --memory=2g` (a $12/mo VM tier —
+DigitalOcean/Linode/Vultr's 2 vCPU, 2GB RAM plan) against the real Groq API and MongoDB Atlas.
+**With the LLM call taken out of the critical path (patched to respond instantly), the server handled
+up to 500 concurrent sessions** — fast and error-free to ~100 concurrent, degrading but still fully
+functional to ~300, and only a handful of transport-level connection errors (well under 1%) by 500,
+with CPU and memory both maxed out at that point. In real use with Groq in the loop, the actual
+bottleneck is Groq's free-tier rate limit, which bites around 60-150 concurrent sessions — well before
+the server's own capacity does. Full numbers and methodology: `docs/LOAD_TEST.md` (local notes, not
+tracked in git — see `.gitignore`).
+
 ---
 
 ## Bot commands

@@ -15,7 +15,7 @@ from __future__ import annotations
 import asyncio
 import logging
 
-from app.core import config
+from app.core import config, metrics
 
 log = logging.getLogger("urimai.retrieval")
 
@@ -54,8 +54,11 @@ async def search(text: str, state: str | None = None) -> list[dict] | None:
     if not config.RETRIEVAL_ENABLED or not text.strip():
         return None
     try:
-        return await asyncio.wait_for(asyncio.to_thread(_search, text, state), config.RETRIEVAL_TIMEOUT_S)
+        hits = await asyncio.wait_for(asyncio.to_thread(_search, text, state), config.RETRIEVAL_TIMEOUT_S)
+        metrics.inc("retrieval_hits" if hits else "retrieval_empty")
+        return hits
     except Exception as e:  # ImportError, model load, TimeoutError, ...
+        metrics.inc("retrieval_failures")
         log.warning("retrieval failed: %s: %s", type(e).__name__, e)
         return None
 

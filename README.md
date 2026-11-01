@@ -87,6 +87,7 @@ The bot provides the voice, buttons, cards and PDF delivery. The eligibility log
 | **Never asks for sensitive IDs** | No Aadhaar, phone or bank number requested; no persistent database; sessions auto-expire | Sessions expire after 30 minutes |
 | **Keeps working when the LLM doesn't** | Requests fall back across models on rate limits, and to template replies if Groq is unreachable | Button-driven eligibility checks run with zero LLM calls |
 | **Lets users flag wrong info** | "⚠️ Report wrong info" on any scheme, then a one-tap reason (amount/benefit, documents/eligibility, or other) | Stored in MongoDB (`feedback` collection) when configured, else `server/logs/feedback.log` — no session or user identifier attached, for someone to review and fix the catalogue |
+| **Tracks its own usage** | Aggregate counters only (sessions, turns, language mix, LLM fallback/failure rate, retrieval hits) — never a session, user or profile value | `GET /api/metrics`; snapshotted into MongoDB every few minutes when configured |
 
 ### Schemes covered
 
@@ -147,6 +148,8 @@ Copy `.env.example` to `.env` in the project root and fill in `TELEGRAM_BOT_TOKE
 | `MONGODB_URI` | server | Empty = use `server/data/schemes.json` |
 | `MONGODB_DB` / `MONGODB_COLLECTION` | server | Default `urimai` / `schemes` |
 | `RETRIEVAL_ENABLED` | server | `0` skips the retrieval models (Q&A then uses the extractor's scheme pick) |
+| `MONGODB_FEEDBACK_COLLECTION` | server | Default `feedback`; log file is used instead without `MONGODB_URI` |
+| `MONGODB_METRICS_COLLECTION` / `METRICS_FLUSH_INTERVAL_S` | server | Usage counters snapshotted here every 300s by default; see `GET /api/metrics` |
 
 ### Switching the scheme catalogue to MongoDB
 Set `MONGODB_URI` in `.env`, then load the seed catalogue. It upserts by scheme `id`, so it's safe to re-run:

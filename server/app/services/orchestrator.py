@@ -6,6 +6,7 @@ import time
 
 from app.agents import answerer, extractor, llm, responder
 from app.catalogue.loader import load_schemes
+from app.core import metrics
 from app.core.session import Session
 from app.domain.fields import FIELDS, UI, tr
 from app.domain.formatting import field_label, value_display
@@ -69,6 +70,7 @@ async def _finish(s: Session, *, lang: str, user_message: str | None, learned: l
         # The user replied with something unrelated: ask the same question again. It doesn't count as
         # one of the two tries, or a chatty user would lose the question for the rest of the session.
         field = repeat
+        metrics.inc("off_topic_replies")
     else:
         field = next_field(raw, SCHEMES_BY_ID, facts, s.asked, s.skipped)
         if field:
@@ -76,6 +78,11 @@ async def _finish(s: Session, *, lang: str, user_message: str | None, learned: l
     nq = question_payload(field, lang)
     s.last_field = field if field != "opening" else None
     trace.mark("plan", next_field=field, repeat=off_topic)
+
+    if nq is None and not s.completed:
+        s.completed = True
+        metrics.inc("sessions_completed")
+        metrics.inc("questions_asked_total", len(s.asked))
 
     likely = results["likely"]
     summary = build_summary(likely, lang)
@@ -145,9 +152,17 @@ def _pending_question(s: Session) -> str | None:
     return nq["field"] if nq else None
 
 
+def _count_turn(s: Session, lang: str) -> None:
+    if s.turn == 1:
+        metrics.inc("sessions_started")
+    metrics.inc("turns_total")
+    metrics.inc(f"lang_{lang}")
+
+
 async def chat(s: Session, message: str, lang: str) -> dict:
     trace = Trace()
     s.turn += 1
+    _count_turn(s, lang)
     s.history.append({"role": "user", "text": message})
     learned, changes, question = [], [], None
     pending = _pending_question(s)
@@ -182,6 +197,7 @@ async def chat(s: Session, message: str, lang: str) -> dict:
 async def answer(s: Session, field: str, value, lang: str, skip: bool = False) -> dict:
     trace = Trace()
     s.turn += 1
+    _count_turn(s, lang)
     learned, changes = [], []
     if skip or value is None:
         s.skipped.add(field)

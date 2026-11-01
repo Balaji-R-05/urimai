@@ -11,7 +11,7 @@ import re
 
 from groq import AsyncGroq
 
-from app.core import config
+from app.core import config, metrics
 
 log = logging.getLogger("urimai.llm")
 
@@ -59,23 +59,30 @@ async def _chat(messages: list[dict], *, json_mode: bool, max_tokens: int, tempe
     models multiplies throughput. A short 429 ("try again in 0.8s") is waited out once on the same model.
     """
     models = [config.LLM_MODEL] + [m for m in config.LLM_FALLBACK_MODELS if m != config.LLM_MODEL]
+    metrics.inc("llm_requests_total")
     last: LLMError | None = None
-    for model in models:
+    for i, model in enumerate(models):
         for attempt in (1, 2):
             try:
-                return await _chat_once(model, messages, json_mode=json_mode, max_tokens=max_tokens,
-                                        temperature=temperature)
+                result = await _chat_once(model, messages, json_mode=json_mode, max_tokens=max_tokens,
+                                          temperature=temperature)
+                if i > 0:
+                    metrics.inc("llm_fallback_used")
+                return result
             except LLMError as e:
                 last = e
                 if "401" in str(e):
+                    metrics.inc("llm_failures_401")
                     raise
                 wait = _rate_limit_wait(str(e))
                 if attempt == 1 and wait is not None and wait <= MAX_RATE_LIMIT_WAIT_S:
+                    metrics.inc("llm_rate_limit_waits")
                     log.info("%s rate-limited; waiting %.1fs", model, wait)
                     await asyncio.sleep(wait + 0.2)
                     continue
                 log.warning("%s failed (%s); trying next model", model, str(e)[:160])
                 break
+    metrics.inc("llm_requests_failed")
     raise last or LLMError("no model available")
 
 

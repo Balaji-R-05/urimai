@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import re
 
+from app.core import metrics
 from app.domain.fields import FIELDS, STATE_CODES, TN_DISTRICTS
 
 MIN_CONFIDENCE = 0.5
@@ -127,7 +128,10 @@ def apply_updates(profile: dict, updates: list[dict], turn: int, evidence: dict)
             conf = float(u.get("confidence", 1))
         except (TypeError, ValueError):
             conf = 1.0
-        if field not in FIELDS or conf < MIN_CONFIDENCE:
+        if field not in FIELDS:
+            continue
+        if conf < MIN_CONFIDENCE:
+            metrics.inc("extraction_rejected_low_confidence")
             continue
         value = normalise_value(field, u.get("value"))
         if value is None:

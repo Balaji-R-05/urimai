@@ -21,6 +21,7 @@ class Session:
     last_response: dict | None = None
     updated_at: float = field(default_factory=time.time)
     lock: asyncio.Lock = field(default_factory=asyncio.Lock)
+    completed: bool = False  # counted once in app/core/metrics when the interview first runs out of questions
 
 
 _sessions: dict[str, Session] = {}

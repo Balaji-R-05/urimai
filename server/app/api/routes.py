@@ -19,7 +19,7 @@ from app.api.schemas import (
     Lang,
     SessionRequest,
 )
-from app.core import config, db, session
+from app.core import config, db, metrics, session
 from app.domain.fields import FIELDS, tr
 from app.retrieval import service as retrieval
 from app.services import orchestrator, report
@@ -61,6 +61,12 @@ async def evaluate(req: EvaluateRequest):
     Evaluate a complete profile in one call, without a session or the LLM (testing and debugging).
     """
     return await orchestrator.evaluate_profile(req.profile, req.lang)
+
+
+@router.get("/metrics")
+async def get_metrics():
+    """Aggregate usage counters only -- no session or user identifier. See app/core/metrics.py."""
+    return metrics.snapshot()
 
 
 @router.post("/session/reset")

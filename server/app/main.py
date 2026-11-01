@@ -31,13 +31,16 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from app.api.routes import router
+from app.core import metrics
 from app.retrieval import service as retrieval
 
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     asyncio.get_running_loop().run_in_executor(None, retrieval.warmup)  # load models without blocking startup
+    flush_task = asyncio.create_task(metrics.flush_loop())  # no-op without MONGODB_URI
     yield
+    flush_task.cancel()
 
 
 app = FastAPI(title="Urimai API", version="0.1.0", lifespan=lifespan)

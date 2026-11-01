@@ -28,6 +28,10 @@ MONGODB_DB = os.getenv("MONGODB_DB", "urimai")
 MONGODB_COLLECTION = os.getenv("MONGODB_COLLECTION", "schemes")
 # User-reported scheme issues (/api/feedback). Falls back to server/logs/feedback.log without MongoDB.
 MONGODB_FEEDBACK_COLLECTION = os.getenv("MONGODB_FEEDBACK_COLLECTION", "feedback")
+# Usage counters (app/core/metrics.py): snapshotted here every METRICS_FLUSH_INTERVAL_S when MongoDB
+# is configured; always readable live via GET /api/metrics regardless.
+MONGODB_METRICS_COLLECTION = os.getenv("MONGODB_METRICS_COLLECTION", "metrics")
+METRICS_FLUSH_INTERVAL_S = float(os.getenv("METRICS_FLUSH_INTERVAL_S", "300"))
 SEED_PATH = SERVER_ROOT / "data" / "schemes.json"
 LOG_DB_CALLS = os.getenv("LOG_DB_CALLS", "1").lower() not in ("0", "false", "no", "")  # see app/core/db.py
 

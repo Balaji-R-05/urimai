@@ -289,6 +289,7 @@ urimai/
 ├── run.py              # starts the server, waits for /api/health, then starts the bot; both logs in one terminal
 ├── compose.yml
 ├── DEPLOYMENT.md       # cloud deployment: VM, managed container platforms, env/secrets, persistence
+├── LICENSE             # MIT
 ├── .env.example
 └── .env               # not committed
 ```
@@ -297,3 +298,7 @@ urimai/
 ## Disclaimer
 
 Urimai provides **indicative** information based on what the user shares. It is not an official government service. **Final eligibility is determined by the concerned government department.** Always confirm with the official source linked for each scheme.
+
+## License
+
+[MIT](LICENSE)

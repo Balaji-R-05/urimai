@@ -279,32 +279,26 @@ urimai/
 │   └── requirements.txt
 ├── server/
 │   ├── app/
-│   │   ├── main.py            # FastAPI app: lifespan + router
-│   │   ├── api/                # routes.py (endpoints used by bot/api.py), schemas.py (request models)
-│   │   ├── core/                # config.py (all settings), db.py (logging MongoDB client), session.py (in-memory, 30 min expiry),
-│   │   │                       # metrics.py (aggregate usage counters, GET /api/metrics, snapshotted to MongoDB)
-│   │   ├── domain/             # fields.py (profile fields, questions in ta/en/hi), formatting.py
-│   │   ├── catalogue/          # schema.py (scheme doc schema), loader.py (MongoDB or JSON seed + validation),
-│   │   │                       # seed.py (JSON → MongoDB), import_myscheme.py (LLM-assisted draft import, one-off)
-│   │   ├── engine/              # rules.py, derive.py, planner.py, summary.py: three-valued rules, derived facts,
-│   │   │                       # question planner, summaries
-│   │   ├── agents/              # llm.py (Groq client: JSON/text completions + speech-to-text), extractor.py,
-│   │   │                       # responder.py, answerer.py, eval_extractor.py (real-LLM extraction accuracy, run by hand)
-│   │   ├── nlp/                 # numerals.py (number words → digits), normalise.py (value normalisation)
-│   │   ├── retrieval/           # scheme Q&A: chunking.py, docs.py (catalogue → chunks), embed.py, bm25.py,
-│   │   │                       # rerank.py, search.py (in-memory backend), atlas.py (MongoDB Atlas backend),
-│   │   │                       # chunk_store.py (keeps scheme_chunks in sync), service.py (glue), demo.py
-│   │   ├── services/            # orchestrator.py (per-turn pipeline), report.py (PDF)
-│   │   └── assets/fonts/        # Noto Sans fonts for the PDF
-│   ├── data/                    # schemes.json (seed catalogue), scheme.schema.json, SCHEMES.md (field guide)
-│   ├── tests/                   # run: cd server && python -m pytest (some tests need MongoDB/models; see file names)
+│   │   ├── main.py        # FastAPI app: lifespan + router
+│   │   ├── api/            # HTTP endpoints and request models
+│   │   ├── core/           # settings, MongoDB client, sessions, usage metrics
+│   │   ├── domain/         # profile field definitions and display formatting
+│   │   ├── catalogue/      # scheme schema, loading (MongoDB or JSON seed), and seeding
+│   │   ├── engine/         # three-valued rule engine, derived facts, question planner
+│   │   ├── agents/         # Groq LLM client, extractor, responder, answerer
+│   │   ├── nlp/            # number-word normalisation and value validation
+│   │   ├── retrieval/      # scheme Q&A: chunking, embedding, BM25, reranking, in-memory/Atlas backends
+│   │   ├── services/       # per-turn orchestration and PDF report generation
+│   │   └── assets/fonts/   # Noto Sans fonts for the PDF
+│   ├── data/               # schemes.json (seed catalogue), scheme.schema.json, SCHEMES.md (field guide)
+│   ├── tests/              # run: cd server && python -m pytest (some tests need MongoDB/models; see file names)
 │   └── requirements.txt
-├── run.py              # starts the server, waits for /api/health, then starts the bot; both logs in one terminal
+├── run.py           # starts the server, waits for /api/health, then starts the bot; both logs in one terminal
 ├── compose.yml
-├── DEPLOYMENT.md       # cloud deployment: VM, managed container platforms, env/secrets, persistence
-├── LICENSE             # MIT
+├── DEPLOYMENT.md    # cloud deployment: VM, managed container platforms, env/secrets, persistence
+├── LICENSE          # MIT
 ├── .env.example
-└── .env               # not committed
+└── .env             # not committed
 ```
 
 

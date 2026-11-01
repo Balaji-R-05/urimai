@@ -233,15 +233,16 @@ starting. Named volumes persist the retrieval models (`models`) and both service
 
 ### Load testing
 
-The production Docker image was load-tested under `--cpus=2 --memory=2g` (a $12/mo VM tier —
-DigitalOcean/Linode/Vultr's 2 vCPU, 2GB RAM plan) against the real Groq API and MongoDB Atlas.
-**With the LLM call taken out of the critical path (patched to respond instantly), the server handled
-up to 500 concurrent sessions** — fast and error-free to ~100 concurrent, degrading but still fully
-functional to ~300, and only a handful of transport-level connection errors (well under 1%) by 500,
-with CPU and memory both maxed out at that point. In real use with Groq in the loop, the actual
-bottleneck is Groq's free-tier rate limit, which bites around 60-150 concurrent sessions — well before
-the server's own capacity does. Full numbers and methodology: `docs/LOAD_TEST.md` (local notes, not
-tracked in git — see `.gitignore`).
+The production Docker image was load-tested under `--cpus=2`, at both `--memory=2g` and `--memory=4g`
+(DigitalOcean/Linode/Vultr's $12/mo and $24/mo 2 vCPU tiers), against the real Groq API and MongoDB
+Atlas. **With the LLM call taken out of the critical path (patched to respond instantly), the server
+handled up to 500 concurrent sessions at both memory tiers** — fast and error-free to ~100 concurrent,
+degrading but still fully functional to ~300, and only a handful of transport-level connection errors
+(well under 1.5%) by 500. The cheaper $12/2GB tier gets there with memory pegged at 99.9% (one bad
+moment from an OOM kill); 4GB removes that risk entirely without changing the concurrency ceiling. In
+real use with Groq in the loop, the actual bottleneck is Groq's free-tier rate limit, which bites
+around 60-150 concurrent sessions — well before either tier's own capacity does, and a bigger box
+doesn't move that ceiling.
 
 ---
 

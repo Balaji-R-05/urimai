@@ -204,6 +204,15 @@ cd bot && python -m pytest && cd ..
 cd server && python -m pytest && cd ..
 ```
 
+The extractor agent (free text -> profile facts, in Tamil/English/Hindi/Tanglish) is the one step the
+test suites above can't check, since they stub it out. `server/app/agents/eval_extractor.py` runs it for
+real against a small golden set (`server/data/extractor_eval.json`) and reports per-field accuracy. It
+costs real Groq calls and isn't part of CI — run it by hand after touching the extractor's prompt:
+
+```bash
+cd server && python -m app.agents.eval_extractor
+```
+
 ---
 
 ## Deploying

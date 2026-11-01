@@ -2,7 +2,30 @@
 In-process, privacy-safe usage counters: aggregate numbers only -- never a session id, user id or
 profile value. Reset on process restart; periodically snapshotted into MongoDB (the `metrics`
 collection) when MONGODB_URI is set, so numbers survive restarts and can be charted over time.
-Readable live at any time via GET /api/metrics.
+Readable live at any time via GET /api/metrics, which returns {"uptime_s": <seconds>, **counters} --
+a sparse dict, so a counter only appears once something has actually incremented it.
+
+Counters, grouped by where they're incremented:
+  llm.py            llm_requests_total     every complete_json / complete_text call into _chat
+                     llm_fallback_used      succeeded on a model other than the primary
+                     llm_rate_limit_waits   waited out a short 429 on the same model
+                     llm_failures_401       auth failure (aborted immediately, no fallback)
+                     llm_requests_failed    every model in the fallback chain failed
+  nlp/normalise.py   extraction_rejected_low_confidence
+                                            an LLM-extracted field update was below MIN_CONFIDENCE
+  retrieval/service.py retrieval_hits       a scheme Q&A search returned at least one hit
+                     retrieval_empty        search ran but returned nothing
+                     retrieval_failures     search errored or timed out
+  services/orchestrator.py
+                     sessions_started       once per session, on its first turn
+                     turns_total            once per chat()/answer() call
+                     lang_en / lang_ta / lang_hi
+                                            one per turn, by the request's language
+                     off_topic_replies      the user's message didn't answer the pending question
+                     sessions_completed     once per session, the first time it runs out of questions
+                     questions_asked_total  added once per session at completion (len(s.asked)) --
+                                            questions_asked_total / sessions_completed is the
+                                            average interview length
 """
 from __future__ import annotations
 

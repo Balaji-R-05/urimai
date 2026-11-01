@@ -12,6 +12,27 @@ reachable *from the bot* — it has no authentication, so **don't give it a publ
   traffic, but catalogue edits need a redeploy instead of a database update.
 - Docker + Docker Compose on whatever you deploy to
 
+### `.env` gotchas that only show up under Docker
+
+`app/core/config.py` reads `.env` with `python-dotenv`, which tolerates both of these — but Docker's
+`--env-file` (and `compose.yml`'s `env_file:`, same parser) does not, so a `.env` that works fine when
+you run the server directly with `uvicorn` can crash the container on boot:
+
+- **Inline `# comments` after a value** (`RETRIEVAL_TIMEOUT_S=8   # seconds...`) become part of the
+  value itself. The server then fails to start with `ValueError: could not convert string to float:
+  "8           # seconds..."`. Put comments on their own line above the variable instead.
+- **Quoted values** (`MONGODB_URI="mongodb+srv://..."`) keep the literal quote characters — common if
+  you pasted a connection string straight from Atlas's UI, which quotes it for you. pymongo then
+  rejects it with `InvalidURI: URI must begin with 'mongodb://'`. Remove the quotes.
+
+`.env.example` has neither problem; this only bites if you hand-edit your own `.env` afterward. Before
+`docker compose up`, a quick sanity check:
+
+```bash
+grep -nE '^[A-Z_]+=.*#' .env   # should print nothing
+grep -n '="' .env              # should print nothing
+```
+
 ## Option A — a single VM (simplest, recommended for a hackathon demo)
 
 Any always-on VM works (Oracle Cloud's free tier, a $5 DigitalOcean/Lightsail droplet, a GCP/AWS free-tier
@@ -71,6 +92,7 @@ Needed only for a shared/updatable scheme catalogue and real vector search inste
 ## Checklist before going live
 
 - [ ] `.env` has `TELEGRAM_BOT_TOKEN` and `GROQ_API_KEY`; `.env` is never committed
+- [ ] `.env` has no inline comments after a value and no quoted values (see "`.env` gotchas" above)
 - [ ] Server is not reachable from the public internet (no auth on its endpoints)
 - [ ] `docker compose config` resolves with no errors
 - [ ] `server_logs` / `bot_logs` volumes are either persistent on your platform, or `MONGODB_URI` is set so

@@ -15,7 +15,7 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 LLM_MODEL = os.getenv("LLM_MODEL", "openai/gpt-oss-120b")
 # comma-separated; each Groq model has its own rate limit, so fallbacks add capacity
 LLM_FALLBACK_MODELS = [m.strip() for m in os.getenv(
-    "LLM_FALLBACK_MODELS", "openai/gpt-oss-20b,qwen/qwen3.8-27b").split(",") if m.strip()]
+    "LLM_FALLBACK_MODELS", "openai/gpt-oss-20b").split(",") if m.strip()]
 LLM_REASONING_EFFORT = os.getenv("LLM_REASONING_EFFORT", "low")
 LLM_TIMEOUT_S = float(os.getenv("LLM_TIMEOUT_S", "8"))
 STT_MODEL = os.getenv("STT_MODEL", "whisper-large-v3")

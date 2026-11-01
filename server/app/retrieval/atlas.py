@@ -1,4 +1,5 @@
-"""Scheme search in MongoDB Atlas over the scheme_chunks collection (see chunk_store.py).
+"""
+Scheme search in MongoDB Atlas over the scheme_chunks collection (see chunk_store.py).
 
   1. recall   : $vectorSearch (meaning, local embedding of the query) + $search (keywords, e.g. "PM-KISAN"),
                 each top-N, restricted to central schemes plus the user's state; fused with RRF in Python
@@ -9,6 +10,8 @@
 Returns hits in the same shape as the in-memory search (app/retrieval/search.py).
 """
 from __future__ import annotations
+
+from concurrent.futures import ThreadPoolExecutor
 
 from app.core import config
 from app.retrieval.chunk_store import TEXT_INDEX, VECTOR_INDEX, chunks_collection
@@ -54,8 +57,10 @@ def retrieve(query: str, k: int = 5, state: str | None = None, use_rerank: bool 
     """Top-k section hits: {scheme_id, section, lang, score, chunk, context, per-stage ranks}."""
     coll = chunks_collection()
     n = config.CANDIDATES
-    dense_docs = vector_search(coll, query, n, state)
-    text_docs = text_search(coll, query, n, state)
+    with ThreadPoolExecutor(max_workers=2) as pool:  # vector_search and text_search are independent round-trips
+        dense_future = pool.submit(vector_search, coll, query, n, state)
+        text_future = pool.submit(text_search, coll, query, n, state)
+        dense_docs, text_docs = dense_future.result(), text_future.result()
     by_id = {d["_id"]: d for d in dense_docs + text_docs}
     dense = [d["_id"] for d in dense_docs]
     bm = [d["_id"] for d in text_docs]
@@ -94,6 +99,8 @@ def retrieve(query: str, k: int = 5, state: str | None = None, use_rerank: bool 
 
 
 def warmup() -> None:
-    """Load the query embedder and the reranker; the chunks themselves stay in MongoDB."""
+    """
+    Load the query embedder and the reranker; the chunks themselves stay in MongoDB.
+    """
     get_embedder().embed(["warmup"])
     rerank("warmup", ["warmup"])

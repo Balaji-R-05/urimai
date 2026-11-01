@@ -62,6 +62,25 @@ def test_feedback_rejects_unknown_scheme(client):
     assert r.status_code == 404
 
 
+def test_feedback_logs_scheme_lang_and_text_with_no_identifier(client, caplog):
+    with caplog.at_level("INFO", logger="urimai.feedback"):
+        client.post("/api/feedback", json={"scheme_id": "pm_kisan", "lang": "ta", "text": "amount looks wrong"})
+    record = next(r for r in caplog.records if r.name == "urimai.feedback")
+    assert "scheme=pm_kisan" in record.message and "lang=ta" in record.message
+    assert "amount looks wrong" in record.message
+    # FeedbackRequest has no session/user field to log in the first place -- nothing session-shaped leaks in.
+    assert "session" not in record.message and "user" not in record.message
+
+
+def test_feedback_logs_none_for_missing_or_blank_text(client, caplog):
+    with caplog.at_level("INFO", logger="urimai.feedback"):
+        client.post("/api/feedback", json={"scheme_id": "pm_kisan"})
+        client.post("/api/feedback", json={"scheme_id": "pm_kisan", "text": "   "})
+    records = [r for r in caplog.records if r.name == "urimai.feedback"]
+    assert len(records) == 2
+    assert all("text=None" in r.message for r in records)
+
+
 def test_bool_question_has_buttons(client):
     sid = "t3"
     for field, value in [("age", 30), ("gender", "female"), ("state", "TN"), ("annual_family_income", 100000),

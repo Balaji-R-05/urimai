@@ -81,6 +81,43 @@ def test_feedback_logs_none_for_missing_or_blank_text(client, caplog):
     assert all("text=None" in r.message for r in records)
 
 
+def test_feedback_writes_to_mongodb_when_configured(client, monkeypatch):
+    from app.api import routes
+
+    monkeypatch.setattr(config, "MONGODB_URI", "mongodb://fake")
+    inserted = []
+
+    class FakeCollection:
+        def insert_one(self, doc):
+            inserted.append(doc)
+
+    monkeypatch.setattr(routes.db, "shared",
+                        lambda: {config.MONGODB_DB: {config.MONGODB_FEEDBACK_COLLECTION: FakeCollection()}})
+    r = client.post("/api/feedback", json={"scheme_id": "pm_kisan", "lang": "en", "text": "amount looks wrong"})
+    assert r.status_code == 200 and r.json() == {"ok": True}
+    assert len(inserted) == 1
+    assert inserted[0]["scheme_id"] == "pm_kisan" and inserted[0]["lang"] == "en"
+    assert inserted[0]["text"] == "amount looks wrong" and "created_at" in inserted[0]
+
+
+def test_feedback_falls_back_to_log_when_mongodb_insert_fails(client, monkeypatch, caplog):
+    from app.api import routes
+    from pymongo.errors import PyMongoError
+
+    monkeypatch.setattr(config, "MONGODB_URI", "mongodb://fake")
+
+    class FailingCollection:
+        def insert_one(self, doc):
+            raise PyMongoError("boom")
+
+    monkeypatch.setattr(routes.db, "shared",
+                        lambda: {config.MONGODB_DB: {config.MONGODB_FEEDBACK_COLLECTION: FailingCollection()}})
+    with caplog.at_level("INFO", logger="urimai.feedback"):
+        r = client.post("/api/feedback", json={"scheme_id": "pm_kisan", "lang": "en", "text": "amount looks wrong"})
+    assert r.status_code == 200 and r.json() == {"ok": True}
+    assert any("scheme=pm_kisan" in rec.message for rec in caplog.records if rec.name == "urimai.feedback")
+
+
 def test_bool_question_has_buttons(client):
     sid = "t3"
     for field, value in [("age", 30), ("gender", "female"), ("state", "TN"), ("annual_family_income", 100000),

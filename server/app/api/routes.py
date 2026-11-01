@@ -5,8 +5,10 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, File, Form, HTTPException, Response, UploadFile
+from pymongo.errors import PyMongoError
 
 from app.agents import llm
 from app.api.schemas import (
@@ -17,7 +19,7 @@ from app.api.schemas import (
     Lang,
     SessionRequest,
 )
-from app.core import config, session
+from app.core import config, db, session
 from app.domain.fields import FIELDS, tr
 from app.retrieval import service as retrieval
 from app.services import orchestrator, report
@@ -115,12 +117,21 @@ async def scheme(scheme_id: str):
 @router.post("/feedback")
 async def feedback(req: FeedbackRequest):
     """
-    Reports an issue with a scheme's info. Written only to the server log -- no session or user
-    identifier is recorded, matching the rest of the app's no-persistence design.
+    Reports an issue with a scheme's info. No session or user identifier is ever recorded.
+    Stored in MongoDB (the `feedback` collection) when MONGODB_URI is set, same as the catalogue;
+    otherwise written to server/logs/feedback.log, so a report is never silently dropped.
     """
     if req.scheme_id not in orchestrator.SCHEMES_BY_ID:
         raise HTTPException(404, "unknown scheme")
-    feedback_log.info("scheme=%s lang=%s text=%r", req.scheme_id, req.lang, (req.text or "").strip() or None)
+    text = (req.text or "").strip() or None
+    if config.MONGODB_URI:
+        doc = {"scheme_id": req.scheme_id, "lang": req.lang, "text": text, "created_at": datetime.now(UTC)}
+        try:
+            db.shared()[config.MONGODB_DB][config.MONGODB_FEEDBACK_COLLECTION].insert_one(doc)
+            return {"ok": True}
+        except PyMongoError as e:
+            feedback_log.warning("feedback insert failed (%s); logged instead", db.explain(e))
+    feedback_log.info("scheme=%s lang=%s text=%r", req.scheme_id, req.lang, text)
     return {"ok": True}
 
 

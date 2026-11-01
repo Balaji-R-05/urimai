@@ -86,7 +86,7 @@ The bot provides the voice, buttons, cards and PDF delivery. The eligibility log
 | **Answers grounded follow-up questions** | Q&A is answered only from that scheme's own record, never the model's general knowledge | "என்ன ஆவணம் வேணும்?" → pulled from that scheme's document list |
 | **Never asks for sensitive IDs** | No Aadhaar, phone or bank number requested; no persistent database; sessions auto-expire | Sessions expire after 30 minutes |
 | **Keeps working when the LLM doesn't** | Requests fall back across models on rate limits, and to template replies if Groq is unreachable | Button-driven eligibility checks run with zero LLM calls |
-| **Lets users flag wrong info** | "⚠️ Report wrong info" on any scheme, then a one-tap reason (amount/benefit, documents/eligibility, or other) | Logged to `server/logs/feedback.log`, no session or user identifier attached, for someone to review and fix the catalogue |
+| **Lets users flag wrong info** | "⚠️ Report wrong info" on any scheme, then a one-tap reason (amount/benefit, documents/eligibility, or other) | Stored in MongoDB (`feedback` collection) when configured, else `server/logs/feedback.log` — no session or user identifier attached, for someone to review and fix the catalogue |
 
 ### Schemes covered
 

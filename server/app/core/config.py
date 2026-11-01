@@ -26,6 +26,8 @@ SESSION_TTL_S = int(os.getenv("SESSION_TTL_S", "1800"))
 MONGODB_URI = os.getenv("MONGODB_URI", "").strip()
 MONGODB_DB = os.getenv("MONGODB_DB", "urimai")
 MONGODB_COLLECTION = os.getenv("MONGODB_COLLECTION", "schemes")
+# User-reported scheme issues (/api/feedback). Falls back to server/logs/feedback.log without MongoDB.
+MONGODB_FEEDBACK_COLLECTION = os.getenv("MONGODB_FEEDBACK_COLLECTION", "feedback")
 SEED_PATH = SERVER_ROOT / "data" / "schemes.json"
 LOG_DB_CALLS = os.getenv("LOG_DB_CALLS", "1").lower() not in ("0", "false", "no", "")  # see app/core/db.py
 

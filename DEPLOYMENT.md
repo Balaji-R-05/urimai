@@ -49,10 +49,11 @@ others can reach without a public URL.
 3. Give the bot service `TELEGRAM_BOT_TOKEN` and set `BACKEND_URL` to the server's *internal* address the
    platform assigns (e.g. Railway's private networking hostname, Render's internal service URL, Fly.io's
    `.flycast` address).
-4. These platforms' ephemeral filesystems reset on redeploy, so `server/logs/feedback.log` won't survive a
-   redeploy unless you attach a persistent volume (Railway and Fly.io both support one; mount it at
-   `/app/server/logs`). Without that, treat user-reported feedback as best-effort until you add one, or point
-   `LOG_DB_CALLS`-style logging at an external sink instead.
+4. These platforms' ephemeral filesystems reset on redeploy, so anything written only to
+   `server/logs/` (feedback, server/bot logs) won't survive a redeploy unless you attach a persistent volume
+   (Railway and Fly.io both support one; mount it at `/app/server/logs`). User-reported feedback
+   (`/api/feedback`) and usage counters (`GET /api/metrics`) both switch from the log file to MongoDB
+   automatically once `MONGODB_URI` is set, which sidesteps this on a platform without persistent volumes.
 5. Health check path for the server service: `/api/health`.
 
 ## MongoDB Atlas (optional)
@@ -72,7 +73,7 @@ Needed only for a shared/updatable scheme catalogue and real vector search inste
 - [ ] `.env` has `TELEGRAM_BOT_TOKEN` and `GROQ_API_KEY`; `.env` is never committed
 - [ ] Server is not reachable from the public internet (no auth on its endpoints)
 - [ ] `docker compose config` resolves with no errors
-- [ ] `server_logs` / `bot_logs` volumes are either persistent on your platform, or you've accepted that
-      `feedback.log` resets on redeploy
+- [ ] `server_logs` / `bot_logs` volumes are either persistent on your platform, or `MONGODB_URI` is set so
+      feedback and usage metrics survive a redeploy without them
 - [ ] `curl http://<host>/api/health` (from inside the network) reports the expected scheme count and
       catalogue source (`mongodb` or `seed`)

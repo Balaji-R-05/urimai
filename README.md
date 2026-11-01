@@ -192,7 +192,8 @@ venv/bin/python bot/main.py         # macOS / Linux
 
 On startup the bot registers its command menu and logs the server's `/api/health` status. If the server can't be reached it logs a warning and keeps running. Open your bot in Telegram and send `/start`.
 
-Both processes log to the console and to rotating files: `server/logs/server.log`, plus `server/logs/feedback.log` for user-reported scheme issues, and `bot/logs/bot.log`.
+Both processes log to the console and to rotating files: `server/logs/server.log`, plus `server/logs/feedback.log`
+for user-reported scheme issues (used only without `MONGODB_URI`; see above), and `bot/logs/bot.log`.
 
 ### Linting and tests
 
@@ -267,14 +268,15 @@ urimai/
 │   ├── app/
 │   │   ├── main.py            # FastAPI app: lifespan + router
 │   │   ├── api/                # routes.py (endpoints used by bot/api.py), schemas.py (request models)
-│   │   ├── core/                # config.py (all settings), db.py (logging MongoDB client), session.py (in-memory, 30 min expiry)
+│   │   ├── core/                # config.py (all settings), db.py (logging MongoDB client), session.py (in-memory, 30 min expiry),
+│   │   │                       # metrics.py (aggregate usage counters, GET /api/metrics, snapshotted to MongoDB)
 │   │   ├── domain/             # fields.py (profile fields, questions in ta/en/hi), formatting.py
 │   │   ├── catalogue/          # schema.py (scheme doc schema), loader.py (MongoDB or JSON seed + validation),
 │   │   │                       # seed.py (JSON → MongoDB), import_myscheme.py (LLM-assisted draft import, one-off)
 │   │   ├── engine/              # rules.py, derive.py, planner.py, summary.py: three-valued rules, derived facts,
 │   │   │                       # question planner, summaries
 │   │   ├── agents/              # llm.py (Groq client: JSON/text completions + speech-to-text), extractor.py,
-│   │   │                       # responder.py, answerer.py
+│   │   │                       # responder.py, answerer.py, eval_extractor.py (real-LLM extraction accuracy, run by hand)
 │   │   ├── nlp/                 # numerals.py (number words → digits), normalise.py (value normalisation)
 │   │   ├── retrieval/           # scheme Q&A: chunking.py, docs.py (catalogue → chunks), embed.py, bm25.py,
 │   │   │                       # rerank.py, search.py (in-memory backend), atlas.py (MongoDB Atlas backend),

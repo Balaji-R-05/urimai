@@ -50,24 +50,45 @@ def preflight() -> int:
     Returns the server port.
     """
     if not (ROOT / ".env").exists():
-        fail(".env not found. Copy .env.example to .env and fill in TELEGRAM_BOT_TOKEN and GROQ_API_KEY.")
+        fail(
+            ".env not found. Copy .env.example to .env and fill in TELEGRAM_BOT_TOKEN and GROQ_API_KEY."
+        )
     env = read_env()
     if not env.get("TELEGRAM_BOT_TOKEN"):
         fail("TELEGRAM_BOT_TOKEN is empty in .env")
     if not env.get("GROQ_API_KEY"):
-        print("[run] warning: GROQ_API_KEY is empty; only button answers will work (no free text or voice)")
+        print(
+            "[run] warning: GROQ_API_KEY is empty; only button answers will work (no free text or voice)"
+        )
 
-    missing = [m for m in ("telegram", "gtts", "httpx", "dotenv",                       # bot/
-                           "fastapi", "uvicorn", "groq", "fpdf", "fastembed", "pymongo")  # server/ (pymongo
-               if importlib.util.find_spec(m) is None]                                   # loads even w/o MONGODB_URI
+    missing = [
+        m
+        for m in (
+            "telegram",
+            "gtts",
+            "httpx",
+            "dotenv",  # bot/
+            "fastapi",
+            "uvicorn",
+            "groq",
+            "fpdf",
+            "fastembed",
+            "pymongo",
+        )  # server/ (pymongo
+        if importlib.util.find_spec(m) is None
+    ]  # loads even w/o MONGODB_URI
     if missing:
-        fail(f"missing packages in {PY}: {', '.join(missing)}\n"
-             f"      install with: \"{PY}\" -m pip install -r bot/requirements.txt -r server/requirements.txt")
+        fail(
+            f"missing packages in {PY}: {', '.join(missing)}\n"
+            f'      install with: "{PY}" -m pip install -r bot/requirements.txt -r server/requirements.txt'
+        )
 
     url = urlparse(env.get("BACKEND_URL") or "http://localhost:8000")
     if url.hostname not in ("localhost", "127.0.0.1"):
-        fail(f"BACKEND_URL points to {url.hostname}; this script starts a local server, so set it to "
-             "http://localhost:8000 (or run the bot alone with: python bot/main.py)")
+        fail(
+            f"BACKEND_URL points to {url.hostname}; this script starts a local server, so set it to "
+            "http://localhost:8000 (or run the bot alone with: python bot/main.py)"
+        )
     port = url.port or 8000
     with socket.socket() as s:
         if s.connect_ex(("127.0.0.1", port)) == 0:
@@ -87,9 +108,18 @@ def stream(name: str, proc: subprocess.Popen) -> None:
 def start(name: str, args: list[str], cwd: Path) -> subprocess.Popen:
     env = {**os.environ, "PYTHONUNBUFFERED": "1", "PYTHONIOENCODING": "utf-8"}
     flags = subprocess.CREATE_NEW_PROCESS_GROUP if os.name == "nt" else 0
-    proc = subprocess.Popen(args, cwd=cwd, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                            text=True, encoding="utf-8", errors="replace", creationflags=flags,
-                            start_new_session=os.name != "nt")
+    proc = subprocess.Popen(
+        args,
+        cwd=cwd,
+        env=env,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        creationflags=flags,
+        start_new_session=os.name != "nt",
+    )
     threading.Thread(target=stream, args=(name, proc), daemon=True).start()
     return proc
 
@@ -98,7 +128,9 @@ def wait_healthy(server: subprocess.Popen, port: int) -> None:
     deadline = time.time() + HEALTH_TIMEOUT_S
     while time.time() < deadline:
         if server.poll() is not None:
-            fail(f"server exited with code {server.returncode} before it was ready (see [server] log above)")
+            fail(
+                f"server exited with code {server.returncode} before it was ready (see [server] log above)"
+            )
         try:
             with urllib.request.urlopen(f"http://127.0.0.1:{port}/api/health", timeout=2) as r:
                 print(f"[run] server ready: {r.read().decode()}")
@@ -127,7 +159,9 @@ def main() -> int:
     server = bot = None
     try:
         print(f"[run] starting server on http://localhost:{port} ...")
-        server = start("server", [PY, "-m", "uvicorn", "app.main:app", "--port", str(port)], ROOT / "server")
+        server = start(
+            "server", [PY, "-m", "uvicorn", "app.main:app", "--port", str(port)], ROOT / "server"
+        )
         wait_healthy(server, port)
         print("[run] starting Telegram bot ... (Ctrl+C to stop both)")
         bot = start("bot", [PY, str(ROOT / "bot" / "main.py")], ROOT)

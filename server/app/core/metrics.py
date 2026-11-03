@@ -27,6 +27,7 @@ Counters, grouped by where they're incremented:
                                             questions_asked_total / sessions_completed is the
                                             average interview length
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -63,6 +64,7 @@ def _flush_once() -> None:
     from pymongo.errors import PyMongoError
 
     from app.core import db
+
     try:
         doc = {"ts": datetime.now(UTC), **snapshot()}
         db.shared()[config.MONGODB_DB][config.MONGODB_METRICS_COLLECTION].insert_one(doc)
@@ -71,8 +73,10 @@ def _flush_once() -> None:
 
 
 async def flush_loop() -> None:
-    """Writes one snapshot doc to MongoDB every config.METRICS_FLUSH_INTERVAL_S, forever.
-    A no-op without MONGODB_URI -- counters stay readable live via GET /api/metrics regardless."""
+    """
+    Writes one snapshot doc to MongoDB every config.METRICS_FLUSH_INTERVAL_S, forever.
+    A no-op without MONGODB_URI -- counters stay readable live via GET /api/metrics regardless.
+    """
     while True:
         await asyncio.sleep(config.METRICS_FLUSH_INTERVAL_S)
         _flush_once()

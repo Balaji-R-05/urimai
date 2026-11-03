@@ -1,5 +1,6 @@
 """
-HTTP endpoints under /api. The Telegram bot calls these through bot/api.py."""
+HTTP endpoints under /api. The Telegram bot calls these through bot/api.py.
+"""
 
 from __future__ import annotations
 
@@ -35,7 +36,7 @@ async def health():
         "llm": "up" if llm.available() else "down",
         "model": config.LLM_MODEL,
         "schemes": len(orchestrator.SCHEMES),
-        "catalogue": "mongodb" if config.MONGODB_URI else "seed"
+        "catalogue": "mongodb" if config.MONGODB_URI else "seed",
     }
 
 
@@ -57,9 +58,7 @@ async def answer(req: AnswerRequest):
 
 @router.post("/evaluate")
 async def evaluate(req: EvaluateRequest):
-    """
-    Evaluate a complete profile in one call, without a session or the LLM (testing and debugging).
-    """
+    """Evaluate a complete profile in one call, without a session or the LLM (testing and debugging)."""
     return await orchestrator.evaluate_profile(req.profile, req.lang)
 
 
@@ -85,15 +84,20 @@ async def get_session(session_id: str):
 
 @router.get("/session/{session_id}/report")
 async def session_report(session_id: str, lang: Lang = "en"):
-    """PDF report of the session: profile, schemes by status with reasons, documents, how to apply.
-    Built in memory and streamed back; nothing is written to disk."""
+    """
+    PDF report of the session: profile, schemes by status with reasons, documents, how to apply.
+    Built in memory and streamed back; nothing is written to disk.
+    """
     s = session.peek(session_id)
     if not s or not s.profile:
         raise HTTPException(404, "no profile in this session yet")
     snap = orchestrator.report_snapshot(s, lang)
     pdf = await asyncio.to_thread(report.build_report, snap, lang)
-    return Response(pdf, media_type="application/pdf",
-                    headers={"Content-Disposition": f'attachment; filename="urimai-report-{lang}.pdf"'})
+    return Response(
+        pdf,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="urimai-report-{lang}.pdf"'},
+    )
 
 
 @router.get("/search")
@@ -102,14 +106,28 @@ async def search(q: str, k: int = 5, state: str | None = None):
     hits = await retrieval.search(q, state)
     if hits is None:
         raise HTTPException(503, "retrieval unavailable")
-    return {"query": q, "hits": [{**t, "chunk": h["chunk"], "context": h["context"]}
-                                 for t, h in zip(retrieval.trace_view(hits), hits, strict=False)][:k]}
+    return {
+        "query": q,
+        "hits": [
+            {**t, "chunk": h["chunk"], "context": h["context"]}
+            for t, h in zip(retrieval.trace_view(hits), hits, strict=False)
+        ][:k],
+    }
 
 
 @router.get("/schemes")
 async def schemes(lang: Lang = "en"):
-    return [{"id": s["id"], "name": tr(s["name"], lang), "level": s["level"], "state": s.get("state"),
-             "category": s["category"], "unverified": s["unverified"]} for s in orchestrator.SCHEMES]
+    return [
+        {
+            "id": s["id"],
+            "name": tr(s["name"], lang),
+            "level": s["level"],
+            "state": s.get("state"),
+            "category": s["category"],
+            "unverified": s["unverified"],
+        }
+        for s in orchestrator.SCHEMES
+    ]
 
 
 @router.get("/schemes/{scheme_id}")
@@ -131,7 +149,12 @@ async def feedback(req: FeedbackRequest):
         raise HTTPException(404, "unknown scheme")
     text = (req.text or "").strip() or None
     if config.MONGODB_URI:
-        doc = {"scheme_id": req.scheme_id, "lang": req.lang, "text": text, "created_at": datetime.now(UTC)}
+        doc = {
+            "scheme_id": req.scheme_id,
+            "lang": req.lang,
+            "text": text,
+            "created_at": datetime.now(UTC),
+        }
         try:
             db.shared()[config.MONGODB_DB][config.MONGODB_FEEDBACK_COLLECTION].insert_one(doc)
             return {"ok": True}

@@ -1,4 +1,5 @@
 """Regression tests for the Groq wrapper's fallback/retry logic and JSON recovery."""
+
 import pytest
 from app.agents import llm
 from app.core import config
@@ -40,6 +41,7 @@ def _install_client(monkeypatch, handler):
 
 # ---------- _rate_limit_wait ----------
 
+
 def test_rate_limit_wait_parses_seconds():
     assert llm._rate_limit_wait("Error 429: rate_limit_exceeded. try again in 0.8s") == 0.8
 
@@ -58,6 +60,7 @@ def test_rate_limit_wait_none_for_unrelated_errors():
 
 # ---------- _strip_think ----------
 
+
 def test_strip_think_removes_reasoning_block():
     assert llm._strip_think("<think>reasoning...</think>answer") == "answer"
 
@@ -67,6 +70,7 @@ def test_strip_think_leaves_plain_text_untouched():
 
 
 # ---------- _chat: fallback across models ----------
+
 
 @pytest.mark.anyio
 async def test_chat_falls_back_to_next_model_on_failure(monkeypatch):
@@ -81,7 +85,9 @@ async def test_chat_falls_back_to_next_model_on_failure(monkeypatch):
         return FakeResponse("ok from model-b")
 
     _install_client(monkeypatch, handler)
-    out = await llm._chat([{"role": "user", "content": "hi"}], json_mode=False, max_tokens=10, temperature=0.1)
+    out = await llm._chat(
+        [{"role": "user", "content": "hi"}], json_mode=False, max_tokens=10, temperature=0.1
+    )
     assert out == "ok from model-b"
     assert seen == ["model-a", "model-b"]
 
@@ -98,7 +104,9 @@ async def test_chat_raises_immediately_on_401_without_trying_fallback(monkeypatc
 
     _install_client(monkeypatch, handler)
     with pytest.raises(llm.LLMError, match="401"):
-        await llm._chat([{"role": "user", "content": "hi"}], json_mode=False, max_tokens=10, temperature=0.1)
+        await llm._chat(
+            [{"role": "user", "content": "hi"}], json_mode=False, max_tokens=10, temperature=0.1
+        )
     assert seen == ["model-a"]  # auth failure must not burn the fallback chain
 
 
@@ -122,7 +130,9 @@ async def test_chat_waits_out_a_short_rate_limit_on_the_same_model(monkeypatch):
 
     monkeypatch.setattr(llm.asyncio, "sleep", fake_sleep)
 
-    out = await llm._chat([{"role": "user", "content": "hi"}], json_mode=False, max_tokens=10, temperature=0.1)
+    out = await llm._chat(
+        [{"role": "user", "content": "hi"}], json_mode=False, max_tokens=10, temperature=0.1
+    )
     assert out == "ok"
     assert calls == ["model-a", "model-a"]  # retried the same model, no fallback needed
     assert slept == [pytest.approx(0.21)]
@@ -138,10 +148,13 @@ async def test_chat_raises_last_error_when_every_model_fails(monkeypatch):
 
     _install_client(monkeypatch, handler)
     with pytest.raises(llm.LLMError, match="model-b is down"):
-        await llm._chat([{"role": "user", "content": "hi"}], json_mode=False, max_tokens=10, temperature=0.1)
+        await llm._chat(
+            [{"role": "user", "content": "hi"}], json_mode=False, max_tokens=10, temperature=0.1
+        )
 
 
 # ---------- complete_json ----------
+
 
 @pytest.mark.anyio
 async def test_complete_json_parses_clean_json(monkeypatch):

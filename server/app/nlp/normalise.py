@@ -1,6 +1,7 @@
 """
 Validate and normalise LLM-extracted values into the canonical profile (app/domain/fields.py).
 """
+
 from __future__ import annotations
 
 import re
@@ -11,19 +12,62 @@ from app.domain.fields import FIELDS, STATE_CODES, TN_DISTRICTS
 MIN_CONFIDENCE = 0.5
 
 ENUM_SYNONYMS = {
-    "gender": {"woman": "female", "f": "female", "girl": "female", "man": "male", "m": "male", "boy": "male"},
-    "marital_status": {"widow": "widowed", "widower": "widowed", "unmarried": "single", "never_married": "single"},
+    "gender": {
+        "woman": "female",
+        "f": "female",
+        "girl": "female",
+        "man": "male",
+        "m": "male",
+        "boy": "male",
+    },
+    "marital_status": {
+        "widow": "widowed",
+        "widower": "widowed",
+        "unmarried": "single",
+        "never_married": "single",
+    },
     "residence": {"village": "rural", "town": "urban", "city": "urban"},
-    "caste_category": {"oc": "general", "fc": "general", "bca": "bc", "bcm": "bc", "dnc": "mbc", "sca": "sc"},
-    "occupation": {"agricultural_labourer": "agri_labourer", "agri_laborer": "agri_labourer", "coolie": "daily_wage_labourer",
-                   "labourer": "daily_wage_labourer", "vendor": "street_vendor", "housewife": "homemaker",
-                   "government_employee": "salaried_govt", "private_employee": "salaried_private", "business": "small_business"},
-    "education_level": {"sslc": "10th", "hsc": "12th", "graduate": "degree", "ug": "degree", "pg": "postgrad",
-                        "bachelor": "degree", "masters": "postgrad", "illiterate": "none"},
+    "caste_category": {
+        "oc": "general",
+        "fc": "general",
+        "bca": "bc",
+        "bcm": "bc",
+        "dnc": "mbc",
+        "sca": "sc",
+    },
+    "occupation": {
+        "agricultural_labourer": "agri_labourer",
+        "agri_laborer": "agri_labourer",
+        "coolie": "daily_wage_labourer",
+        "labourer": "daily_wage_labourer",
+        "vendor": "street_vendor",
+        "housewife": "homemaker",
+        "government_employee": "salaried_govt",
+        "private_employee": "salaried_private",
+        "business": "small_business",
+    },
+    "education_level": {
+        "sslc": "10th",
+        "hsc": "12th",
+        "graduate": "degree",
+        "ug": "degree",
+        "pg": "postgrad",
+        "bachelor": "degree",
+        "masters": "postgrad",
+        "illiterate": "none",
+    },
 }
 
-_MULT = {"k": 1_000, "thousand": 1_000, "l": 100_000, "lakh": 100_000, "lakhs": 100_000, "lac": 100_000,
-         "cr": 10_000_000, "crore": 10_000_000}
+_MULT = {
+    "k": 1_000,
+    "thousand": 1_000,
+    "l": 100_000,
+    "lakh": 100_000,
+    "lakhs": 100_000,
+    "lac": 100_000,
+    "cr": 10_000_000,
+    "crore": 10_000_000,
+}
 
 
 def parse_amount(v) -> float | None:
@@ -64,7 +108,9 @@ def _children(v):
         age = parse_amount(c.get("age"))
         if age is not None and 0 <= age <= 40:
             child["age"] = int(age)
-        g = ENUM_SYNONYMS["gender"].get(str(c.get("gender", "")).lower(), str(c.get("gender", "")).lower())
+        g = ENUM_SYNONYMS["gender"].get(
+            str(c.get("gender", "")).lower(), str(c.get("gender", "")).lower()
+        )
         if g in ("female", "male"):
             child["gender"] = g
         if _bool(c.get("in_school")) is not None:
@@ -96,7 +142,9 @@ def normalise_value(field: str, value):
 
     if field == "state":
         s = str(value).strip().lower()
-        return STATE_CODES.get(s, str(value).strip().upper() if len(s) <= 3 else str(value).strip().title())
+        return STATE_CODES.get(
+            s, str(value).strip().upper() if len(s) <= 3 else str(value).strip().title()
+        )
 
     if t == "int" or t == "float":
         n = parse_amount(value)
@@ -117,7 +165,9 @@ def normalise_value(field: str, value):
     return None
 
 
-def apply_updates(profile: dict, updates: list[dict], turn: int, evidence: dict) -> tuple[list[dict], list[dict]]:
+def apply_updates(
+    profile: dict, updates: list[dict], turn: int, evidence: dict
+) -> tuple[list[dict], list[dict]]:
     """Apply extracted updates in place. Returns (learned, changes)."""
     learned, changes = [], []
     for u in updates:
@@ -160,8 +210,10 @@ def side_effects(profile: dict, field: str, value) -> list[dict]:
         put("state", "TN")
     if field == "occupation" and value == "salaried_govt":
         put("is_govt_employee", True)
-    if field == "has_disability" and value is False:
-        put("disability_percent", 0)
+    # 0% only when there's no disability to begin with; not worth surfacing as a learned fact
+    # on top of "no disability" itself (see app/services/orchestrator._profile_view too).
+    if field == "has_disability" and value is False and profile.get("disability_percent") is None:
+        profile["disability_percent"] = 0
     if field == "disability_percent" and isinstance(value, int | float):
         put("has_disability", value > 0)
     return extra

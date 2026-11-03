@@ -1,13 +1,20 @@
 """Regression test for the rerank-pool slicing fix (b99ddc5): retrieve() must size the reranker's input
 by the precision-stage width (RERANK_POOL), not the recall-stage width (CANDIDATES)."""
+
 from app.core import config
 from app.retrieval import search as search_module
 from app.retrieval.search import retrieve
 
 
 def _chunk(i):
-    return {"id": f"c{i}", "scheme_id": f"s{i}", "section": "overview", "lang": "en",
-            "parent_id": "p0", "text": f"chunk{i}"}
+    return {
+        "id": f"c{i}",
+        "scheme_id": f"s{i}",
+        "section": "overview",
+        "lang": "en",
+        "parent_id": "p0",
+        "text": f"chunk{i}",
+    }
 
 
 def test_retrieve_slices_rerank_pool_by_rerank_pool_width(monkeypatch):

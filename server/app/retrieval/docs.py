@@ -1,4 +1,5 @@
-"""Turn the scheme catalogue (app/catalogue/loader.py: MongoDB or the JSON seed) into retrievable chunks.
+"""
+Turn the scheme catalogue (app/catalogue/loader.py: MongoDB or the JSON seed) into retrievable chunks.
 
 Two levels (parent / child):
   parent = one section of one scheme in one language (overview, eligibility, documents, how_to_apply),
@@ -8,6 +9,7 @@ Two levels (parent / child):
            search for "KMUT" or "PM Kisan" matches every section of that scheme.
 Children are what gets embedded and ranked; the parent text is returned as context.
 """
+
 from __future__ import annotations
 
 from app.catalogue.loader import load_schemes
@@ -18,11 +20,26 @@ CHUNK_FORMAT = 3  # bump when the chunk text layout changes, so stored chunks ar
 MAX_HEADER_ALIASES = 6
 SECTIONS = ("overview", "eligibility", "documents", "how_to_apply")
 LANGS = ("en", "ta", "hi")
-_LABEL = {"overview": "Overview", "eligibility": "Eligibility", "documents": "Documents needed",
-          "how_to_apply": "How to apply"}
+_LABEL = {
+    "overview": "Overview",
+    "eligibility": "Eligibility",
+    "documents": "Documents needed",
+    "how_to_apply": "How to apply",
+}
 
-_OPS = {"eq": "is", "ne": "is not", "in": "is one of", "not_in": "is not one of", "lt": "<", "lte": "<=",
-        "gt": ">", "gte": ">=", "between": "between", "is_true": "is yes", "is_false": "is no"}
+_OPS = {
+    "eq": "is",
+    "ne": "is not",
+    "in": "is one of",
+    "not_in": "is not one of",
+    "lt": "<",
+    "lte": "<=",
+    "gt": ">",
+    "gte": ">=",
+    "between": "between",
+    "is_true": "is yes",
+    "is_false": "is no",
+}
 
 
 def _loc(d, lang: str):
@@ -55,8 +72,12 @@ def _block(e: dict) -> list[str]:
 def scheme_sections(s: dict) -> list[dict]:
     """Parent documents for one scheme."""
     out = []
-    base = {"scheme_id": s["id"], "level": s.get("level") or "", "category": ",".join(s.get("category", [])),
-            "aliases": s.get("aliases", [])[:MAX_HEADER_ALIASES]}
+    base = {
+        "scheme_id": s["id"],
+        "level": s.get("level") or "",
+        "category": ",".join(s.get("category", [])),
+        "aliases": s.get("aliases", [])[:MAX_HEADER_ALIASES],
+    }
     app = s.get("application", {})
     contact = s.get("contact") or {}
     benefit_meta = s.get("benefit", {})
@@ -68,11 +89,16 @@ def scheme_sections(s: dict) -> list[dict]:
         body: dict[str, str] = {}
         benefit = _loc(benefit_meta.get("summary"), lang)
         if benefit:
-            lines = [f"{benefit}.", f"Categories: {base['category'].replace(',', ', ').replace('_', ' ')}."]
+            lines = [
+                f"{benefit}.",
+                f"Categories: {base['category'].replace(',', ', ').replace('_', ' ')}.",
+            ]
             if benefit_meta.get("frequency"):
                 lines.append(f"Paid: {benefit_meta['frequency'].replace('_', ' ')}.")
             if priority:
-                lines.append(f"Priority groups: {', '.join(p.replace('_', ' ') for p in priority)}.")
+                lines.append(
+                    f"Priority groups: {', '.join(p.replace('_', ' ') for p in priority)}."
+                )
             body["overview"] = "\n".join(lines)
         if lang == "en":  # rules and document ids are English-only in the catalogue
             rules = _block(s.get("eligibility", {}))
@@ -96,11 +122,25 @@ def scheme_sections(s: dict) -> list[dict]:
         if helpline_hours:
             extra.append(f"Helpline hours: {helpline_hours}.")
         if where or steps or extra:
-            head = f"Mode: {app.get('mode', '')}. Where: {where}." if where else f"Mode: {app.get('mode', '')}."
-            body["how_to_apply"] = "\n".join([head] + [f"{i}. {st}" for i, st in enumerate(steps, 1)] + extra)
+            head = (
+                f"Mode: {app.get('mode', '')}. Where: {where}."
+                if where
+                else f"Mode: {app.get('mode', '')}."
+            )
+            body["how_to_apply"] = "\n".join(
+                [head] + [f"{i}. {st}" for i, st in enumerate(steps, 1)] + extra
+            )
         for section, text in body.items():
-            out.append({**base, "id": f"{s['id']}#{section}#{lang}", "section": section, "lang": lang,
-                        "name": name, "text": text})
+            out.append(
+                {
+                    **base,
+                    "id": f"{s['id']}#{section}#{lang}",
+                    "section": section,
+                    "lang": lang,
+                    "name": name,
+                    "text": text,
+                }
+            )
     return out
 
 
@@ -108,9 +148,11 @@ def split_section(p: dict) -> list[dict]:
     aka = f" ({', '.join(p['aliases'])})" if p.get("aliases") else ""
     header = f"{p['name']}{aka} | {_LABEL[p['section']]}\n"
     pieces = recursive_split(p["text"], config.CHUNK_SIZE, config.CHUNK_OVERLAP)
-    return [{k: p[k] for k in ("scheme_id", "level", "category", "section", "lang")}
-            | {"id": f"{p['id']}#{i}", "parent_id": p["id"], "text": (header + piece)[:2000]}
-            for i, piece in enumerate(pieces)]
+    return [
+        {k: p[k] for k in ("scheme_id", "level", "category", "section", "lang")}
+        | {"id": f"{p['id']}#{i}", "parent_id": p["id"], "text": (header + piece)[:2000]}
+        for i, piece in enumerate(pieces)
+    ]
 
 
 def all_sections() -> list[dict]:

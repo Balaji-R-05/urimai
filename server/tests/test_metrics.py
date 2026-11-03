@@ -1,5 +1,6 @@
 """Usage counters (app/core/metrics.py): the counters themselves, the MongoDB flush, and that the
 orchestrator/llm/retrieval/normalise hooks actually move them."""
+
 import pytest
 from app.core import config, metrics
 
@@ -33,8 +34,11 @@ def test_flush_once_inserts_a_snapshot_doc(monkeypatch):
         def insert_one(self, doc):
             inserted.append(doc)
 
-    monkeypatch.setattr(db, "shared",
-                        lambda: {config.MONGODB_DB: {config.MONGODB_METRICS_COLLECTION: FakeCollection()}})
+    monkeypatch.setattr(
+        db,
+        "shared",
+        lambda: {config.MONGODB_DB: {config.MONGODB_METRICS_COLLECTION: FakeCollection()}},
+    )
     metrics.inc("sessions_started")
     metrics._flush_once()
     assert len(inserted) == 1
@@ -51,8 +55,11 @@ def test_flush_once_swallows_insert_failures(monkeypatch):
         def insert_one(self, doc):
             raise PyMongoError("boom")
 
-    monkeypatch.setattr(db, "shared",
-                        lambda: {config.MONGODB_DB: {config.MONGODB_METRICS_COLLECTION: FailingCollection()}})
+    monkeypatch.setattr(
+        db,
+        "shared",
+        lambda: {config.MONGODB_DB: {config.MONGODB_METRICS_COLLECTION: FailingCollection()}},
+    )
     metrics._flush_once()  # logs a warning, does not raise
 
 
@@ -99,6 +106,7 @@ async def test_session_completion_is_counted_once(monkeypatch):
 def test_metrics_endpoint_returns_snapshot():
     from app.main import app
     from fastapi.testclient import TestClient
+
     metrics.inc("sessions_started")
     r = TestClient(app).get("/api/metrics")
     assert r.status_code == 200

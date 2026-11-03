@@ -1,4 +1,5 @@
-"""Walkthrough of Urimai's chunking + retrieval + reranking, for judges. Run from server/:
+"""
+Walkthrough of Urimai's chunking + retrieval + reranking, for judges. Run from server/:
 
     python -m app.retrieval.demo                 # all three parts
     python -m app.retrieval.demo --part chunking # 1: how the catalogue becomes chunks
@@ -8,6 +9,7 @@
 
 Runs fully in memory (no LLM). First run downloads the two models (~1.3 GB) into server/.models.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -25,8 +27,11 @@ from app.retrieval.docs import all_chunks, all_sections, split_section
 from app.retrieval.search import _corpus, dense_local, retrieve, rrf, sparse
 
 EVAL = Path(__file__).with_name("eval_queries.json")
-SHOWCASE = ["any help to build a concrete house in my village", "விதவை ஓய்வூதியம்",
-            "what documents do I need for PM-KISAN"]
+SHOWCASE = [
+    "any help to build a concrete house in my village",
+    "விதவை ஓய்வூதியம்",
+    "what documents do I need for PM-KISAN",
+]
 W = 100
 
 
@@ -66,11 +71,16 @@ def part_chunking() -> None:
     parents, chunks = all_sections(), all_chunks()
     sub(f"Corpus (CHUNK_SIZE={config.CHUNK_SIZE}, CHUNK_OVERLAP={config.CHUNK_OVERLAP})")
     lens = [len(c["text"]) for c in chunks]
-    print(f"    {len({p['scheme_id'] for p in parents})} schemes -> {len(parents)} parent sections -> "
-          f"{len(chunks)} child chunks   (chars min/avg/max {min(lens)}/{sum(lens)//len(lens)}/{max(lens)})")
+    print(
+        f"    {len({p['scheme_id'] for p in parents})} schemes -> {len(parents)} parent sections -> "
+        f"{len(chunks)} child chunks   (chars min/avg/max {min(lens)}/{sum(lens) // len(lens)}/{max(lens)})"
+    )
     by = Counter((c["section"], c["lang"]) for c in chunks)
     for sec in ("overview", "eligibility", "documents", "how_to_apply"):
-        print(f"    {sec:<13} " + "  ".join(f"{lang}:{by[(sec, lang)]:>3}" for lang in ("en", "ta", "hi")))
+        print(
+            f"    {sec:<13} "
+            + "  ".join(f"{lang}:{by[(sec, lang)]:>3}" for lang in ("en", "ta", "hi"))
+        )
 
     p = next(x for x in parents if x["id"] == "pm_kisan#how_to_apply#en")
     sub(f"Parent  {p['id']}  ({len(p['text'])} chars)")
@@ -81,18 +91,29 @@ def part_chunking() -> None:
         print(f"  [{c['id']}]\n" + indent(c["text"]))
 
     size, ov = 60, 25
-    sub(f"Same parent, stress-tested at CHUNK_SIZE={size}, OVERLAP={ov}: watch the recursion and the overlap")
+    sub(
+        f"Same parent, stress-tested at CHUNK_SIZE={size}, OVERLAP={ov}: watch the recursion and the overlap"
+    )
     pieces = recursive_split(p["text"], size, ov)
     for i, piece in enumerate(pieces):
         o = _overlap(pieces[i - 1], piece) if i else 0
         shown = (f"«{piece[:o]}»" + piece[o:]) if o else piece
-        print(f"  #{i}  {len(piece):>3} chars" + (f", {o} overlap «»" if o else "") + "\n" + indent(shown))
+        print(
+            f"  #{i}  {len(piece):>3} chars"
+            + (f", {o} overlap «»" if o else "")
+            + "\n"
+            + indent(shown)
+        )
     too_long = sum(len(line) > size for line in p["text"].split("\n"))
-    print(f"\n  Lines that fit in {size} chars split at '\\n' and are merged back up to the limit; the {too_long}"
-          f" longer line(s)\n  recurse to '. ' / ', ' / ' '. «» marks text repeated from the previous chunk.")
+    print(
+        f"\n  Lines that fit in {size} chars split at '\\n' and are merged back up to the limit; the {too_long}"
+        f" longer line(s)\n  recurse to '. ' / ', ' / ' '. «» marks text repeated from the previous chunk."
+    )
 
     t = max((x for x in parents if x["lang"] == "ta"), key=lambda x: len(x["text"]))
-    sub(f"Tamil works the same way  (longest Tamil section {t['id']}, {len(t['text'])} chars, CHUNK_SIZE=120)")
+    sub(
+        f"Tamil works the same way  (longest Tamil section {t['id']}, {len(t['text'])} chars, CHUNK_SIZE=120)"
+    )
     for i, piece in enumerate(recursive_split(t["text"], 120, 30)):
         print(f"  #{i}  {len(piece):>3} chars\n" + indent(piece))
 
@@ -131,14 +152,27 @@ def part_pipeline(queries: list[str]) -> None:
         f = list(rrf(d, b))
         final = retrieve(q, k=n)
         ms = (time.perf_counter() - t0) * 1000
-        cols = [("A dense", _dedupe(d, n)), ("B BM25", _dedupe(b, n)), ("C RRF", _dedupe(f, n)),
-                ("D reranked", [f"{h['score']:.2f} {_label(h)}" for h in final])]
+        cols = [
+            ("A dense", _dedupe(d, n)),
+            ("B BM25", _dedupe(b, n)),
+            ("C RRF", _dedupe(f, n)),
+            ("D reranked", [f"{h['score']:.2f} {_label(h)}" for h in final]),
+        ]
         cw = 34
         print("  " + "".join(f"{name:<{cw}}" for name, _ in cols))
         for i in range(n):
-            print("  " + "".join(f"{(col[i] if i < len(col) else ''):<{cw}}"[:cw - 1].ljust(cw) for _, col in cols))
+            print(
+                "  "
+                + "".join(
+                    f"{(col[i] if i < len(col) else ''):<{cw}}"[: cw - 1].ljust(cw)
+                    for _, col in cols
+                )
+            )
         top = final[0]
-        print(f"\n  Answer context ({top['parent_id'].rsplit('#', 1)[0]}#{top['lang']}):\n" + indent(top["context"], "    | "))
+        print(
+            f"\n  Answer context ({top['parent_id'].rsplit('#', 1)[0]}#{top['lang']}):\n"
+            + indent(top["context"], "    | ")
+        )
         print(f"  ({ms:.0f} ms)")
 
 
@@ -150,7 +184,9 @@ def _scheme_rank(labels: list[str], gold: set[str]) -> int | None:
 
 def part_eval() -> None:
     items = json.loads(EVAL.read_text(encoding="utf-8"))
-    banner(f"3. EVALUATION: {len(items)} queries (en / ta / hi, keyword and paraphrase), scheme-level")
+    banner(
+        f"3. EVALUATION: {len(items)} queries (en / ta / hi, keyword and paraphrase), scheme-level"
+    )
     systems = {
         "A dense only": lambda q: dense_local(q, config.CANDIDATES, None, None),
         "B BM25 only": lambda q: sparse(q, config.CANDIDATES, None, None),
@@ -174,16 +210,21 @@ def part_eval() -> None:
     n = len(items)
     print(f"\n  {'system':<20} {'hit@1':>8} {'hit@3':>8} {'MRR':>6} {'ms/query':>9}")
     for name, h1, h3, mrr, ms in rows:
-        print(f"  {name:<20} {h1/n:>7.0%} {h3/n:>8.0%} {mrr:>6.2f} {ms:>9.0f}")
+        print(f"  {name:<20} {h1 / n:>7.0%} {h3 / n:>8.0%} {mrr:>6.2f} {ms:>9.0f}")
 
     sec_items = [it for it in items if it.get("section")]
     ok = sum(retrieve(it["q"], 1)[0]["section"] == it["section"] for it in sec_items)
-    print(f"\n  Section intent (top hit is the right section, e.g. 'documents' for a documents question): "
-          f"{ok}/{len(sec_items)}")
+    print(
+        f"\n  Section intent (top hit is the right section, e.g. 'documents' for a documents question): "
+        f"{ok}/{len(sec_items)}"
+    )
     for name in systems:
         if misses.get(name):
-            print(f"  missed at rank 1 by {name}: " + "; ".join(misses[name][:6])
-                  + (" ..." if len(misses[name]) > 6 else ""))
+            print(
+                f"  missed at rank 1 by {name}: "
+                + "; ".join(misses[name][:6])
+                + (" ..." if len(misses[name]) > 6 else "")
+            )
 
 
 def main() -> int:
@@ -191,9 +232,13 @@ def main() -> int:
         sys.stdout.reconfigure(encoding="utf-8")
     warnings.filterwarnings("ignore")
     logging.basicConfig(level=logging.ERROR)
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     ap.add_argument("--part", choices=["chunking", "pipeline", "eval", "all"], default="all")
-    ap.add_argument("-q", "--query", action="append", help="query for the pipeline part (repeatable)")
+    ap.add_argument(
+        "-q", "--query", action="append", help="query for the pipeline part (repeatable)"
+    )
     a = ap.parse_args()
 
     if a.part in ("chunking", "all"):

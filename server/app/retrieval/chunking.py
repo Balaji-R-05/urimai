@@ -1,9 +1,11 @@
-"""Recursive character splitter (LangChain-style, no dependency).
+"""
+Recursive character splitter (LangChain-style, no dependency).
 
 Try the coarsest separator first (paragraph, line, sentence, clause, word). Any piece still longer than
 `size` is split again with the next separator. Small pieces are then merged back up to `size`, with
 `overlap` characters carried into the next chunk so a fact on a boundary appears whole in at least one chunk.
 """
+
 from __future__ import annotations
 
 import re
@@ -11,7 +13,9 @@ import re
 SEPARATORS = ("\n\n", "\n", ". ", "। ", "; ", ", ", " ", "")
 
 
-_SENTENCE = re.compile(r"(?<=\D\. )")  # after ". ", but not "1. " (numbered steps stay with their text)
+_SENTENCE = re.compile(
+    r"(?<=\D\. )"
+)  # after ". ", but not "1. " (numbered steps stay with their text)
 
 
 def _split(text: str, sep: str) -> list[str]:
@@ -41,13 +45,14 @@ def _merge(pieces: list[str], size: int, overlap: int) -> list[str]:
     return [c for c in chunks if c]
 
 
-def recursive_split(text: str, size: int = 300, overlap: int = 60,
-                    separators: tuple[str, ...] = SEPARATORS) -> list[str]:
+def recursive_split(
+    text: str, size: int = 300, overlap: int = 60, separators: tuple[str, ...] = SEPARATORS
+) -> list[str]:
     text = text.strip()
     if len(text) <= size:
         return [text] if text else []
     sep = next((s for s in separators if s == "" or s in text), "")
-    rest = separators[separators.index(sep) + 1:] if sep else ()
+    rest = separators[separators.index(sep) + 1 :] if sep else ()
     out: list[str] = []
     good: list[str] = []  # pieces that fit, waiting to be merged
     for p in _split(text, sep):

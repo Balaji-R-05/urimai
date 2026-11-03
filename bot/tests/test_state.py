@@ -13,6 +13,7 @@ def _clean_registries():
 
 # ---------- get / reset ----------
 
+
 def test_get_creates_and_reuses_the_same_state():
     a = state.get(1)
     b = state.get(1)
@@ -50,6 +51,7 @@ def test_session_id_is_namespaced_by_chat_id():
 
 # ---------- lock ----------
 
+
 def test_lock_is_reused_per_chat_and_distinct_across_chats():
     l1 = state.lock(1)
     assert state.lock(1) is l1
@@ -57,6 +59,7 @@ def test_lock_is_reused_per_chat_and_distinct_across_chats():
 
 
 # ---------- LRU eviction ----------
+
 
 def test_eviction_drops_the_least_recently_touched_chat(monkeypatch):
     monkeypatch.setattr(state, "MAX_CHATS", 2)

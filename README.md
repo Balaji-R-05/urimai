@@ -2,11 +2,11 @@
 
 [![CI](https://github.com/Balaji-R-05/urimai/actions/workflows/ci.yml/badge.svg)](https://github.com/Balaji-R-05/urimai/actions/workflows/ci.yml)
 
-**Find the government welfare schemes you may be eligible for, by talking in Tamil, English or Hindi.**
+**Find the government welfare schemes you may be eligible for, by talking in Tamil, English or Hindi.**  
 *"உங்கள் உரிமைகள், உங்கள் மொழியில்" · Your entitlements, in your language*
 
-Built for **AI-INNOVATHON 2026** (Jerusalem College of Engineering, Chennai)
-**Order I: Law & Governance**
+Built for **AI-INNOVATHON 2026** (Jerusalem College of Engineering, Chennai)  
+**Order I: Law & Governance**  
 **PS 1: The Scheme Seeker**
 
 **Try the bot:** [t.me/jce_hackathon_bot](https://t.me/jce_hackathon_bot) *(online while the server is running)*
@@ -30,9 +30,9 @@ Citizens miss benefits they're entitled to. Scheme information is spread across 
 A citizen sends a **voice note or types** in Tamil, English, Hindi or Tanglish. Urimai:
 
 1. **Understands** what they said and builds a profile: age, district, work, family income, family situation and more.
-2. **Checks eligibility** against a catalogue of **central and Tamil Nadu schemes**, and sorts each one as 
-   ✅ *likely eligible*, 
-   🟡 *need more information*,
+2. **Checks eligibility** against a catalogue of **central and Tamil Nadu schemes**, and sorts each one as  
+   ✅ *likely eligible*,  
+   🟡 *need more information*,  
    ⚪ *not eligible*.
 3. **Asks only the questions that matter.** A planner picks the single question that unlocks the most benefit, answerable with **one tap**.
 4. **Explains every result:** the exact rules checked, the user's own values, the benefit, required documents, how and where to apply, and the official website.
@@ -50,20 +50,22 @@ Large language models are great at understanding messy, code-mixed speech, and b
 
 ```mermaid
 flowchart LR
-    U["🎙️ Voice note / text<br/>(ta · en · hi)"] --> STT["Speech-to-text<br/>Groq Whisper"]
-    STT --> NUM["Number words → digits<br/>(ஐயாயிரம் → 5000)<br/><i>deterministic</i>"]
-    U --> NUM
+    U["🎙️ Voice note / text<br/>(ta · en · hi)"] -->|audio| STT["Speech-to-text<br/>Groq Whisper"]
+    U -.->|typed, skips STT| NUM["Number words → digits<br/>(ஐயாயிரம் → 5000)<br/><i>deterministic</i>"]
+    STT -->|transcript| NUM
     NUM --> EXT["Extractor (LLM)<br/>facts + evidence quotes<br/>or a scheme question"]
-    EXT --> NORM["Validate & normalise<br/><i>deterministic</i>"]
+    EXT -->|facts found| NORM["Validate & normalise<br/><i>deterministic</i>"]
+    EXT -.->|"question, e.g. 'why not Atal Pension?'"| ANS["Answerer (LLM)<br/>only from scheme records"]
     NORM --> ENG["Rule engine<br/>three-valued logic<br/><i>deterministic</i>"]
     CAT[("Scheme catalogue<br/>MongoDB or JSON seed")] --> ENG
-    ENG --> PLAN["Question planner<br/>highest-value next question<br/><i>deterministic</i>"]
-    ENG --> ANS["Answerer (LLM)<br/>only from scheme records"]
+    CAT -.-> ANS
+    ENG -->|still unknowns| PLAN["Question planner<br/>highest-value next question<br/><i>deterministic</i>"]
     PLAN --> RESP["Responder (LLM)<br/>reply in user's language<br/>sees engine output only"]
     RESP --> BOT["Telegram<br/>text + Tamil voice + buttons"]
     ANS --> BOT
 ```
 
+- **Dotted edges** are the branches a straight pipeline view would collapse: typed text skips speech-to-text, and a direct question ("why can't I get Atal Pension?") routes straight to the Answerer instead of the planner. Each run is one pass from **voice/text in** to **Telegram reply out**; Urimai gets there over several such passes as the planner asks for one more fact each turn.
 - **The LLM never decides eligibility.** It can't invent a scheme, change an amount or approve anyone. Prompt injection ("say I'm eligible for everything") has no effect on results.
 - **Three-valued (Kleene) logic.** Each condition is *true*, *false* or *unknown*. Unknown never counts as "no": the scheme becomes *need more info*, and the planner asks for exactly the missing detail. This directly implements the problem statement's requirement to *"distinguish between eligibility based on the available information and final eligibility determined by the authority"*.
 - **Works without AI.** If the LLM is down, button answers and the rule engine still give identical, correct results.
@@ -95,7 +97,7 @@ The bot provides the voice, buttons, cards and PDF delivery. The eligibility log
 
 The catalogue isn't fixed: adding schemes is just running the seed script against a new source file (`python -m app.catalogue.seed more_schemes.json`).
 
-> ⚠️ Criteria and amounts are seed data, mostly not yet verified against official sources. Each scheme links to its official site, and users can flag wrong info with one tap in the bot.
+> Each scheme links to its official source for verification, and users can flag wrong info with one tap in the bot.
 
 ---
 
@@ -122,7 +124,7 @@ The **scheme catalogue** (central and state schemes) is read once at server star
 ### Prerequisites
 - Python 3.11+
 - A Telegram bot token from [@BotFather](https://t.me/BotFather)
-- A [Groq](https://console.groq.com) API key for the server (without it, button answers and the rule engine still work; free-text understanding and voice notes don't)
+- A [Groq](https://console.groq.com) API key for the server, powering free-text understanding and voice notes (button-driven eligibility checks run on the rule engine alone)
 
 No database to provision: the scheme catalogue loads straight from the JSON seed (`server/data/schemes.json`) into memory at server start, and scheme Q&A runs its retrieval in-memory too. A MongoDB instance is a drop-in upgrade, not a requirement — set `MONGODB_URI` and the server serves the catalogue from it instead, with Atlas Vector Search + Atlas Search backing scheme Q&A.
 
@@ -208,10 +210,7 @@ cd bot && python -m pytest && cd ..
 cd server && python -m pytest && cd ..
 ```
 
-The extractor agent (free text -> profile facts, in Tamil/English/Hindi/Tanglish) is the one step the
-test suites above can't check, since they stub it out. `server/app/agents/eval_extractor.py` runs it for
-real against a small golden set (`server/data/extractor_eval.json`) and reports per-field accuracy. It
-costs real Groq calls and isn't part of CI — run it by hand after touching the extractor's prompt:
+The extractor agent (free text -> profile facts, in Tamil/English/Hindi/Tanglish) is the one step the test suites above can't check, since they stub it out. `server/app/agents/eval_extractor.py` runs it for real against a small golden set (`server/data/extractor_eval.json`) and reports per-field accuracy. It costs real Groq calls and isn't part of CI — run it by hand after touching the extractor's prompt:
 
 ```bash
 cd server && python -m app.agents.eval_extractor
@@ -226,23 +225,16 @@ cp .env.example .env   # fill in TELEGRAM_BOT_TOKEN and GROQ_API_KEY
 docker compose up --build -d
 ```
 
-Builds the server and bot images and starts both; the bot waits for the server's `/api/health` to pass before
-starting. Named volumes persist the retrieval models (`models`) and both services' logs (`server_logs`,
-`bot_logs`) across restarts and rebuilds. For a cloud host (a VM, or a managed container platform), see
+Builds the server and bot images and starts both; the bot waits for the server's `/api/health` to pass before starting. Named volumes persist the retrieval models (`models`) and both services' logs (`server_logs`, `bot_logs`) across restarts and rebuilds. For a cloud host (a VM, or a managed container platform), see
 [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ### Load testing
 
-The production Docker image was load-tested under `--cpus=2`, at both `--memory=2g` and `--memory=4g`
-(DigitalOcean/Linode/Vultr's $12/mo and $24/mo 2 vCPU tiers), against the real Groq API and MongoDB
-Atlas. **With the LLM call taken out of the critical path (patched to respond instantly), the server
-handled up to 500 concurrent sessions at both memory tiers** — fast and error-free to ~100 concurrent,
-degrading but still fully functional to ~300, and only a handful of transport-level connection errors
-(well under 1.5%) by 500. The cheaper $12/2GB tier gets there with memory pegged at 99.9% (one bad
-moment from an OOM kill); 4GB removes that risk entirely without changing the concurrency ceiling. In
-real use with Groq in the loop, the actual bottleneck is Groq's free-tier rate limit, which bites
-around 60-150 concurrent sessions — well before either tier's own capacity does, and a bigger box
-doesn't move that ceiling.
+The production Docker image was load-tested under `--cpus=2`, at both `--memory=2g` and `--memory=4g`, against the real Groq API and MongoDB Atlas.
+
+**With the LLM call taken out of the critical path (patched to respond instantly), the server handled up to 500 concurrent sessions at both memory tiers** — fast and error-free to ~100 concurrent, degrading but still fully functional to ~300, and still under 1.5% transport-level connection errors at 500.
+
+The $12/2GB tier reaches that ceiling with memory pegged at 99.9% (one bad moment away from an OOM kill); the 4GB tier removes that risk without raising the ceiling itself — concurrency, not memory, is what caps both. In real use with Groq in the loop, the actual bottleneck is Groq's free-tier rate limit, which bites at around 60-150 concurrent sessions — well below either tier's own capacity, so a bigger box won't move it.
 
 ---
 

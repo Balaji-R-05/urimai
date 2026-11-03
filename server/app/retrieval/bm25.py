@@ -1,8 +1,10 @@
-"""Tiny Okapi BM25 over words + character 4-grams.
+"""
+Tiny Okapi BM25 over words + character 4-grams.
 
 The 4-grams let Tamil / Hindi inflections (ஓய்வூதியம் / ஓய்வூதியத்தை) still share terms, and catch
 partial matches like "kisan" in "pm-kisan". Corpus is a few hundred chunks, so it lives in memory.
 """
+
 from __future__ import annotations
 
 import math
@@ -17,7 +19,7 @@ def tokenize(text: str) -> list[str]:
     for w in _WORD.findall(text.lower()):
         toks.append(w)
         if len(w) > 4:
-            toks.extend("#" + w[i:i + 4] for i in range(len(w) - 3))
+            toks.extend("#" + w[i : i + 4] for i in range(len(w) - 3))
     return toks
 
 
@@ -39,6 +41,11 @@ class BM25:
             for t in q:
                 f = tf.get(t)
                 if f:
-                    s += self.idf[t] * f * (self.k1 + 1) / (f + self.k1 * (1 - self.b + self.b * dl / self.avg))
+                    s += (
+                        self.idf[t]
+                        * f
+                        * (self.k1 + 1)
+                        / (f + self.k1 * (1 - self.b + self.b * dl / self.avg))
+                    )
             out.append(s)
         return out

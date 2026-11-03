@@ -19,66 +19,26 @@ S: dict[str, dict[str, str]] = {
         "ta": "இது தோராயமான தகவல் மட்டுமே. இறுதித் தகுதியை சம்பந்தப்பட்ட அரசுத் துறை தீர்மானிக்கும்.",
         "hi": "यह केवल अनुमान है। अंतिम पात्रता संबंधित सरकारी विभाग तय करेगा।",
     },
-    "heard": {
-        "en": "🎙️ I heard:",
-        "ta": "🎙️ கேட்டது:",
-        "hi": "🎙️ सुना:"
-    },
-    "understood": {
-        "en": "📋 Got it:",
-        "ta": "📋 புரிந்தது:",
-        "hi": "📋 समझा:"
-    },
-    "corrected": {
-        "en": "✏️ Updated:",
-        "ta": "✏️ திருத்தம்:",
-        "hi": "✏️ बदला:"
-    },
+    "heard": {"en": "🎙️ I heard:", "ta": "🎙️ கேட்டது:", "hi": "🎙️ सुना:"},
+    "understood": {"en": "📋 Got it:", "ta": "📋 புரிந்தது:", "hi": "📋 समझा:"},
+    "corrected": {"en": "✏️ Updated:", "ta": "✏️ திருத்தம்:", "hi": "✏️ बदला:"},
     "card_title": {
         "en": "🎯 Schemes for you",
         "ta": "🎯 உங்களுக்கான திட்டங்கள்",
         "hi": "🎯 आपके लिए योजनाएँ",
     },
-    "likely": {
-        "en": "Likely",
-        "ta": "வாய்ப்புள்ளவை",
-        "hi": "संभावित"
-    },
-    "need_info": {
-        "en": "Need info",
-        "ta": "தகவல் தேவை",
-        "hi": "जानकारी चाहिए"
-    },
-    "not_eligible": {
-        "en": "Not eligible",
-        "ta": "தகுதியில்லை",
-        "hi": "पात्र नहीं"
-    },
-    "per_year": {
-        "en": "a year",
-        "ta": "ஆண்டுக்கு",
-        "hi": "प्रति वर्ष"
-    },
+    "likely": {"en": "Likely", "ta": "வாய்ப்புள்ளவை", "hi": "संभावित"},
+    "need_info": {"en": "Need info", "ta": "தகவல் தேவை", "hi": "जानकारी चाहिए"},
+    "not_eligible": {"en": "Not eligible", "ta": "தகுதியில்லை", "hi": "पात्र नहीं"},
+    "per_year": {"en": "a year", "ta": "ஆண்டுக்கு", "hi": "प्रति वर्ष"},
     "no_results": {
         "en": "No likely schemes yet — tell me a bit more about yourself.",
         "ta": "இன்னும் திட்டங்கள் கண்டறியப்படவில்லை — உங்களைப் பற்றி இன்னும் கொஞ்சம் சொல்லுங்கள்.",
         "hi": "अभी कोई संभावित योजना नहीं — अपने बारे में थोड़ा और बताइए।",
     },
-    "btn_docs": {
-        "en": "📄 Documents",
-        "ta": "📄 ஆவணங்கள்",
-        "hi": "📄 दस्तावेज़"
-    },
-    "btn_back": {
-        "en": "◀ Back",
-        "ta": "◀ பின்செல்",
-        "hi": "◀ वापस"
-    },
-    "btn_retry": {
-        "en": "🔁 Retry",
-        "ta": "🔁 மீண்டும் முயற்சி",
-        "hi": "🔁 फिर से"
-    },
+    "btn_docs": {"en": "📄 Documents", "ta": "📄 ஆவணங்கள்", "hi": "📄 दस्तावेज़"},
+    "btn_back": {"en": "◀ Back", "ta": "◀ பின்செல்", "hi": "◀ वापस"},
+    "btn_retry": {"en": "🔁 Retry", "ta": "🔁 மீண்டும் முயற்சி", "hi": "🔁 फिर से"},
     "docs_title": {
         "en": "📄 Documents to keep ready",
         "ta": "📄 தயார் செய்ய வேண்டிய ஆவணங்கள்",
@@ -99,11 +59,7 @@ S: dict[str, dict[str, str]] = {
         "ta": "இன்னும் ஆவணங்கள் இல்லை — முதலில் திட்டங்களைக் கண்டறிவோம்.",
         "hi": "अभी कोई दस्तावेज़ नहीं — पहले योजनाएँ ढूँढते हैं।",
     },
-    "status_likely": {
-        "en": "looks likely",
-        "ta": "வாய்ப்புள்ளது",
-        "hi": "संभावित"
-    },
+    "status_likely": {"en": "looks likely", "ta": "வாய்ப்புள்ளது", "hi": "संभावित"},
     "status_need_info": {
         "en": "need more info",
         "ta": "மேலும் தகவல் தேவை",
@@ -114,18 +70,10 @@ S: dict[str, dict[str, str]] = {
         "ta": "தகுதியில்லை",
         "hi": "पात्र नहीं",
     },
-    "why": {
-        "en": "Why", "ta": "ஏன்", "hi": "क्यों"
-    },
-    "reason": {
-        "en": "Reason", "ta": "காரணம்", "hi": "कारण"
-    },
-    "tell_me": {
-        "en": "Still need", "ta": "இன்னும் தேவை", "hi": "और चाहिए"
-    },
-    "documents": {
-        "en": "Documents", "ta": "ஆவணங்கள்", "hi": "दस्तावेज़"
-    },
+    "why": {"en": "Why", "ta": "ஏன்", "hi": "क्यों"},
+    "reason": {"en": "Reason", "ta": "காரணம்", "hi": "कारण"},
+    "tell_me": {"en": "Still need", "ta": "இன்னும் தேவை", "hi": "और चाहिए"},
+    "documents": {"en": "Documents", "ta": "ஆவணங்கள்", "hi": "दस्तावेज़"},
     "how": {
         "en": "How to apply",
         "ta": "எப்படி விண்ணப்பிப்பது",
@@ -142,13 +90,19 @@ S: dict[str, dict[str, str]] = {
         "hi": "⚠️ इनमें से केवल एक मिल सकती है: {names}",
     },
     "deadline": {
-        "en": "Deadline", "ta": "இறுதி நாள்", "hi": "अंतिम तिथि",
+        "en": "Deadline",
+        "ta": "இறுதி நாள்",
+        "hi": "अंतिम तिथि",
     },
     "contact": {
-        "en": "Contact", "ta": "தொடர்பு", "hi": "संपर्क",
+        "en": "Contact",
+        "ta": "தொடர்பு",
+        "hi": "संपर्क",
     },
     "priority_for": {
-        "en": "Priority for", "ta": "முன்னுரிமை", "hi": "प्राथमिकता",
+        "en": "Priority for",
+        "ta": "முன்னுரிமை",
+        "hi": "प्राथमिकता",
     },
     "btn_feedback": {
         "en": "⚠️ Report wrong info",
@@ -215,6 +169,13 @@ S: dict[str, dict[str, str]] = {
         "ta": "🔄 புதிதாகத் தொடங்குகிறோம்.",
         "hi": "🔄 नई शुरुआत।",
     },
+    "voice_pref_prompt": {
+        "en": "Would you like voice replies too, or text only? You can change this later with /voice.",
+        "ta": "குரல் பதில்களும் வேண்டுமா, அல்லது உரை மட்டும் போதுமா? பிறகு /voice மூலம் மாற்றலாம்.",
+        "hi": "क्या आपको आवाज़ में जवाब भी चाहिए, या सिर्फ़ टेक्स्ट? बाद में /voice से बदल सकते हैं।",
+    },
+    "btn_voice_and_text": {"en": "🔊 Text + voice", "ta": "🔊 உரை + குரல்", "hi": "🔊 टेक्स्ट + आवाज़"},
+    "btn_text_only": {"en": "🔇 Text only", "ta": "🔇 உரை மட்டும்", "hi": "🔇 सिर्फ़ टेक्स्ट"},
     "voice_on": {
         "en": "🔊 Voice replies ON",
         "ta": "🔊 குரல் பதில்கள் இயக்கத்தில்",

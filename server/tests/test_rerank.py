@@ -1,5 +1,6 @@
 """Regression tests for the MIN_POOL short-circuit (b99ddc5): the cross-encoder is skipped below
 MIN_POOL candidates, falling back to RRF order the same way an unavailable model already does."""
+
 from app.retrieval import rerank as rerank_module
 from app.retrieval.rerank import MIN_POOL, rerank
 

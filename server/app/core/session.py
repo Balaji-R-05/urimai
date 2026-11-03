@@ -1,4 +1,8 @@
-"""In-memory session store. No database; nothing persists after expiry (privacy by design)."""
+"""
+In-memory session store.
+No database; nothing persists after expiry (privacy by design).
+"""
+
 from __future__ import annotations
 
 import asyncio
@@ -13,15 +17,17 @@ class Session:
     id: str
     profile: dict = field(default_factory=dict)
     evidence: dict = field(default_factory=dict)
-    asked: dict = field(default_factory=dict)      # field -> times asked
+    asked: dict = field(default_factory=dict)  # field -> times asked
     skipped: set = field(default_factory=set)
-    history: list = field(default_factory=list)    # [{"role": "user"|"assistant", "text": str}]
+    history: list = field(default_factory=list)  # [{"role": "user"|"assistant", "text": str}]
     last_field: str | None = None
     turn: int = 0
     last_response: dict | None = None
     updated_at: float = field(default_factory=time.time)
     lock: asyncio.Lock = field(default_factory=asyncio.Lock)
-    completed: bool = False  # counted once in app/core/metrics when the interview first runs out of questions
+    completed: bool = (
+        False  # counted once in app/core/metrics when the interview first runs out of questions
+    )
 
 
 _sessions: dict[str, Session] = {}

@@ -1,9 +1,11 @@
-"""Scheme document schema (v1): the one definition of a valid scheme, for the JSON seed and MongoDB alike.
+"""
+Scheme document schema (v1): the one definition of a valid scheme, for the JSON seed and MongoDB alike.
 
 Used by the seed command and the loader. Export it as JSON Schema (for editors, data preparers and a MongoDB
 validator) with:  python -m app.catalogue.schema  -> data/scheme.schema.json
 Field-by-field guide: data/SCHEMES.md
 """
+
 from __future__ import annotations
 
 import datetime as dt
@@ -20,14 +22,48 @@ SCHEMA_VERSION = 1
 
 STATES = tuple(sorted(set(STATE_CODES.values())))
 CATEGORIES = (
-    "agriculture", "banking", "business", "child_welfare", "disability", "education", "employment", "energy",
-    "fisheries", "food_security", "health", "housing", "income_support", "insurance", "legal_aid", "livestock",
-    "maternity", "minority_welfare", "pension", "savings", "sc_st_welfare", "senior_citizens", "skill_development",
-    "sports_culture", "transport", "water_sanitation", "women",
+    "agriculture",
+    "banking",
+    "business",
+    "child_welfare",
+    "disability",
+    "education",
+    "employment",
+    "energy",
+    "fisheries",
+    "food_security",
+    "health",
+    "housing",
+    "income_support",
+    "insurance",
+    "legal_aid",
+    "livestock",
+    "maternity",
+    "minority_welfare",
+    "pension",
+    "savings",
+    "sc_st_welfare",
+    "senior_citizens",
+    "skill_development",
+    "sports_culture",
+    "transport",
+    "water_sanitation",
+    "women",
 )
 OP_NAMES = ("eq", "ne", "in", "not_in", "lt", "lte", "gt", "gte", "between", "is_true", "is_false")
 BENEFIT_FREQUENCIES = ("one_time", "monthly", "quarterly", "annual", "ongoing")
-PRIORITY_GROUPS = ("sc", "st", "obc", "mbc", "bc", "minority", "women", "disability", "senior_citizen", "bpl")
+PRIORITY_GROUPS = (
+    "sc",
+    "st",
+    "obc",
+    "mbc",
+    "bc",
+    "minority",
+    "women",
+    "disability",
+    "senior_citizen",
+    "bpl",
+)
 FieldName = Literal[tuple(sorted(set(FIELDS) | set(DERIVED)))]  # type: ignore[valid-type]
 DocId = Literal[tuple(sorted(DOC_LABELS))]  # type: ignore[valid-type]
 Category = Literal[CATEGORIES]  # type: ignore[valid-type]
@@ -45,6 +81,7 @@ class Strict(BaseModel):
 
 class Text(Strict):
     """User-facing text. English is required; Tamil and Hindi fall back to English when missing."""
+
     en: str = Field(min_length=1)
     ta: str | None = None
     hi: str | None = None
@@ -58,17 +95,22 @@ class TextList(Strict):
 
 class Condition(Strict):
     """One machine-checkable rule on a profile field, e.g. {"field": "age", "op": "gte", "value": 60}."""
+
     field: FieldName
     op: Literal[OP_NAMES]  # type: ignore[valid-type]
     value: Any = None
-    text: Text | None = Field(None, description="Override the auto-generated rule text shown to users")
+    text: Text | None = Field(
+        None, description="Override the auto-generated rule text shown to users"
+    )
 
     @model_validator(mode="after")
     def _value_matches_field(self):
         meta = FIELDS.get(self.field) or {"type": "bool"}  # every DERIVED field is a yes/no fact
         t, op, v = meta["type"], self.op, self.value
         if t == "children":
-            raise ValueError("'children' can't be used in rules; use a derived field such as has_girl_child_under_10")
+            raise ValueError(
+                "'children' can't be used in rules; use a derived field such as has_girl_child_under_10"
+            )
         if op in ("is_true", "is_false"):
             if t != "bool":
                 raise ValueError(f"'{op}' only works on yes/no fields; '{self.field}' is {t}")
@@ -92,7 +134,11 @@ class Condition(Strict):
             for x in v:
                 _check_value(self.field, t, meta, x)
         else:
-            if op in ("lt", "lte", "gt", "gte") and t not in ("int", "float") and self.field != "education_level":
+            if (
+                op in ("lt", "lte", "gt", "gte")
+                and t not in ("int", "float")
+                and self.field != "education_level"
+            ):
                 raise ValueError(f"'{op}' needs a number field; '{self.field}' is {t}")
             _check_value(self.field, t, meta, v)
         return self
@@ -117,8 +163,11 @@ def _check_value(field: str, t: str, meta: dict, x) -> None:
 
 
 class Eligibility(Strict):
-    """all: every rule must pass. any: at least one must pass. none: none may be true.
-    other: requirements the engine can't check (shown to the user as "please check")."""
+    """
+    all: every rule must pass. any: at least one must pass. none: none may be true.
+    other: requirements the engine can't check (shown to the user as "please check").
+    """
+
     all: list[Condition] = []
     any: list[Condition] = []
     none: list[Condition] = []
@@ -127,21 +176,32 @@ class Eligibility(Strict):
     @model_validator(mode="after")
     def _has_a_rule(self):
         if not (self.all or self.any or self.none):
-            raise ValueError("needs at least one rule in all / any / none; "
-                             "a scheme with only 'other' text would look likely for everyone")
+            raise ValueError(
+                "needs at least one rule in all / any / none; "
+                "a scheme with only 'other' text would look likely for everyone"
+            )
         return self
 
 
 class Benefit(Strict):
     summary: Text
-    annual_cash_value_inr: int = Field(0, ge=0, description="Cash per year, for ranking; 0 if not cash")
-    cover_highlight: Text | None = Field(None, description="Non-cash headline, e.g. '₹5 lakh health cover'")
-    frequency: Literal[BENEFIT_FREQUENCIES] | None = Field(None, description=(  # type: ignore[valid-type]
-        "How the benefit recurs: one_time, monthly, quarterly, annual, or ongoing (e.g. insurance cover)"))
+    annual_cash_value_inr: int = Field(
+        0, ge=0, description="Cash per year, for ranking; 0 if not cash"
+    )
+    cover_highlight: Text | None = Field(
+        None, description="Non-cash headline, e.g. '₹5 lakh health cover'"
+    )
+    frequency: Literal[BENEFIT_FREQUENCIES] | None = Field(
+        None,
+        description=(  # type: ignore[valid-type]
+            "How the benefit recurs: one_time, monthly, quarterly, annual, or ongoing (e.g. insurance cover)"
+        ),
+    )
 
 
 class CustomDocument(Strict):
     """A document not in the standard list (fields.DOC_LABELS)."""
+
     id: str = Field(pattern=r"^[a-z0-9_]{2,64}$")
     label: Text
 
@@ -151,10 +211,16 @@ class Application(Strict):
     where: Text | None = None
     url: str | None = Field(None, pattern=r"^https?://")
     steps: TextList | None = None
-    deadline: dt.date | None = Field(None, description="Hard cutoff date (YYYY-MM-DD) to apply, if one exists")
-    window: Text | None = Field(None, description=(
-        "Recurring application period in words, for schemes that aren't open year-round, "
-        "e.g. 'Admission season: June–August each year'"))
+    deadline: dt.date | None = Field(
+        None, description="Hard cutoff date (YYYY-MM-DD) to apply, if one exists"
+    )
+    window: Text | None = Field(
+        None,
+        description=(
+            "Recurring application period in words, for schemes that aren't open year-round, "
+            "e.g. 'Admission season: June–August each year'"
+        ),
+    )
 
     @model_validator(mode="after")
     def _says_how(self):
@@ -165,6 +231,7 @@ class Application(Strict):
 
 class Contact(Strict):
     """A human help channel, for schemes where a phone call or office visit matters."""
+
     phone: str | None = Field(None, pattern=r"^\+?[0-9][0-9\- ]{6,14}[0-9]$")
     email: str | None = Field(None, pattern=r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
     helpline_hours: Text | None = Field(None, description="e.g. 'Mon–Sat, 9am–6pm'")
@@ -177,13 +244,20 @@ class Contact(Strict):
 
 
 class Source(Strict):
-    url: str = Field(pattern=r"^https?://", description="Official page the scheme details come from")
-    origin: str | None = Field(None, description="Where this record came from, e.g. 'manual', 'myscheme.gov.in'")
-    external_id: str | None = Field(None, description="The scheme's id at the origin, for re-imports")
+    url: str = Field(
+        pattern=r"^https?://", description="Official page the scheme details come from"
+    )
+    origin: str | None = Field(
+        None, description="Where this record came from, e.g. 'manual', 'myscheme.gov.in'"
+    )
+    external_id: str | None = Field(
+        None, description="The scheme's id at the origin, for re-imports"
+    )
 
 
 class Verification(Strict):
     """draft: stored but never shown to users. unverified: shown with a 'being verified' note. verified: checked."""
+
     status: Literal["draft", "unverified", "verified"] = "draft"
     last_verified: dt.date | None = None
     verified_by: str | None = None
@@ -201,23 +275,38 @@ class Scheme(Strict):
     id: str = SchemeId
     status: Literal["active", "closed"] = "active"
     level: Literal["central", "state"]
-    state: StateCode | None = Field(None, description="Required for state schemes, null for central")
+    state: StateCode | None = Field(
+        None, description="Required for state schemes, null for central"
+    )
     category: list[Category] = Field(min_length=1)
     name: Text
-    aliases: list[str] = Field([], max_length=20, description=(
-        "Other names people use: abbreviations (KMUT), short forms (PM Kisan), common spellings (Tamil Puthalvan), "
-        "any language. Used by scheme search"))
+    aliases: list[str] = Field(
+        [],
+        max_length=20,
+        description=(
+            "Other names people use: abbreviations (KMUT), short forms (PM Kisan), common spellings (Tamil Puthalvan), "
+            "any language. Used by scheme search"
+        ),
+    )
     benefit: Benefit
     eligibility: Eligibility
     documents: list[DocId | CustomDocument] = []
     application: Application
-    contact: Contact | None = Field(None, description="Human help channel: phone, email and/or helpline hours")
+    contact: Contact | None = Field(
+        None, description="Human help channel: phone, email and/or helpline hours"
+    )
     source: Source
     verification: Verification = Verification()
-    mutually_exclusive_with: list[str] = Field([], description="Ids of schemes a person can't get together with this")
-    priority_groups: list[PriorityGroup] = Field([], description=(  # type: ignore[valid-type]
-        "Display/filter tags for quotas or reservations this scheme targets. Informational only: it does not "
-        "affect eligibility — put the actual rule in eligibility.all / any / none as well"))
+    mutually_exclusive_with: list[str] = Field(
+        [], description="Ids of schemes a person can't get together with this"
+    )
+    priority_groups: list[PriorityGroup] = Field(
+        [],
+        description=(  # type: ignore[valid-type]
+            "Display/filter tags for quotas or reservations this scheme targets. Informational only: it does not "
+            "affect eligibility — put the actual rule in eligibility.all / any / none as well"
+        ),
+    )
 
     @model_validator(mode="after")
     def _state_matches_level(self):
@@ -236,8 +325,10 @@ class Scheme(Strict):
         for i, x in enumerate(v):
             if isinstance(x, str):
                 if x not in DOC_LABELS:
-                    raise ValueError(f"[{i}] unknown document id {x!r}: use a standard id (data/SCHEMES.md) "
-                                     'or a custom one: {"id": "...", "label": {"en": "..."}}')
+                    raise ValueError(
+                        f"[{i}] unknown document id {x!r}: use a standard id (data/SCHEMES.md) "
+                        'or a custom one: {"id": "...", "label": {"en": "..."}}'
+                    )
             elif isinstance(x, dict):
                 try:
                     CustomDocument.model_validate(x)
@@ -304,7 +395,9 @@ def check(docs: list[dict]) -> tuple[list[Scheme], dict[str, list[str]]]:
     for s in list(valid):
         unknown = [o for o in s.mutually_exclusive_with if o not in ids]
         if unknown:
-            errors.setdefault(s.id, []).append(f"mutually_exclusive_with: unknown or invalid scheme(s) {unknown}")
+            errors.setdefault(s.id, []).append(
+                f"mutually_exclusive_with: unknown or invalid scheme(s) {unknown}"
+            )
             valid.remove(s)
     return valid, errors
 
@@ -323,6 +416,7 @@ def export_json_schema() -> dict:
 
 if __name__ == "__main__":
     out = config.SEED_PATH.with_name("scheme.schema.json")
-    out.write_text(json.dumps(export_json_schema(), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    out.write_text(
+        json.dumps(export_json_schema(), ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
     print(f"wrote {out}", file=sys.stderr)
-

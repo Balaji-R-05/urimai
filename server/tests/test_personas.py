@@ -1,4 +1,5 @@
 """Persona suite: every (persona, scheme, expected status) row is one check. The count goes on the slide."""
+
 import json
 from pathlib import Path
 
@@ -14,10 +15,7 @@ SCHEMES = load_schemes()
 BY_ID = {s["id"]: s for s in SCHEMES}
 
 ROWS = [
-    (p["id"], sid, status)
-    for p in PERSONAS
-    for status, ids in p["expect"].items()
-    for sid in ids
+    (p["id"], sid, status) for p in PERSONAS for status, ids in p["expect"].items() for sid in ids
 ]
 
 
@@ -32,10 +30,14 @@ def test_persona_status(pid, scheme_id, status):
     assert scheme_id in BY_ID, f"unknown scheme {scheme_id}"
     _, results = _run(persona)
     r = results[scheme_id]
-    assert r["status"] == status, f"{pid}/{scheme_id}: got {r['status']} ({r['fail_reason'] or r['missing_fields']})"
+    assert r["status"] == status, (
+        f"{pid}/{scheme_id}: got {r['status']} ({r['fail_reason'] or r['missing_fields']})"
+    )
 
 
-@pytest.mark.parametrize("persona", [p for p in PERSONAS if p.get("conflicts")], ids=lambda p: p["id"])
+@pytest.mark.parametrize(
+    "persona", [p for p in PERSONAS if p.get("conflicts")], ids=lambda p: p["id"]
+)
 def test_persona_conflicts(persona):
     _, results = _run(persona)
     for a, b in persona["conflicts"]:
@@ -43,7 +45,9 @@ def test_persona_conflicts(persona):
         assert a in results[b]["conflicts_with"]
 
 
-@pytest.mark.parametrize("persona", [p for p in PERSONAS if p.get("first_question_in")], ids=lambda p: p["id"])
+@pytest.mark.parametrize(
+    "persona", [p for p in PERSONAS if p.get("first_question_in")], ids=lambda p: p["id"]
+)
 def test_persona_first_question(persona):
     facts, results = _run(persona)
     field = next_field(list(results.values()), BY_ID, facts, asked={}, skipped=set())

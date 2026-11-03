@@ -1,10 +1,12 @@
-"""Three-valued (Kleene) rule engine.
+"""
+Three-valued (Kleene) rule engine.
 
 T = condition met, F = not met, U = unknown (field missing from the profile).
 The LLM never touches this module: eligibility is decided here and only here.
 eligibility.other holds requirements that can't be checked from the profile: they are listed for the user
 ("manual" checks) but never change the status.
 """
+
 from __future__ import annotations
 
 from app.domain.fields import DERIVED, EDUCATION_ORDER, UI, UNORGANISED, tr
@@ -104,8 +106,12 @@ def evaluate_scheme(facts: dict, scheme: dict, lang: str = "en") -> dict:
         }
         # show the user's own value where it adds information: numeric ranges, or any failed check
         informative = cond["op"] in ("between", "gte", "gt", "lte", "lt") or value == F
-        if (informative and facts.get(field) is not None and field not in DERIVED
-                and cond["op"] not in ("is_true", "is_false")):
+        if (
+            informative
+            and facts.get(field) is not None
+            and field not in DERIVED
+            and cond["op"] not in ("is_true", "is_false")
+        ):
             check["yours"] = value_display(field, facts[field], lang)
         if group:
             check["group"] = group
@@ -145,7 +151,9 @@ def evaluate_scheme(facts: dict, scheme: dict, lang: str = "en") -> dict:
         fail = {"text": group + ": " + " / ".join(c["text"] for c in checks if c.get("group"))}
     fail_reason = None
     if overall == F and fail:
-        fail_reason = fail["text"] + (f" ({tr(UI['you'], lang)}: {fail['yours']})" if fail.get("yours") else "")
+        fail_reason = fail["text"] + (
+            f" ({tr(UI['you'], lang)}: {fail['yours']})" if fail.get("yours") else ""
+        )
 
     return {
         "scheme_id": scheme["id"],
@@ -168,5 +176,7 @@ def evaluate_all(facts: dict, schemes: list[dict], lang: str = "en") -> list[dic
                 excl[s["id"]].add(other)
                 excl[other].add(s["id"])
     for r in results:
-        r["conflicts_with"] = sorted(excl[r["scheme_id"]] & likely) if r["status"] == "likely" else []
+        r["conflicts_with"] = (
+            sorted(excl[r["scheme_id"]] & likely) if r["status"] == "likely" else []
+        )
     return results

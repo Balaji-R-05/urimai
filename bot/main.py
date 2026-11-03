@@ -31,7 +31,9 @@ LOG_DIR.mkdir(exist_ok=True)
 _fmt = logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s")
 _console = logging.StreamHandler()
 _console.setFormatter(_fmt)
-_file = RotatingFileHandler(LOG_DIR / "bot.log", maxBytes=5_000_000, backupCount=3, encoding="utf-8")
+_file = RotatingFileHandler(
+    LOG_DIR / "bot.log", maxBytes=5_000_000, backupCount=3, encoding="utf-8"
+)
 _file.setFormatter(_fmt)
 logging.basicConfig(level=logging.INFO, handlers=[_console, _file])
 logging.getLogger("httpx").setLevel(logging.WARNING)
@@ -51,8 +53,8 @@ COMMANDS = [
 ]
 
 
-# Pushes the bot's Telegram profile description/short description for each supported
-# language, but only the ones that differ from what's live (these API calls are rate-limited).
+# Pushes the bot's Telegram profile description/short description for each supported language,
+# but only the ones that differ from what's live (these API calls are rate-limited).
 async def set_profile_text(bot) -> None:
     """
     Description and short description per language.
@@ -99,8 +101,12 @@ def main() -> None:
     app = (
         Application.builder()
         .token(config.TELEGRAM_BOT_TOKEN)
-        .connect_timeout(30).read_timeout(40).write_timeout(40).pool_timeout(30)
-        .get_updates_connect_timeout(30).get_updates_read_timeout(40)
+        .connect_timeout(30)
+        .read_timeout(40)
+        .write_timeout(40)
+        .pool_timeout(30)
+        .get_updates_connect_timeout(30)
+        .get_updates_read_timeout(40)
         # Throttles outgoing calls to Telegram's limits and retries on 429, so a reply
         # never silently drops just because a user is messaging faster than the limit.
         .rate_limiter(AIORateLimiter())
@@ -120,15 +126,27 @@ def main() -> None:
     app.add_handler(CommandHandler("docs", handlers.cmd_docs))
     app.add_handler(CommandHandler("report", handlers.cmd_report))
     app.add_handler(CallbackQueryHandler(handlers.on_callback))
-    app.add_handler(MessageHandler(filters.UpdateType.MESSAGE & filters.TEXT & ~filters.COMMAND, handlers.on_text))
-    app.add_handler(MessageHandler(filters.UpdateType.MESSAGE & (filters.VOICE | filters.AUDIO), handlers.on_voice))
+    app.add_handler(
+        MessageHandler(
+            filters.UpdateType.MESSAGE & filters.TEXT & ~filters.COMMAND, handlers.on_text
+        )
+    )
+    app.add_handler(
+        MessageHandler(
+            filters.UpdateType.MESSAGE & (filters.VOICE | filters.AUDIO), handlers.on_voice
+        )
+    )
     # Catch-all must stay last: within a group PTB dispatches to the first handler
     # whose filters match, so text/voice are claimed above before reaching on_other.
-    app.add_handler(MessageHandler(filters.UpdateType.MESSAGE & ~filters.COMMAND, handlers.on_other))
+    app.add_handler(
+        MessageHandler(filters.UpdateType.MESSAGE & ~filters.COMMAND, handlers.on_other)
+    )
     app.add_error_handler(handlers.on_error)
 
     log.info("Urimai bot starting (long polling)…")
-    app.run_polling(allowed_updates=Update.ALL_TYPES, drop_pending_updates=True, bootstrap_retries=-1)
+    app.run_polling(
+        allowed_updates=Update.ALL_TYPES, drop_pending_updates=True, bootstrap_retries=-1
+    )
 
 
 if __name__ == "__main__":

@@ -1,4 +1,5 @@
-"""Keep the scheme_chunks collection (and its Atlas search indexes) in step with the schemes collection.
+"""
+Keep the scheme_chunks collection (and its Atlas search indexes) in step with the schemes collection.
 
 Each served scheme is split into section chunks (app/retrieval/docs.py, the same chunks the in-memory search
 uses), embedded locally, and stored with its vector:
@@ -11,6 +12,7 @@ draft or closed schemes are deleted. Runs as part of the seed command, or alone:
 
     python -m app.retrieval.chunk_store
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -40,8 +42,12 @@ def chunks_collection(client=None):
 
 def content_hash(doc: dict, embed_model: str) -> str:
     """Changes when the scheme, the embedding model or the chunk layout / settings change: then it is re-embedded."""
-    basis = json.dumps([doc, embed_model, CHUNK_FORMAT, config.CHUNK_SIZE, config.CHUNK_OVERLAP], sort_keys=True,
-                       ensure_ascii=False, default=str)
+    basis = json.dumps(
+        [doc, embed_model, CHUNK_FORMAT, config.CHUNK_SIZE, config.CHUNK_OVERLAP],
+        sort_keys=True,
+        ensure_ascii=False,
+        default=str,
+    )
     return hashlib.sha1(basis.encode("utf-8")).hexdigest()
 
 
@@ -51,26 +57,56 @@ def build_chunks(scheme: dict, digest: str, embed_model: str) -> list[dict]:
     out = []
     for parent in scheme_sections(scheme):
         for c in split_section(parent):
-            out.append({"_id": c["id"], "scheme_id": c["scheme_id"], "section": c["section"], "lang": c["lang"],
-                        "state": state, "level": c["level"], "parent_id": c["parent_id"], "text": c["text"],
-                        "context": parent["text"], "content_hash": digest, "embed_model": embed_model})
+            out.append(
+                {
+                    "_id": c["id"],
+                    "scheme_id": c["scheme_id"],
+                    "section": c["section"],
+                    "lang": c["lang"],
+                    "state": state,
+                    "level": c["level"],
+                    "parent_id": c["parent_id"],
+                    "text": c["text"],
+                    "context": parent["text"],
+                    "content_hash": digest,
+                    "embed_model": embed_model,
+                }
+            )
     return out
 
 
 def index_definitions(dims: int) -> dict[str, tuple[str, dict]]:
     return {
-        VECTOR_INDEX: ("vectorSearch", {"fields": [
-            {"type": "vector", "path": "embedding", "numDimensions": dims, "similarity": "cosine"},
-            {"type": "filter", "path": "state"},
-            {"type": "filter", "path": "lang"},
-            {"type": "filter", "path": "section"},
-            {"type": "filter", "path": "embed_model"},
-        ]}),
-        TEXT_INDEX: ("search", {"mappings": {"dynamic": False, "fields": {
-            "text": {"type": "string"},
-            "state": {"type": "token"},
-            "lang": {"type": "token"},
-        }}}),
+        VECTOR_INDEX: (
+            "vectorSearch",
+            {
+                "fields": [
+                    {
+                        "type": "vector",
+                        "path": "embedding",
+                        "numDimensions": dims,
+                        "similarity": "cosine",
+                    },
+                    {"type": "filter", "path": "state"},
+                    {"type": "filter", "path": "lang"},
+                    {"type": "filter", "path": "section"},
+                    {"type": "filter", "path": "embed_model"},
+                ]
+            },
+        ),
+        TEXT_INDEX: (
+            "search",
+            {
+                "mappings": {
+                    "dynamic": False,
+                    "fields": {
+                        "text": {"type": "string"},
+                        "state": {"type": "token"},
+                        "lang": {"type": "token"},
+                    },
+                }
+            },
+        ),
     }
 
 
@@ -96,8 +132,10 @@ def sync(client) -> dict:
     """Bring scheme_chunks in line with the schemes collection. Returns counts."""
     emb = get_embedder()
     if emb.name == "hash":
-        raise RuntimeError("the embedding model could not be loaded (hashing fallback); refusing to store "
-                           "vectors that the server's model can't match. Check fastembed / MODEL_CACHE.")
+        raise RuntimeError(
+            "the embedding model could not be loaded (hashing fallback); refusing to store "
+            "vectors that the server's model can't match. Check fastembed / MODEL_CACHE."
+        )
     schemes_coll = client[config.MONGODB_DB][config.MONGODB_COLLECTION]
     coll = chunks_collection(client)
 
@@ -107,8 +145,12 @@ def sync(client) -> dict:
     engine = {s.id: to_engine(s, ids) for s in keep}
     hashes = {s.id: content_hash(to_document(s), emb.name) for s in keep}
 
-    stored = {g["_id"]: g["hash"] for g in coll.aggregate(
-        [{"$group": {"_id": "$scheme_id", "hash": {"$first": "$content_hash"}}}])}
+    stored = {
+        g["_id"]: g["hash"]
+        for g in coll.aggregate(
+            [{"$group": {"_id": "$scheme_id", "hash": {"$first": "$content_hash"}}}]
+        )
+    }
     stale = [sid for sid, h in stored.items() if hashes.get(sid) != h]
     removed = coll.delete_many({"scheme_id": {"$in": stale}}).deleted_count if stale else 0
     todo = [sid for sid in hashes if stored.get(sid) != hashes[sid]]
@@ -116,18 +158,28 @@ def sync(client) -> dict:
     docs = [d for sid in todo for d in build_chunks(engine[sid], hashes[sid], emb.name)]
     t = time.perf_counter()
     for i in range(0, len(docs), EMBED_BATCH):
-        batch = docs[i:i + EMBED_BATCH]
+        batch = docs[i : i + EMBED_BATCH]
         for d, vec in zip(batch, emb.embed([d["text"] for d in batch]), strict=False):
             d["embedding"] = Binary.from_vector(vec, BinaryVectorDtype.FLOAT32)
         coll.insert_many(batch, ordered=False)
     if docs:
-        log.info("embedded %d chunks for %d schemes in %.1fs", len(docs), len(todo), time.perf_counter() - t)
+        log.info(
+            "embedded %d chunks for %d schemes in %.1fs",
+            len(docs),
+            len(todo),
+            time.perf_counter() - t,
+        )
 
     coll.create_index("scheme_id")
     ensure_indexes(coll, emb.dim)
-    return {"schemes_embedded": len(todo), "chunks_written": len(docs), "chunks_removed": removed,
-            "chunks_total": coll.count_documents({}), "unchanged": len(hashes) - len(todo),
-            "indexes": index_status(coll)}
+    return {
+        "schemes_embedded": len(todo),
+        "chunks_written": len(docs),
+        "chunks_removed": removed,
+        "chunks_total": coll.count_documents({}),
+        "unchanged": len(hashes) - len(todo),
+        "indexes": index_status(coll),
+    }
 
 
 def main() -> int:
@@ -138,6 +190,7 @@ def main() -> int:
         print("MONGODB_URI is not set", file=sys.stderr)
         return 1
     from pymongo.errors import PyMongoError
+
     try:
         with db.client() as client:
             print(json.dumps(sync(client), indent=2))

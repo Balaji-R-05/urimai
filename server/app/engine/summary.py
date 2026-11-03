@@ -1,4 +1,7 @@
-"""Build the user-facing result payload: localized scheme results, headline, documents, hints."""
+"""
+Build the user-facing result payload: localized scheme results, headline, documents, hints.
+"""
+
 from __future__ import annotations
 
 from app.domain.fields import DOC_LABELS, PRIORITY_LABELS, UI, tr
@@ -18,8 +21,13 @@ def localize_result(r: dict, scheme: dict, lang: str) -> dict:
         "benefit_summary": tr(b.get("summary"), lang),
         "annual_cash_value_inr": b.get("annual_cash_value_inr", 0) or 0,
         "cover_highlight": tr(b.get("cover_highlight"), lang) or None,
-        "documents": [{"id": d, "label": tr(scheme.get("document_labels", {}).get(d) or DOC_LABELS.get(d, d), lang)}
-                      for d in scheme["documents"]],
+        "documents": [
+            {
+                "id": d,
+                "label": tr(scheme.get("document_labels", {}).get(d) or DOC_LABELS.get(d, d), lang),
+            }
+            for d in scheme["documents"]
+        ],
         "apply": {
             "mode": app.get("mode"),
             "where": tr(app.get("where"), lang),
@@ -32,9 +40,13 @@ def localize_result(r: dict, scheme: dict, lang: str) -> dict:
             "phone": contact.get("phone"),
             "email": contact.get("email"),
             "helpline_hours": tr(contact.get("helpline_hours"), lang) or None,
-        } if contact else None,
-        "priority_groups": [tr(PRIORITY_LABELS.get(p), lang) or p.replace("_", " ")
-                             for p in scheme.get("priority_groups") or []],
+        }
+        if contact
+        else None,
+        "priority_groups": [
+            tr(PRIORITY_LABELS.get(p), lang) or p.replace("_", " ")
+            for p in scheme.get("priority_groups") or []
+        ],
         "unverified": scheme.get("unverified", True),
         "source_url": scheme.get("source_url"),
     }

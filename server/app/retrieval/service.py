@@ -1,4 +1,5 @@
-"""Scheme retrieval for Q&A: which schemes (and which section) is the user's question about?
+"""
+Scheme retrieval for Q&A: which schemes (and which section) is the user's question about?
 
 Backend (config.RETRIEVAL_BACKEND): "atlas" = MongoDB Atlas Vector Search + Atlas Search (app/retrieval/atlas.py),
 "memory" = in-process index over the loaded catalogue (app/retrieval/search.py). Both do:
@@ -10,6 +11,7 @@ Backend (config.RETRIEVAL_BACKEND): "atlas" = MongoDB Atlas Vector Search + Atla
 Retrieval only picks WHICH schemes to talk about. Eligibility still comes from app/engine/rules.py.
 Every failure (models missing, timeout) returns None and the extractor's pick is used unchanged.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -20,8 +22,12 @@ from app.core import config, metrics
 log = logging.getLogger("urimai.retrieval")
 
 # retrieval section -> answerer topic
-SECTION_TOPIC = {"overview": "general", "eligibility": "eligibility", "documents": "documents",
-                 "how_to_apply": "how_to_apply"}
+SECTION_TOPIC = {
+    "overview": "general",
+    "eligibility": "eligibility",
+    "documents": "documents",
+    "how_to_apply": "how_to_apply",
+}
 MAX_SCHEMES = 3
 
 
@@ -29,8 +35,10 @@ def _search(text: str, state: str | None = None) -> list[dict]:
     """state: the user's state code, if known; limits results to central schemes plus that state's."""
     if config.RETRIEVAL_BACKEND == "atlas":
         from app.retrieval import atlas
+
         return atlas.retrieve(text, k=6, state=state)
     from app.retrieval.search import retrieve
+
     return retrieve(text, k=6)
 
 
@@ -41,6 +49,7 @@ def warmup() -> None:
     try:
         if config.RETRIEVAL_BACKEND == "atlas":
             from app.retrieval import atlas
+
             atlas.warmup()
         else:
             _search("warmup")
@@ -54,7 +63,9 @@ async def search(text: str, state: str | None = None) -> list[dict] | None:
     if not config.RETRIEVAL_ENABLED or not text.strip():
         return None
     try:
-        hits = await asyncio.wait_for(asyncio.to_thread(_search, text, state), config.RETRIEVAL_TIMEOUT_S)
+        hits = await asyncio.wait_for(
+            asyncio.to_thread(_search, text, state), config.RETRIEVAL_TIMEOUT_S
+        )
         metrics.inc("retrieval_hits" if hits else "retrieval_empty")
         return hits
     except Exception as e:  # ImportError, model load, TimeoutError, ...
@@ -93,14 +104,24 @@ def merge_question(question: dict, hits: list[dict] | None) -> dict | None:
         return None
     if topic == "general" and good:
         topic = SECTION_TOPIC.get(good[0]["section"], "general")
-    passages = [{"scheme_id": h["scheme_id"], "section": h["section"], "text": h["context"]}
-                for h in good if h["scheme_id"] in ids][:4]
+    passages = [
+        {"scheme_id": h["scheme_id"], "section": h["section"], "text": h["context"]}
+        for h in good
+        if h["scheme_id"] in ids
+    ][:4]
     return {"scheme_ids": ids, "topic": topic, "source": source, "passages": passages}
 
 
 def trace_view(hits: list[dict] | None) -> list[dict]:
     """Compact per-hit view of every stage, for the turn trace."""
-    return [{"scheme": h["scheme_id"], "section": h["section"], "dense_rank": h.get("dense_rank"),
-             "bm25_rank": h.get("bm25_rank"), "rrf": round(h.get("rrf", 0), 4),
-             "rerank": None if h.get("rerank_score") is None else round(h["rerank_score"], 3)}
-            for h in (hits or [])]
+    return [
+        {
+            "scheme": h["scheme_id"],
+            "section": h["section"],
+            "dense_rank": h.get("dense_rank"),
+            "bm25_rank": h.get("bm25_rank"),
+            "rrf": round(h.get("rrf", 0), 4),
+            "rerank": None if h.get("rerank_score") is None else round(h["rerank_score"], 3),
+        }
+        for h in (hits or [])
+    ]

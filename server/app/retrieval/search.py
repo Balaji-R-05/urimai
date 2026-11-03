@@ -1,4 +1,5 @@
-"""Two-stage retrieval over the scheme chunks.
+"""
+Two-stage retrieval over the scheme chunks.
 
   1. recall   : dense (in-memory) + BM25, each top-N, fused with Reciprocal Rank Fusion
   2. precision: cross-encoder rerank of the fused pool; children of the same section are collapsed and
@@ -10,6 +11,7 @@ Run from server/:
     python -m app.retrieval.search "விதவை ஓய்வூதியம்" -k 5
     python -m app.retrieval.search "documents for PM-KISAN" --section documents
 """
+
 from __future__ import annotations
 
 import argparse
@@ -38,6 +40,7 @@ def _local_vectors():
     import hashlib
 
     import numpy as np
+
     chunks, _, _ = _corpus()
     emb = get_embedder()
     texts = [c["text"] for c in chunks]
@@ -71,6 +74,7 @@ def _keep(c: dict, lang: str | None, section: str | None) -> bool:
 
 def dense_local(query: str, n: int, lang: str | None, section: str | None) -> list[str]:
     import numpy as np
+
     chunks, _, _ = _corpus()
     q = np.asarray(get_embedder().embed([query])[0], dtype="float32")
     sims = _local_vectors() @ q
@@ -80,7 +84,11 @@ def dense_local(query: str, n: int, lang: str | None, section: str | None) -> li
 
 def sparse(query: str, n: int, lang: str | None, section: str | None) -> list[str]:
     chunks, _, bm25 = _corpus()
-    scored = [(s, c["id"]) for s, c in zip(bm25.scores(query), chunks, strict=False) if s > 0 and _keep(c, lang, section)]
+    scored = [
+        (s, c["id"])
+        for s, c in zip(bm25.scores(query), chunks, strict=False)
+        if s > 0 and _keep(c, lang, section)
+    ]
     return [cid for _, cid in sorted(scored, reverse=True)[:n]]
 
 
@@ -96,8 +104,13 @@ def _rank(ranking: list[str], cid: str) -> int | None:
     return ranking.index(cid) + 1 if cid in ranking else None
 
 
-def retrieve(query: str, k: int = 5, lang: str | None = None, section: str | None = None,
-             use_rerank: bool = True) -> list[dict]:
+def retrieve(
+    query: str,
+    k: int = 5,
+    lang: str | None = None,
+    section: str | None = None,
+    use_rerank: bool = True,
+) -> list[dict]:
     """Top-k section hits: {scheme_id, section, lang, score, chunk, context, per-stage ranks}."""
     chunks, parents, _ = _corpus()
     by_id = {c["id"]: c for c in chunks}
@@ -106,15 +119,26 @@ def retrieve(query: str, k: int = 5, lang: str | None = None, section: str | Non
     dense = dense_local(query, n, lang, section)
     bm = sparse(query, n, lang, section)
     fused = rrf(dense, bm)
-    pool = [by_id[cid] for cid in list(fused)[:config.RERANK_POOL] if cid in by_id]
+    pool = [by_id[cid] for cid in list(fused)[: config.RERANK_POOL] if cid in by_id]
 
     rr = rerank(query, [c["text"] for c in pool]) if use_rerank else None
-    hits = [{"scheme_id": c["scheme_id"], "section": c["section"], "lang": c["lang"],
-             "parent_id": c["parent_id"], "chunk": c["text"], "context": parents[c["parent_id"]]["text"],
-             "rrf": fused[c["id"]], "dense_rank": _rank(dense, c["id"]), "bm25_rank": _rank(bm, c["id"]),
-             "reranked": rr is not None, "rerank_score": rr[i] if rr is not None else None,
-             "score": rr[i] if rr is not None else fused[c["id"]]}
-            for i, c in enumerate(pool)]
+    hits = [
+        {
+            "scheme_id": c["scheme_id"],
+            "section": c["section"],
+            "lang": c["lang"],
+            "parent_id": c["parent_id"],
+            "chunk": c["text"],
+            "context": parents[c["parent_id"]]["text"],
+            "rrf": fused[c["id"]],
+            "dense_rank": _rank(dense, c["id"]),
+            "bm25_rank": _rank(bm, c["id"]),
+            "reranked": rr is not None,
+            "rerank_score": rr[i] if rr is not None else None,
+            "score": rr[i] if rr is not None else fused[c["id"]],
+        }
+        for i, c in enumerate(pool)
+    ]
     hits.sort(key=lambda h: -h["score"])
 
     # One hit per (scheme, section): language variants and sibling children are the same fact. The best
@@ -143,7 +167,9 @@ def main() -> int:
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
     logging.basicConfig(level=logging.WARNING, format="%(levelname)s %(message)s")
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     ap.add_argument("query")
     ap.add_argument("-k", type=int, default=5)
     ap.add_argument("--lang", choices=["en", "ta", "hi"])
@@ -156,8 +182,10 @@ def main() -> int:
     print(f"{'score':>6} {'dense':>5} {'bm25':>4}  {'scheme':<24} {'section':<13} lang  chunk")
     for h in hits:
         d, b = h["dense_rank"] or "-", h["bm25_rank"] or "-"
-        print(f"{h['score']:6.3f} {d:>5} {b:>4}  {h['scheme_id']:<24} {h['section']:<13} {h['lang']:<4}  "
-              + h["chunk"].replace("\n", " / ")[:80])
+        print(
+            f"{h['score']:6.3f} {d:>5} {b:>4}  {h['scheme_id']:<24} {h['section']:<13} {h['lang']:<4}  "
+            + h["chunk"].replace("\n", " / ")[:80]
+        )
         if a.context:
             print("        " + h["context"].replace("\n", "\n        "))
     print("\nschemes:", ", ".join(top_schemes(hits)))

@@ -14,8 +14,18 @@ from app.core import config
 
 log = logging.getLogger("urimai.db")
 
-LOGGED = {"find", "getMore", "aggregate", "count", "distinct", "insert", "update", "delete", "findAndModify",
-          "createIndexes"}
+LOGGED = {
+    "find",
+    "getMore",
+    "aggregate",
+    "count",
+    "distinct",
+    "insert",
+    "update",
+    "delete",
+    "findAndModify",
+    "createIndexes",
+}
 
 
 class CommandLog(monitoring.CommandListener):
@@ -37,7 +47,9 @@ class CommandLog(monitoring.CommandListener):
         if "firstBatch" in cursor or "nextBatch" in cursor:
             result = f"{len(cursor.get('firstBatch', cursor.get('nextBatch', [])))} docs"
         elif "n" in reply:
-            result = f"{reply['n']} docs" + (f", {reply['nModified']} modified" if "nModified" in reply else "")
+            result = f"{reply['n']} docs" + (
+                f", {reply['nModified']} modified" if "nModified" in reply else ""
+            )
         else:
             result = "ok"
         log.info("%s -> %s in %d ms", what, result, event.duration_micros // 1000)
@@ -45,21 +57,28 @@ class CommandLog(monitoring.CommandListener):
     def failed(self, event):
         what = self._pending.pop(event.request_id, None)
         if what is not None:
-            log.warning("%s failed after %d ms: %s", what, event.duration_micros // 1000, event.failure)
+            log.warning(
+                "%s failed after %d ms: %s", what, event.duration_micros // 1000, event.failure
+            )
 
 
 def client(timeout_ms: int = 5000) -> MongoClient:
     """A new client; close it when done (startup load, seed command)."""
     listeners = [CommandLog()] if config.LOG_DB_CALLS else []
-    return MongoClient(config.MONGODB_URI, serverSelectionTimeoutMS=timeout_ms, event_listeners=listeners)
+    return MongoClient(
+        config.MONGODB_URI, serverSelectionTimeoutMS=timeout_ms, event_listeners=listeners
+    )
 
 
 def explain(e: Exception) -> str:
     """One-line reason for a failed database call, with the usual fix."""
     from pymongo.errors import ConfigurationError, OperationFailure, ServerSelectionTimeoutError
+
     if isinstance(e, ServerSelectionTimeoutError):
-        return ("can't reach MongoDB (network down, or this IP isn't in the Atlas Network Access list); "
-                "try again in a moment")
+        return (
+            "can't reach MongoDB (network down, or this IP isn't in the Atlas Network Access list); "
+            "try again in a moment"
+        )
     if isinstance(e, OperationFailure) and e.code in (8000, 18):
         return "MongoDB rejected the login: check the user and password in MONGODB_URI"
     if isinstance(e, ConfigurationError):

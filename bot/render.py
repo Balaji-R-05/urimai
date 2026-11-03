@@ -3,6 +3,7 @@ Server response JSON -> Telegram HTML messages + inline keyboards.
 
 callback_data (max 64 bytes):
   l|<lang>          language picker
+  v|<0/1>           voice preference (1=text+voice, 0=text only), asked once after language
   s|<scheme_id>     scheme detail
   b|<bucket>        bucket list (likely / need_info / not_eligible)
   c                 back to the results card
@@ -22,17 +23,8 @@ from telegram import InlineKeyboardButton as Btn
 from telegram import InlineKeyboardMarkup as Kb
 
 MAX_LEN = 4000
-STATUS_EMOJI = {
-    "likely": "✅",
-    "need_info": "🟡",
-    "not_eligible": "⚪"
-}
-CHECK_EMOJI = {
-    "pass": "✅",
-    "fail": "❌",
-    "unknown": "❔",
-    "manual": "📋"
-}
+STATUS_EMOJI = {"likely": "✅", "need_info": "🟡", "not_eligible": "⚪"}
+CHECK_EMOJI = {"pass": "✅", "fail": "❌", "unknown": "❔", "manual": "📋"}
 
 
 # Clips a string to n characters, adding an ellipsis if it was clipped.
@@ -57,11 +49,27 @@ def inr(n: int) -> str:
 
 # Returns a keyboard with the three supported languages.
 def language_keyboard() -> Kb:
-    return Kb([[
-        Btn("தமிழ்", callback_data="l|ta"),
-        Btn("English", callback_data="l|en"),
-        Btn("हिंदी", callback_data="l|hi")
-    ]])
+    return Kb(
+        [
+            [
+                Btn("தமிழ்", callback_data="l|ta"),
+                Btn("English", callback_data="l|en"),
+                Btn("हिंदी", callback_data="l|hi"),
+            ]
+        ]
+    )
+
+
+# Returns a keyboard to pick voice preference, asked once right after language.
+def voice_pref_keyboard(lang: str) -> Kb:
+    return Kb(
+        [
+            [
+                Btn(t("btn_voice_and_text", lang), callback_data="v|1"),
+                Btn(t("btn_text_only", lang), callback_data="v|0"),
+            ]
+        ]
+    )
 
 
 # Returns a keyboard with a single "Retry" button.
@@ -72,8 +80,12 @@ def retry_keyboard(lang: str) -> Kb:
 # Returns a signature for the results card.
 def card_signature(resp: dict) -> tuple:
     res = resp["results"]
-    return (tuple(r["scheme_id"] for r in res["likely"]), len(res["need_info"]), len(res["not_eligible"]),
-            resp["summary"]["annual_cash_value_inr"])
+    return (
+        tuple(r["scheme_id"] for r in res["likely"]),
+        len(res["need_info"]),
+        len(res["not_eligible"]),
+        resp["summary"]["annual_cash_value_inr"],
+    )
 
 
 # Returns the "got it / updated" message for newly learned or corrected fields, or
@@ -81,10 +93,14 @@ def card_signature(resp: dict) -> tuple:
 def learned_text(resp: dict, lang: str) -> str | None:
     lines = []
     if resp.get("learned"):
-        items = " · ".join(f"{escape(x['label'])}: <b>{escape(x['display'])}</b>" for x in resp["learned"])
+        items = " · ".join(
+            f"{escape(x['label'])}: <b>{escape(x['display'])}</b>" for x in resp["learned"]
+        )
         lines.append(f"{t('understood', lang)} {items}")
     for c in resp.get("changes", []):
-        lines.append(f"{t('corrected', lang)} {escape(c['label'])}: {escape(c.get('from_display', ''))} → <b>{escape(c['display'])}</b>")
+        lines.append(
+            f"{t('corrected', lang)} {escape(c['label'])}: {escape(c.get('from_display', ''))} → <b>{escape(c['display'])}</b>"
+        )
     return "\n".join(lines) or None
 
 
@@ -92,8 +108,10 @@ def learned_text(resp: dict, lang: str) -> str | None:
 def results_card(resp: dict, lang: str) -> tuple[str, Kb]:
     res, summ = resp["results"], resp["summary"]
     n_l, n_n, n_x = len(res["likely"]), len(res["need_info"]), len(res["not_eligible"])
-    lines = [f"<b>{t('card_title', lang)}</b>",
-             f"✅ {t('likely', lang)}: <b>{n_l}</b>   🟡 {t('need_info', lang)}: {n_n}   ⚪ {t('not_eligible', lang)}: {n_x}"]
+    lines = [
+        f"<b>{t('card_title', lang)}</b>",
+        f"✅ {t('likely', lang)}: <b>{n_l}</b>   🟡 {t('need_info', lang)}: {n_n}   ⚪ {t('not_eligible', lang)}: {n_x}",
+    ]
     value_bits = []
     if summ["annual_cash_value_inr"]:
         value_bits.append(f"{inr(summ['annual_cash_value_inr'])} {t('per_year', lang)}")
@@ -107,7 +125,14 @@ def results_card(resp: dict, lang: str) -> tuple[str, Kb]:
     rows = []
     shown = res["likely"][:6] if n_l else res["need_info"][:4]
     for r in shown:
-        rows.append([Btn(f"{STATUS_EMOJI[r['status']]} {_clip(r['name'])}", callback_data=f"s|{r['scheme_id']}")])
+        rows.append(
+            [
+                Btn(
+                    f"{STATUS_EMOJI[r['status']]} {_clip(r['name'])}",
+                    callback_data=f"s|{r['scheme_id']}",
+                )
+            ]
+        )
     nav = []
     if n_l > 6:
         nav.append(Btn(f"✅ +{n_l - 6}", callback_data="b|likely"))
@@ -133,7 +158,10 @@ def bucket_list(resp: dict, bucket: str, lang: str) -> tuple[str, Kb]:
         elif bucket == "need_info" and r.get("missing_labels"):
             extra = f" — <i>{escape(', '.join(r['missing_labels']))}</i>"
         lines.append(f"• {escape(r['name'])}{extra}")
-    rows = [[Btn(f"{STATUS_EMOJI[bucket]} {_clip(r['name'])}", callback_data=f"s|{r['scheme_id']}")] for r in items[:12]]
+    rows = [
+        [Btn(f"{STATUS_EMOJI[bucket]} {_clip(r['name'])}", callback_data=f"s|{r['scheme_id']}")]
+        for r in items[:12]
+    ]
     rows.append([Btn(t("btn_back", lang), callback_data="c")])
     return "\n".join(lines)[:MAX_LEN], Kb(rows)
 
@@ -150,8 +178,10 @@ def find_result(resp: dict, scheme_id: str) -> dict | None:
 # Returns a formatted scheme detail view.
 def scheme_detail(resp: dict, r: dict, lang: str) -> tuple[str, Kb]:
     st = r["status"]
-    lines = [f"{STATUS_EMOJI[st]} <b>{escape(r['name'])}</b>  <i>({t('status_' + st, lang)})</i>",
-             f"💰 {escape(r['benefit_summary'])}"]
+    lines = [
+        f"{STATUS_EMOJI[st]} <b>{escape(r['name'])}</b>  <i>({t('status_' + st, lang)})</i>",
+        f"💰 {escape(r['benefit_summary'])}",
+    ]
     if r.get("priority_groups"):
         lines.append(f"⭐ {t('priority_for', lang)}: {escape(', '.join(r['priority_groups']))}")
     lines += ["", f"<b>{t('why', lang)}:</b>"]
@@ -170,7 +200,9 @@ def scheme_detail(resp: dict, r: dict, lang: str) -> tuple[str, Kb]:
     if r.get("conflicts_with"):
         names = [x["name"] for x in (find_result(resp, sid) for sid in r["conflicts_with"]) if x]
         lines.append("\n" + escape(t("choose_one", lang, names=", ".join([r["name"], *names]))))
-    lines.append(f"\n<b>{t('documents', lang)}:</b> " + escape(", ".join(d["label"] for d in r["documents"])))
+    lines.append(
+        f"\n<b>{t('documents', lang)}:</b> " + escape(", ".join(d["label"] for d in r["documents"]))
+    )
     app = r.get("apply") or {}
     lines.append(f"\n<b>{t('how', lang)}:</b>")
     if app.get("where"):
@@ -206,11 +238,13 @@ def scheme_detail(resp: dict, r: dict, lang: str) -> tuple[str, Kb]:
 # Returns the three one-tap feedback reasons shown after "Report wrong info": amount/benefit,
 # documents/eligibility, or other (which then asks for a short typed note).
 def feedback_category_keyboard(scheme_id: str, lang: str) -> Kb:
-    return Kb([
-        [Btn(t("feedback_amount_btn", lang), callback_data=f"g|{scheme_id}|amount")],
-        [Btn(t("feedback_docs_btn", lang), callback_data=f"g|{scheme_id}|docs")],
-        [Btn(t("feedback_other_btn", lang), callback_data=f"g|{scheme_id}|other")],
-    ])
+    return Kb(
+        [
+            [Btn(t("feedback_amount_btn", lang), callback_data=f"g|{scheme_id}|amount")],
+            [Btn(t("feedback_docs_btn", lang), callback_data=f"g|{scheme_id}|docs")],
+            [Btn(t("feedback_other_btn", lang), callback_data=f"g|{scheme_id}|other")],
+        ]
+    )
 
 
 # Returns a formatted documents checklist.
@@ -255,7 +289,9 @@ def reply_keyboard(resp: dict, qid: int) -> Kb | None:
             rows.append([Btn(f"📄 {_clip(r['name'])}", callback_data=f"s|{sid}")])
     question = resp.get("next_question")
     if question and question.get("options"):
-        btns = [Btn(o["label"], callback_data=f"a|{qid}|{i}") for i, o in enumerate(question["options"])]
+        btns = [
+            Btn(o["label"], callback_data=f"a|{qid}|{i}") for i, o in enumerate(question["options"])
+        ]
         per_row = 3 if question["input_type"] == "bool" else 2
-        rows += [btns[i:i + per_row] for i in range(0, len(btns), per_row)]
+        rows += [btns[i : i + per_row] for i in range(0, len(btns), per_row)]
     return Kb(rows) if rows else None

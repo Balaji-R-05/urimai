@@ -19,6 +19,7 @@ def _scheme_index() -> str:
     def line(s):
         aka = f" (aka {', '.join(s['aliases'][:4])})" if s.get("aliases") else ""
         return f"{s['id']}: {s['name']['en']}{aka} [{','.join(s['category'])}]"
+
     return "\n".join(line(s) for s in load_schemes())
 
 
@@ -81,7 +82,9 @@ Scheme catalogue (id: English name [categories]); match Tamil/Hindi scheme names
 Return JSON only: {{"updates": [{{"field": "...", "value": ..., "quote": "...", "confidence": 0.9}}], "question": null}}"""
 
 
-async def extract(message: str, history: list[dict], last_field: str | None, profile: dict) -> tuple[list[dict], dict | None]:
+async def extract(
+    message: str, history: list[dict], last_field: str | None, profile: dict
+) -> tuple[list[dict], dict | None]:
     """Returns (updates, question). question = {"scheme_ids": [...], "topic": str} or None."""
     payload = {
         "known_profile": profile,

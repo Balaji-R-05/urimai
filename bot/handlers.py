@@ -27,8 +27,8 @@ log = logging.getLogger("urimai.bot")
 backend = Backend()
 HTML = ParseMode.HTML
 
-# Fixed English text sent with each preset feedback category, so logs stay triageable
-# regardless of the reporting user's language.
+# Fixed English text sent with each preset feedback category,
+# so logs stay triageable regardless of the reporting user's language.
 FEEDBACK_CATEGORY_TEXT = {"amount": "Amount/benefit wrong", "docs": "Documents/eligibility wrong"}
 
 
@@ -48,6 +48,7 @@ def _serialized(fn):
             return await fn(update, ctx)
         async with state.lock(update.effective_chat.id):
             return await fn(update, ctx)
+
     return wrapper
 
 
@@ -60,16 +61,46 @@ def _lang_from_user(update: Update) -> str:
 # Sends an HTML-formatted message to a chat, with link previews disabled.
 async def _send(ctx, chat_id: int, text: str, markup=None):
     return await ctx.bot.send_message(
-        chat_id,
-        text,
-        parse_mode=HTML,
-        reply_markup=markup,
-        disable_web_page_preview=True
+        chat_id, text, parse_mode=HTML, reply_markup=markup, disable_web_page_preview=True
     )
 
 
+# Edits a message in place by id. Returns False (instead of raising) if it can't be edited —
+# e.g. deleted by the user, or too old — so the caller can fall back to sending a fresh one.
+async def _edit_msg(ctx, chat_id: int, message_id: int, text: str, markup=None) -> bool:
+    try:
+        await ctx.bot.edit_message_text(
+            chat_id=chat_id,
+            message_id=message_id,
+            text=text,
+            parse_mode=HTML,
+            reply_markup=markup,
+            disable_web_page_preview=True,
+        )
+        return True
+    except BadRequest as e:
+        return "not modified" in str(e).lower()
+    except TelegramError:
+        return False
+
+
+# Updates the results card in place: edits the existing card message if one is live for this chat, else sends a new one.
+# Edited rather than deleted+resent, so the card never duplicates or flickers as more facts come in turn by turn.
+async def _update_card(ctx, chat_id: int, st: state.ChatState, resp: dict, sig: tuple) -> None:
+    text, kb = render.results_card(resp, st.lang)
+    if st.card_msg_id and await _edit_msg(ctx, chat_id, st.card_msg_id, text, kb):
+        st.card_sig = sig
+        return
+    if st.card_msg_id:
+        with suppress(TelegramError):
+            await ctx.bot.delete_message(chat_id, st.card_msg_id)
+    msg = await _send(ctx, chat_id, text, kb)
+    st.card_msg_id, st.card_sig = msg.message_id, sig
+
+
 # Renders a server response as a sequence of messages.
-# The results card is replaced only when its content signature changes, and each hint fires at most once per chat, so repeated/unchanged responses don't spam the chat.
+# The results card is replaced only when its content signature changes, and each hint fires at most once per chat,
+# so repeated/unchanged responses don't spam the chat.
 async def show_response(ctx, chat_id: int, st: state.ChatState, resp: dict) -> None:
     lang = st.lang
     st.last = resp
@@ -80,12 +111,7 @@ async def show_response(ctx, chat_id: int, st: state.ChatState, resp: dict) -> N
 
     sig = render.card_signature(resp)
     if sig != st.card_sig:
-        if st.card_msg_id:
-            with suppress(TelegramError):
-                await ctx.bot.delete_message(chat_id, st.card_msg_id)
-        text, kb = render.results_card(resp, lang)
-        msg = await _send(ctx, chat_id, text, kb)
-        st.card_msg_id, st.card_sig = msg.message_id, sig
+        await _update_card(ctx, chat_id, st, resp, sig)
 
     hints = render.hints(resp, lang)
     new_hints = set(resp.get("hints") or []) - st.hints_shown
@@ -106,7 +132,9 @@ async def show_response(ctx, chat_id: int, st: state.ChatState, resp: dict) -> N
             except TelegramError as e:
                 log.warning("send_voice failed (%s); sending as audio", e)
                 with suppress(TelegramError):
-                    await ctx.bot.send_audio(chat_id, audio=io.BytesIO(audio), filename="urimai.mp3")
+                    await ctx.bot.send_audio(
+                        chat_id, audio=io.BytesIO(audio), filename="urimai.mp3"
+                    )
 
 
 # Sends a free-text query to the backend and renders the reply; on backend failure, shows a retry prompt instead
@@ -132,10 +160,10 @@ async def process_text(ctx, chat_id: int, st: state.ChatState, text: str) -> Non
     await show_response(ctx, chat_id, st, resp)
 
 
-
 # ------------------------------
 # ---------- commands ----------
 # ------------------------------
+
 
 # /start: resets chat + backend session, then asks the user to pick a language.
 @_serialized
@@ -168,7 +196,9 @@ async def cmd_reset(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
 @_serialized
 async def cmd_help(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     st = state.get(_chat_id(update))
-    await _send(ctx, _chat_id(update), f"{t('help', st.lang)}\n\n⚠️ <i>{t('disclaimer', st.lang)}</i>")
+    await _send(
+        ctx, _chat_id(update), f"{t('help', st.lang)}\n\n⚠️ <i>{t('disclaimer', st.lang)}</i>"
+    )
 
 
 # /voice: toggles TTS replies on/off for this chat.
@@ -186,7 +216,8 @@ async def cmd_profile(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     await _send(ctx, _chat_id(update), render.profile(st.last or {}, st.lang))
 
 
-# /schemes: re-sends the results card from the last response, tracking it like show_response does.
+# /schemes: re-sends the results card from the last response at the bottom of the chat (so it's
+# visible without scrolling), deleting the old card first so it doesn't linger as a duplicate.
 @_serialized
 async def cmd_schemes(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     chat_id = _chat_id(update)
@@ -194,6 +225,9 @@ async def cmd_schemes(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     if not st.last:
         await _send(ctx, chat_id, t("no_results", st.lang))
         return
+    if st.card_msg_id:
+        with suppress(TelegramError):
+            await ctx.bot.delete_message(chat_id, st.card_msg_id)
     text, kb = render.results_card(st.last, st.lang)
     msg = await _send(ctx, chat_id, text, kb)
     st.card_msg_id, st.card_sig = msg.message_id, render.card_signature(st.last)
@@ -221,14 +255,19 @@ async def cmd_report(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     if not pdf:
         await _send(ctx, chat_id, t("profile_empty", st.lang))
         return
-    await ctx.bot.send_document(chat_id, io.BytesIO(pdf), filename=f"urimai-report-{st.lang}.pdf",
-                                caption=t("report_caption", st.lang), parse_mode=HTML)
-
+    await ctx.bot.send_document(
+        chat_id,
+        io.BytesIO(pdf),
+        filename=f"urimai-report-{st.lang}.pdf",
+        caption=t("report_caption", st.lang),
+        parse_mode=HTML,
+    )
 
 
 # ------------------------------
 # ---------- messages ----------
 # ------------------------------
+
 
 # Plain text messages. Before the user has explicitly chosen a language (and before any backend response exists),
 # infer it from Telegram's reported client language.
@@ -283,16 +322,18 @@ async def on_other(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         await _send(ctx, _chat_id(update), t("other_type", st.lang))
 
 
-
-# -----------------------------
+# ------------------------------
 # ---------- buttons ----------
 # ------------------------------
+
 
 # Edits a message in place, swallowing Telegram's harmless "message is not modified" error
 # (raised when the new text/markup is identical to what's already shown).
 async def _edit(q, text: str, markup=None):
     try:
-        await q.edit_message_text(text, parse_mode=HTML, reply_markup=markup, disable_web_page_preview=True)
+        await q.edit_message_text(
+            text, parse_mode=HTML, reply_markup=markup, disable_web_page_preview=True
+        )
     except BadRequest as e:
         if "not modified" not in str(e).lower():
             raise
@@ -316,6 +357,15 @@ async def on_callback(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     if kind == "l":
         await q.answer()
         st.lang, st.lang_chosen = rest, True
+        if st.voice_chosen:
+            await _edit(q, f"{t('intro', st.lang)}\n\n⚠️ <i>{t('disclaimer', st.lang)}</i>")
+        else:
+            await _edit(q, t("voice_pref_prompt", st.lang), render.voice_pref_keyboard(st.lang))
+        return
+
+    if kind == "v":
+        await q.answer()
+        st.voice_on, st.voice_chosen = rest == "1", True
         await _edit(q, f"{t('intro', st.lang)}\n\n⚠️ <i>{t('disclaimer', st.lang)}</i>")
         return
 
@@ -336,12 +386,15 @@ async def on_callback(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         # show the chosen answer and remove the buttons (old messages come back as inaccessible)
         if isinstance(msg, Message):
             with suppress(TelegramError):
-                await q.edit_message_text(f"{msg.text_html}\n\n➜ <b>{escape(opt['label'])}</b>", parse_mode=HTML)
+                await q.edit_message_text(
+                    f"{msg.text_html}\n\n➜ <b>{escape(opt['label'])}</b>", parse_mode=HTML
+                )
         st.question = None
         await ctx.bot.send_chat_action(chat_id, ChatAction.TYPING)
         try:
-            resp = await backend.answer(state.session_id(chat_id), field, opt.get("value"),
-                                        bool(opt.get("skip")), st.lang)
+            resp = await backend.answer(
+                state.session_id(chat_id), field, opt.get("value"), bool(opt.get("skip")), st.lang
+            )
         except BackendError as e:
             log.error("backend answer failed: %s", e)
             await _send(ctx, chat_id, t("error", st.lang))
@@ -351,7 +404,12 @@ async def on_callback(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
 
     if kind == "f":
         await q.answer()
-        await _send(ctx, chat_id, t("feedback_prompt", st.lang), render.feedback_category_keyboard(rest, st.lang))
+        await _send(
+            ctx,
+            chat_id,
+            t("feedback_prompt", st.lang),
+            render.feedback_category_keyboard(rest, st.lang),
+        )
         return
 
     if kind == "g":
@@ -362,7 +420,9 @@ async def on_callback(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
             await _send(ctx, chat_id, t("feedback_other_prompt", st.lang))
             return
         try:
-            await backend.feedback(scheme_id, st.lang, FEEDBACK_CATEGORY_TEXT.get(category, category))
+            await backend.feedback(
+                scheme_id, st.lang, FEEDBACK_CATEGORY_TEXT.get(category, category)
+            )
         except BackendError as e:
             log.warning("feedback failed: %s", e)
         await _send(ctx, chat_id, t("feedback_thanks", st.lang))
@@ -391,7 +451,9 @@ async def on_callback(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
 # Global error handler registered with the Application: logs unexpected exceptions,
 # but treats transient network blips as routine (python-telegram-bot retries them).
 async def on_error(update: object, ctx: ContextTypes.DEFAULT_TYPE):
-    if isinstance(ctx.error, NetworkError):  # transient Telegram connectivity blip; the library retries
+    if isinstance(
+        ctx.error, NetworkError
+    ):  # transient Telegram connectivity blip; the library retries
         log.warning("Telegram network blip: %s", ctx.error)
         return
     log.exception("unhandled error", exc_info=ctx.error)

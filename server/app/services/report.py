@@ -1,8 +1,10 @@
-"""PDF report of one session: what we understood, schemes by status (with reasons), documents, how to apply.
+"""
+PDF report of one session: what we understood, schemes by status (with reasons), documents, how to apply.
 
 Built in memory from the same engine output the chat shows (orchestrator.report_snapshot), never stored.
 Tamil / Hindi need glyph shaping, so fpdf2 runs HarfBuzz (uharfbuzz) with Noto Sans + script fallbacks.
 """
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -16,9 +18,11 @@ FONTS = Path(__file__).resolve().parents[1] / "assets" / "fonts"
 
 T = {
     "title": L("Scheme report", "திட்ட அறிக்கை", "योजना रिपोर्ट"),
-    "subtitle": L("Government welfare schemes you may be eligible for",
-                  "உங்களுக்குக் கிடைக்கக்கூடிய அரசு நலத் திட்டங்கள்",
-                  "सरकारी कल्याण योजनाएँ जिनके लिए आप पात्र हो सकते हैं"),
+    "subtitle": L(
+        "Government welfare schemes you may be eligible for",
+        "உங்களுக்குக் கிடைக்கக்கூடிய அரசு நலத் திட்டங்கள்",
+        "सरकारी कल्याण योजनाएँ जिनके लिए आप पात्र हो सकते हैं",
+    ),
     "generated": L("Generated", "உருவாக்கப்பட்டது", "तैयार किया गया"),
     "about_you": L("What you told us", "நீங்கள் சொன்னவை", "आपने जो बताया"),
     "inferred": L("inferred", "ஊகம்", "अनुमान"),
@@ -38,21 +42,31 @@ T = {
     "contact": L("Contact", "தொடர்பு", "संपर्क"),
     "priority_for": L("Priority for", "முன்னுரிமை", "प्राथमिकता"),
     "official": L("Official website", "அதிகாரப்பூர்வ இணையதளம்", "आधिकारिक वेबसाइट"),
-    "choose_one": L("You can get only one of", "இவற்றில் ஒன்றை மட்டுமே பெற முடியும்", "इनमें से केवल एक मिल सकती है"),
-    "unverified": L("Details are being verified against the official source.",
-                    "விவரங்கள் அதிகாரப்பூர்வ தகவலுடன் சரிபார்க்கப்படுகின்றன.",
-                    "विवरण आधिकारिक स्रोत से सत्यापित किए जा रहे हैं।"),
+    "choose_one": L(
+        "You can get only one of", "இவற்றில் ஒன்றை மட்டுமே பெற முடியும்", "इनमें से केवल एक मिल सकती है"
+    ),
+    "unverified": L(
+        "Details are being verified against the official source.",
+        "விவரங்கள் அதிகாரப்பூர்வ தகவலுடன் சரிபார்க்கப்படுகின்றன.",
+        "विवरण आधिकारिक स्रोत से सत्यापित किए जा रहे हैं।",
+    ),
     "still_needed": L("Still needed", "இன்னும் தேவை", "अभी चाहिए"),
     "reason": L("Reason", "காரணம்", "कारण"),
     "checklist": L("Documents to keep ready", "தயார் செய்ய வேண்டிய ஆவணங்கள்", "तैयार रखने वाले दस्तावेज़"),
     "for_n": L("for {n} scheme(s)", "{n} திட்டங்களுக்கு", "{n} योजनाओं के लिए"),
-    "coming_up": L("Coming up for your family", "உங்கள் குடும்பத்துக்கு வரவிருப்பவை", "आपके परिवार के लिए आगे"),
-    "none_likely": L("No likely schemes yet. Share a few more details in the chat to find more.",
-                     "இன்னும் திட்டங்கள் கண்டறியப்படவில்லை. மேலும் விவரங்களைச் சொல்லுங்கள்.",
-                     "अभी कोई संभावित योजना नहीं। चैट में थोड़ी और जानकारी दें।"),
-    "privacy": L("Urimai never asks for Aadhaar, phone or bank numbers. This report is not stored.",
-                 "உரிமை ஆதார், தொலைபேசி, வங்கி எண்களைக் கேட்பதில்லை. இந்த அறிக்கை சேமிக்கப்படுவதில்லை.",
-                 "उरिमै कभी आधार, फ़ोन या बैंक नंबर नहीं माँगता। यह रिपोर्ट सहेजी नहीं जाती।"),
+    "coming_up": L(
+        "Coming up for your family", "உங்கள் குடும்பத்துக்கு வரவிருப்பவை", "आपके परिवार के लिए आगे"
+    ),
+    "none_likely": L(
+        "No likely schemes yet. Share a few more details in the chat to find more.",
+        "இன்னும் திட்டங்கள் கண்டறியப்படவில்லை. மேலும் விவரங்களைச் சொல்லுங்கள்.",
+        "अभी कोई संभावित योजना नहीं। चैट में थोड़ी और जानकारी दें।",
+    ),
+    "privacy": L(
+        "Urimai never asks for Aadhaar, phone or bank numbers. This report is not stored.",
+        "உரிமை ஆதார், தொலைபேசி, வங்கி எண்களைக் கேட்பதில்லை. இந்த அறிக்கை சேமிக்கப்படுவதில்லை.",
+        "उरिमै कभी आधार, फ़ोन या बैंक नंबर नहीं माँगता। यह रिपोर्ट सहेजी नहीं जाती।",
+    ),
     "page": L("Page", "பக்கம்", "पृष्ठ"),
 }
 
@@ -79,7 +93,11 @@ class ReportPDF(FPDF):
     def __init__(self, lang: str, disclaimer: str):
         super().__init__(format="A4")
         self.lang, self.disclaimer = lang, disclaimer
-        for fam, stem in (("sans", "NotoSans"), ("tamil", "NotoSansTamil"), ("deva", "NotoSansDevanagari")):
+        for fam, stem in (
+            ("sans", "NotoSans"),
+            ("tamil", "NotoSansTamil"),
+            ("deva", "NotoSansDevanagari"),
+        ):
             self.add_font(fam, "", FONTS / f"{stem}-Regular.ttf")
             self.add_font(fam, "B", FONTS / f"{stem}-Bold.ttf")
         self.set_fallback_fonts(["tamil", "deva"], exact_match=False)
@@ -98,7 +116,13 @@ class ReportPDF(FPDF):
         self.line(self.l_margin, self.get_y(), self.w - self.r_margin, self.get_y())
         self.set_font("sans", "", 7.5)
         self.set_text_color(*MUTED)
-        self.multi_cell(self.epw - 22, 3.6, f"{self.disclaimer}  {self.t('privacy')}", new_x="RIGHT", new_y="TOP")
+        self.multi_cell(
+            self.epw - 22,
+            3.6,
+            f"{self.disclaimer}  {self.t('privacy')}",
+            new_x="RIGHT",
+            new_y="TOP",
+        )
         self.cell(22, 3.6, f"{self.t('page')} {self.page_no()}/{{nb}}", align="R")
 
     # ---------- building blocks ----------
@@ -106,7 +130,15 @@ class ReportPDF(FPDF):
         self.set_font("sans", "B" if bold else "", size)
         self.set_text_color(*color)
 
-    def para(self, text: str, size: float = 10, bold: bool = False, color=INK, indent: float = 0, h: float = 5.2):
+    def para(
+        self,
+        text: str,
+        size: float = 10,
+        bold: bool = False,
+        color=INK,
+        indent: float = 0,
+        h: float = 5.2,
+    ):
         self.font(size, bold, color)
         self.set_x(self.l_margin + indent)
         self.multi_cell(self.epw - indent, h, text, new_x="LMARGIN", new_y="NEXT")
@@ -144,7 +176,9 @@ class ReportPDF(FPDF):
         self.font(size, color=ink)
         self.set_fill_color(*bg)
         self.set_x(self.l_margin)
-        self.multi_cell(self.epw, 5.4, text, fill=True, padding=(2.5, 3.5), new_x="LMARGIN", new_y="NEXT")
+        self.multi_cell(
+            self.epw, 5.4, text, fill=True, padding=(2.5, 3.5), new_x="LMARGIN", new_y="NEXT"
+        )
 
     def tag(self, text: str, status: str):
         self.set_font("sans", "B", 8)
@@ -162,8 +196,13 @@ def _header(pdf: ReportPDF, generated: datetime):
     pdf.set_text_color(255, 255, 255)
     pdf.cell(0, 9, f"Urimai · உரிமை  —  {pdf.t('title')}", new_x="LMARGIN", new_y="NEXT")
     pdf.set_font("sans", "", 10)
-    pdf.cell(0, 6, f"{pdf.t('subtitle')}   ·   {pdf.t('generated')}: {generated:%d %b %Y, %H:%M}",
-             new_x="LMARGIN", new_y="NEXT")
+    pdf.cell(
+        0,
+        6,
+        f"{pdf.t('subtitle')}   ·   {pdf.t('generated')}: {generated:%d %b %Y, %H:%M}",
+        new_x="LMARGIN",
+        new_y="NEXT",
+    )
     pdf.set_y(36)
 
 
@@ -205,7 +244,11 @@ def _summary(pdf: ReportPDF, snap: dict):
         pdf.cell(col - 10, 5, pdf.t(status))
     pdf.set_y(y + 20)
     if summ.get("annual_cash_value_inr"):
-        pdf.para(f"{pdf.t('cash')}: {inr(summ['annual_cash_value_inr'])} {pdf.t('per_year')}", size=10.5, bold=True)
+        pdf.para(
+            f"{pdf.t('cash')}: {inr(summ['annual_cash_value_inr'])} {pdf.t('per_year')}",
+            size=10.5,
+            bold=True,
+        )
     if summ.get("cover_highlights"):
         pdf.para(f"{pdf.t('cover')}: " + "; ".join(summ["cover_highlights"]), size=9.5)
 
@@ -222,7 +265,9 @@ def _scheme(pdf: ReportPDF, r: dict, by_id: dict):
     if r.get("benefit_summary"):
         pdf.para(f"{pdf.t('benefit')}: {r['benefit_summary']}", size=10)
     if r.get("priority_groups"):
-        pdf.para(f"{pdf.t('priority_for')}: " + ", ".join(r["priority_groups"]), size=9, color=MUTED)
+        pdf.para(
+            f"{pdf.t('priority_for')}: " + ", ".join(r["priority_groups"]), size=9, color=MUTED
+        )
     if r.get("checks"):
         pdf.para(pdf.t("why"), size=9.5, bold=True, color=MUTED)
         for c in r["checks"]:
@@ -232,9 +277,13 @@ def _scheme(pdf: ReportPDF, r: dict, by_id: dict):
             pdf.dot_line(text, OUTCOME.get(c["outcome"], MUTED))
     if r.get("conflicts_with"):
         names = [by_id[s]["name"] for s in r["conflicts_with"] if s in by_id]
-        pdf.boxed(f"{pdf.t('choose_one')}: " + ", ".join([r["name"], *names]), WARN_BG, WARN_INK, size=9)
+        pdf.boxed(
+            f"{pdf.t('choose_one')}: " + ", ".join([r["name"], *names]), WARN_BG, WARN_INK, size=9
+        )
     if r.get("documents"):
-        pdf.para(f"{pdf.t('documents')}: " + ", ".join(d["label"] for d in r["documents"]), size=9.5)
+        pdf.para(
+            f"{pdf.t('documents')}: " + ", ".join(d["label"] for d in r["documents"]), size=9.5
+        )
     app = r.get("apply") or {}
     if app.get("where") or app.get("steps"):
         pdf.para(pdf.t("how"), size=9.5, bold=True, color=MUTED)
@@ -247,7 +296,9 @@ def _scheme(pdf: ReportPDF, r: dict, by_id: dict):
         if app.get("window"):
             pdf.para(app["window"], size=9.5, indent=4)
     contact = r.get("contact") or {}
-    contact_bits = [x for x in (contact.get("phone"), contact.get("email"), contact.get("helpline_hours")) if x]
+    contact_bits = [
+        x for x in (contact.get("phone"), contact.get("email"), contact.get("helpline_hours")) if x
+    ]
     if contact_bits:
         pdf.para(f"{pdf.t('contact')}: " + " · ".join(contact_bits), size=9.5)
     url = r.get("source_url") or app.get("url")
@@ -274,7 +325,9 @@ def build_report(snap: dict, lang: str, generated: datetime | None = None) -> by
     pdf.set_author("Urimai")
     pdf.add_page()
     _header(pdf, generated or datetime.now())
-    pdf.boxed(snap["disclaimer"], WARN_BG, WARN_INK, size=10)  # the disclaimer always renders, first
+    pdf.boxed(
+        snap["disclaimer"], WARN_BG, WARN_INK, size=10
+    )  # the disclaimer always renders, first
 
     _profile(pdf, snap.get("profile_view") or [])
     _summary(pdf, snap)
@@ -298,7 +351,12 @@ def build_report(snap: dict, lang: str, generated: datetime | None = None) -> by
         for r in res["need_info"]:
             pdf.dot_line(r["name"], STATUS["need_info"], indent=0, size=10)
             if r.get("missing_labels"):
-                pdf.para(f"{pdf.t('still_needed')}: " + ", ".join(r["missing_labels"]), size=9, color=MUTED, indent=4)
+                pdf.para(
+                    f"{pdf.t('still_needed')}: " + ", ".join(r["missing_labels"]),
+                    size=9,
+                    color=MUTED,
+                    indent=4,
+                )
 
     if res["not_eligible"]:
         pdf.heading(pdf.t("not_eligible"), STATUS["not_eligible"])

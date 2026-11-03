@@ -1,4 +1,5 @@
 """Next-question planner: pick the unknown field that resolves the most value."""
+
 from __future__ import annotations
 
 import math
@@ -6,7 +7,15 @@ import math
 from app.domain.fields import DONT_KNOW, FIELD_PRIORITY, FIELDS, NO, UI, YES, tr
 from app.engine.rules import F, eval_condition
 
-CORE_FIELDS = ("age", "gender", "district", "state", "occupation", "annual_family_income", "marital_status")
+CORE_FIELDS = (
+    "age",
+    "gender",
+    "district",
+    "state",
+    "occupation",
+    "annual_family_income",
+    "marital_status",
+)
 BUTTON_MAX = 10
 
 
@@ -23,8 +32,9 @@ def _allowed(field: str, facts: dict) -> bool:
     return all(eval_condition(facts, c) != F for c in FIELDS.get(field, {}).get("ask_if", []))
 
 
-def next_field(results: list[dict], schemes_by_id: dict, facts: dict,
-               asked: dict[str, int], skipped: set[str]) -> str | None:
+def next_field(
+    results: list[dict], schemes_by_id: dict, facts: dict, asked: dict[str, int], skipped: set[str]
+) -> str | None:
     known_core = sum(1 for f in CORE_FIELDS if facts.get(f) is not None)
     if known_core < 2 and asked.get("opening", 0) == 0:
         return "opening"
@@ -46,8 +56,13 @@ def next_field(results: list[dict], schemes_by_id: dict, facts: dict,
         return gate in skipped or facts.get(gate) is False or ignored
 
     candidates = [
-        f for f in score
-        if f in FIELDS and f not in skipped and asked.get(f, 0) < 2 and _allowed(f, facts) and not blocked_by_gate(f)
+        f
+        for f in score
+        if f in FIELDS
+        and f not in skipped
+        and asked.get(f, 0) < 2
+        and _allowed(f, facts)
+        and not blocked_by_gate(f)
     ]
     if not candidates:
         return None
@@ -65,7 +80,12 @@ def question_payload(field: str | None, lang: str) -> dict | None:
     if field is None:
         return None
     if field == "opening":
-        return {"field": "opening", "text": tr(UI["opening"], lang), "input_type": "text", "options": []}
+        return {
+            "field": "opening",
+            "text": tr(UI["opening"], lang),
+            "input_type": "text",
+            "options": [],
+        }
     meta = FIELDS[field]
     t = meta["type"]
     options: list[dict] = []
@@ -89,4 +109,9 @@ def question_payload(field: str | None, lang: str) -> dict | None:
         options.append({"value": None, "label": tr(DONT_KNOW, lang), "skip": True})
     elif t in ("int", "float"):
         input_type = "number"
-    return {"field": field, "text": tr(meta["q"], lang), "input_type": input_type, "options": options}
+    return {
+        "field": field,
+        "text": tr(meta["q"], lang),
+        "input_type": input_type,
+        "options": options,
+    }

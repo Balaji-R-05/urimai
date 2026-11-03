@@ -1,4 +1,5 @@
 """API tests with the LLM switched off: proves the engine + template fallback path works end to end."""
+
 import json
 from pathlib import Path
 
@@ -7,7 +8,9 @@ from app.core import config
 from app.main import app
 from fastapi.testclient import TestClient
 
-PERSONA_A = json.loads((Path(__file__).parent / "personas.json").read_text(encoding="utf-8"))[0]["profile"]
+PERSONA_A = json.loads((Path(__file__).parent / "personas.json").read_text(encoding="utf-8"))[0][
+    "profile"
+]
 
 
 @pytest.fixture(autouse=True)
@@ -29,13 +32,18 @@ def test_evaluate_form_mode_tamil(client):
     r = client.post("/api/evaluate", json={"profile": PERSONA_A, "lang": "ta"}).json()
     likely = {x["scheme_id"] for x in r["results"]["likely"]}
     assert {"kmut", "ignwps", "cmchis"} <= likely
-    assert r["summary"]["annual_cash_value_inr"] == 14400  # kmut/ignwps choose-one: count the larger
+    assert (
+        r["summary"]["annual_cash_value_inr"] == 14400
+    )  # kmut/ignwps choose-one: count the larger
     assert any(d["doc"] == "aadhaar" for d in r["documents"])
     assert "அரசுத் துறை" in r["disclaimer"]
 
 
 def test_chat_without_llm_asks_opening(client):
-    r = client.post("/api/chat", json={"session_id": "t1", "message": "hello", "lang": "ta", "channel": "telegram"}).json()
+    r = client.post(
+        "/api/chat",
+        json={"session_id": "t1", "message": "hello", "lang": "ta", "channel": "telegram"},
+    ).json()
     assert r["next_question"]["field"] == "opening"
     assert r["reply"]
 
@@ -43,17 +51,28 @@ def test_chat_without_llm_asks_opening(client):
 def test_answer_flow_and_skip(client):
     sid = "t2"
     client.post("/api/session/reset", json={"session_id": sid})
-    for field, value in [("age", 42), ("gender", "female"), ("state", "TN"), ("occupation", "agri_labourer")]:
-        r = client.post("/api/answer", json={"session_id": sid, "field": field, "value": value, "lang": "en"}).json()
+    for field, value in [
+        ("age", 42),
+        ("gender", "female"),
+        ("state", "TN"),
+        ("occupation", "agri_labourer"),
+    ]:
+        r = client.post(
+            "/api/answer", json={"session_id": sid, "field": field, "value": value, "lang": "en"}
+        ).json()
     assert r["profile"]["age"] == 42
     nq = r["next_question"]
     assert nq and nq["field"] != "opening"
-    r2 = client.post("/api/answer", json={"session_id": sid, "field": nq["field"], "skip": True, "lang": "en"}).json()
+    r2 = client.post(
+        "/api/answer", json={"session_id": sid, "field": nq["field"], "skip": True, "lang": "en"}
+    ).json()
     assert r2["next_question"] is None or r2["next_question"]["field"] != nq["field"]
 
 
 def test_feedback_accepts_known_scheme(client):
-    r = client.post("/api/feedback", json={"scheme_id": "pm_kisan", "lang": "en", "text": "amount looks wrong"})
+    r = client.post(
+        "/api/feedback", json={"scheme_id": "pm_kisan", "lang": "en", "text": "amount looks wrong"}
+    )
     assert r.status_code == 200 and r.json() == {"ok": True}
 
 
@@ -64,7 +83,10 @@ def test_feedback_rejects_unknown_scheme(client):
 
 def test_feedback_logs_scheme_lang_and_text_with_no_identifier(client, caplog):
     with caplog.at_level("INFO", logger="urimai.feedback"):
-        client.post("/api/feedback", json={"scheme_id": "pm_kisan", "lang": "ta", "text": "amount looks wrong"})
+        client.post(
+            "/api/feedback",
+            json={"scheme_id": "pm_kisan", "lang": "ta", "text": "amount looks wrong"},
+        )
     record = next(r for r in caplog.records if r.name == "urimai.feedback")
     assert "scheme=pm_kisan" in record.message and "lang=ta" in record.message
     assert "amount looks wrong" in record.message
@@ -91,9 +113,14 @@ def test_feedback_writes_to_mongodb_when_configured(client, monkeypatch):
         def insert_one(self, doc):
             inserted.append(doc)
 
-    monkeypatch.setattr(routes.db, "shared",
-                        lambda: {config.MONGODB_DB: {config.MONGODB_FEEDBACK_COLLECTION: FakeCollection()}})
-    r = client.post("/api/feedback", json={"scheme_id": "pm_kisan", "lang": "en", "text": "amount looks wrong"})
+    monkeypatch.setattr(
+        routes.db,
+        "shared",
+        lambda: {config.MONGODB_DB: {config.MONGODB_FEEDBACK_COLLECTION: FakeCollection()}},
+    )
+    r = client.post(
+        "/api/feedback", json={"scheme_id": "pm_kisan", "lang": "en", "text": "amount looks wrong"}
+    )
     assert r.status_code == 200 and r.json() == {"ok": True}
     assert len(inserted) == 1
     assert inserted[0]["scheme_id"] == "pm_kisan" and inserted[0]["lang"] == "en"
@@ -110,19 +137,34 @@ def test_feedback_falls_back_to_log_when_mongodb_insert_fails(client, monkeypatc
         def insert_one(self, doc):
             raise PyMongoError("boom")
 
-    monkeypatch.setattr(routes.db, "shared",
-                        lambda: {config.MONGODB_DB: {config.MONGODB_FEEDBACK_COLLECTION: FailingCollection()}})
+    monkeypatch.setattr(
+        routes.db,
+        "shared",
+        lambda: {config.MONGODB_DB: {config.MONGODB_FEEDBACK_COLLECTION: FailingCollection()}},
+    )
     with caplog.at_level("INFO", logger="urimai.feedback"):
-        r = client.post("/api/feedback", json={"scheme_id": "pm_kisan", "lang": "en", "text": "amount looks wrong"})
+        r = client.post(
+            "/api/feedback",
+            json={"scheme_id": "pm_kisan", "lang": "en", "text": "amount looks wrong"},
+        )
     assert r.status_code == 200 and r.json() == {"ok": True}
-    assert any("scheme=pm_kisan" in rec.message for rec in caplog.records if rec.name == "urimai.feedback")
+    assert any(
+        "scheme=pm_kisan" in rec.message for rec in caplog.records if rec.name == "urimai.feedback"
+    )
 
 
 def test_bool_question_has_buttons(client):
     sid = "t3"
-    for field, value in [("age", 30), ("gender", "female"), ("state", "TN"), ("annual_family_income", 100000),
-                         ("is_pregnant", True)]:
-        r = client.post("/api/answer", json={"session_id": sid, "field": field, "value": value}).json()
+    for field, value in [
+        ("age", 30),
+        ("gender", "female"),
+        ("state", "TN"),
+        ("annual_family_income", 100000),
+        ("is_pregnant", True),
+    ]:
+        r = client.post(
+            "/api/answer", json={"session_id": sid, "field": field, "value": value}
+        ).json()
     nq = r["next_question"]
     if nq and nq["input_type"] == "bool":
         assert [o["value"] for o in nq["options"]][:2] == [True, False]
@@ -136,4 +178,9 @@ def test_correction_is_reported(client):
 
 
 def test_unknown_field_rejected(client):
-    assert client.post("/api/answer", json={"session_id": "x", "field": "aadhaar", "value": "1"}).status_code == 400
+    assert (
+        client.post(
+            "/api/answer", json={"session_id": "x", "field": "aadhaar", "value": "1"}
+        ).status_code
+        == 400
+    )

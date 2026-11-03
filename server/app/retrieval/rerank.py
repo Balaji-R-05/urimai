@@ -1,6 +1,9 @@
-"""Cross-encoder reranker (fastembed ONNX). Scores (query, chunk) pairs jointly, so it catches meaning
+"""
+Cross-encoder reranker (fastembed ONNX). Scores (query, chunk) pairs jointly, so it catches meaning
 the bi-encoder / BM25 stage misses, including Tamil or Hindi queries against English chunks.
-Returns None when no model is available; the caller then keeps the fused order."""
+Returns None when no model is available; the caller then keeps the fused order.
+"""
+
 from __future__ import annotations
 
 import logging
@@ -18,13 +21,16 @@ def _model():
         return None
     try:
         from fastembed.rerank.cross_encoder import TextCrossEncoder
+
         return TextCrossEncoder(config.RERANK_MODEL, cache_dir=config.MODEL_CACHE)
     except Exception as e:
         log.warning("reranker %s unavailable (%s); using fused order", config.RERANK_MODEL, e)
         return None
 
 
-MIN_POOL = 4  # fewer candidates than this isn't worth the cross-encoder's cost; RRF order is used instead
+MIN_POOL = (
+    4  # fewer candidates than this isn't worth the cross-encoder's cost; RRF order is used instead
+)
 
 
 def rerank(query: str, texts: list[str]) -> list[float] | None:

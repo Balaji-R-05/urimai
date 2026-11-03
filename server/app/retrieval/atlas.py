@@ -9,6 +9,7 @@ Scheme search in MongoDB Atlas over the scheme_chunks collection (see chunk_stor
 
 Returns hits in the same shape as the in-memory search (app/retrieval/search.py).
 """
+
 from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor
@@ -31,33 +32,53 @@ def vector_search(coll, query: str, n: int, state: str | None) -> list[dict]:
     filt: dict = {"embed_model": emb.name}  # vectors from another model are not comparable
     if state:
         filt["state"] = {"$in": _states(state)}
-    return list(coll.aggregate([
-        {"$vectorSearch": {"index": VECTOR_INDEX, "path": "embedding", "queryVector": emb.embed([query])[0],
-                           "numCandidates": n * 5, "limit": n, "filter": filt}},
-        {"$project": NO_VECTOR},
-    ]))
+    return list(
+        coll.aggregate(
+            [
+                {
+                    "$vectorSearch": {
+                        "index": VECTOR_INDEX,
+                        "path": "embedding",
+                        "queryVector": emb.embed([query])[0],
+                        "numCandidates": n * 5,
+                        "limit": n,
+                        "filter": filt,
+                    }
+                },
+                {"$project": NO_VECTOR},
+            ]
+        )
+    )
 
 
 def text_search(coll, query: str, n: int, state: str | None) -> list[dict]:
     compound: dict = {"must": [{"text": {"query": query, "path": "text"}}]}
     if state:
         compound["filter"] = [{"in": {"path": "state", "value": _states(state)}}]
-    return list(coll.aggregate([
-        {"$search": {"index": TEXT_INDEX, "compound": compound}},
-        {"$limit": n},
-        {"$project": NO_VECTOR},
-    ]))
+    return list(
+        coll.aggregate(
+            [
+                {"$search": {"index": TEXT_INDEX, "compound": compound}},
+                {"$limit": n},
+                {"$project": NO_VECTOR},
+            ]
+        )
+    )
 
 
 def _rank(ranking: list[str], cid: str) -> int | None:
     return ranking.index(cid) + 1 if cid in ranking else None
 
 
-def retrieve(query: str, k: int = 5, state: str | None = None, use_rerank: bool = True) -> list[dict]:
+def retrieve(
+    query: str, k: int = 5, state: str | None = None, use_rerank: bool = True
+) -> list[dict]:
     """Top-k section hits: {scheme_id, section, lang, score, chunk, context, per-stage ranks}."""
     coll = chunks_collection()
     n = config.CANDIDATES
-    with ThreadPoolExecutor(max_workers=2) as pool:  # vector_search and text_search are independent round-trips
+    with ThreadPoolExecutor(
+        max_workers=2
+    ) as pool:  # vector_search and text_search are independent round-trips
         dense_future = pool.submit(vector_search, coll, query, n, state)
         text_future = pool.submit(text_search, coll, query, n, state)
         dense_docs, text_docs = dense_future.result(), text_future.result()
@@ -65,15 +86,26 @@ def retrieve(query: str, k: int = 5, state: str | None = None, use_rerank: bool 
     dense = [d["_id"] for d in dense_docs]
     bm = [d["_id"] for d in text_docs]
     fused = rrf(dense, bm)
-    pool = [by_id[cid] for cid in list(fused)[:config.RERANK_POOL]]
+    pool = [by_id[cid] for cid in list(fused)[: config.RERANK_POOL]]
 
     rr = rerank(query, [c["text"] for c in pool]) if use_rerank else None
-    hits = [{"scheme_id": c["scheme_id"], "section": c["section"], "lang": c["lang"], "parent_id": c["parent_id"],
-             "chunk": c["text"], "context": c["context"], "rrf": fused[c["_id"]],
-             "dense_rank": _rank(dense, c["_id"]), "bm25_rank": _rank(bm, c["_id"]),
-             "reranked": rr is not None, "rerank_score": rr[i] if rr is not None else None,
-             "score": rr[i] if rr is not None else fused[c["_id"]]}
-            for i, c in enumerate(pool)]
+    hits = [
+        {
+            "scheme_id": c["scheme_id"],
+            "section": c["section"],
+            "lang": c["lang"],
+            "parent_id": c["parent_id"],
+            "chunk": c["text"],
+            "context": c["context"],
+            "rrf": fused[c["_id"]],
+            "dense_rank": _rank(dense, c["_id"]),
+            "bm25_rank": _rank(bm, c["_id"]),
+            "reranked": rr is not None,
+            "rerank_score": rr[i] if rr is not None else None,
+            "score": rr[i] if rr is not None else fused[c["_id"]],
+        }
+        for i, c in enumerate(pool)
+    ]
     hits.sort(key=lambda h: -h["score"])
 
     # One hit per (scheme, section): language variants and sibling chunks are the same fact

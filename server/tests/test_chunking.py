@@ -1,4 +1,5 @@
 """Recursive chunker + parent/child chunk building (app/retrieval). Pure functions, no models."""
+
 from app.retrieval.chunking import recursive_split
 from app.retrieval.docs import all_chunks, all_sections
 
@@ -22,7 +23,9 @@ def test_overlap_carries_text_into_next_chunk():
 
 
 def test_numbered_steps_are_not_split_from_their_text():
-    chunks = recursive_split("1. Register on the portal with your details today\n2. Complete e-KYC", 40, 0)
+    chunks = recursive_split(
+        "1. Register on the portal with your details today\n2. Complete e-KYC", 40, 0
+    )
     assert "1." not in chunks and all(not c.endswith(" 1.") for c in chunks)
 
 
@@ -32,4 +35,9 @@ def test_every_child_has_header_and_parent():
     assert len(chunks) >= len(parents) >= 150
     for c in chunks:
         assert c["parent_id"] in parents and " | " in c["text"].split("\n", 1)[0]
-    assert {c["section"] for c in chunks} == {"overview", "eligibility", "documents", "how_to_apply"}
+    assert {c["section"] for c in chunks} == {
+        "overview",
+        "eligibility",
+        "documents",
+        "how_to_apply",
+    }

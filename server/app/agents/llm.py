@@ -28,7 +28,9 @@ def client() -> AsyncGroq:
     if not config.GROQ_API_KEY:
         raise LLMError("GROQ_API_KEY is not set")
     if _client is None:
-        _client = AsyncGroq(api_key=config.GROQ_API_KEY, timeout=config.LLM_TIMEOUT_S, max_retries=0)
+        _client = AsyncGroq(
+            api_key=config.GROQ_API_KEY, timeout=config.LLM_TIMEOUT_S, max_retries=0
+        )
     return _client
 
 
@@ -41,9 +43,7 @@ _RETRY_IN = re.compile(r"try again in ([\d.]+)(ms|s)")
 
 
 def _rate_limit_wait(err: str) -> float | None:
-    """
-    Seconds Groq asks us to wait on a 429, if stated.
-    """
+    """Seconds Groq asks us to wait on a 429, if stated."""
     if "429" not in err and "rate_limit" not in err:
         return None
     m = _RETRY_IN.search(err)
@@ -53,7 +53,9 @@ def _rate_limit_wait(err: str) -> float | None:
     return n / 1000 if m.group(2) == "ms" else n
 
 
-async def _chat(messages: list[dict], *, json_mode: bool, max_tokens: int, temperature: float) -> str:
+async def _chat(
+    messages: list[dict], *, json_mode: bool, max_tokens: int, temperature: float
+) -> str:
     """
     Try the primary model, then each fallback. Groq rate limits are per model, so spreading across
     models multiplies throughput. A short 429 ("try again in 0.8s") is waited out once on the same model.
@@ -64,8 +66,13 @@ async def _chat(messages: list[dict], *, json_mode: bool, max_tokens: int, tempe
     for i, model in enumerate(models):
         for attempt in (1, 2):
             try:
-                result = await _chat_once(model, messages, json_mode=json_mode, max_tokens=max_tokens,
-                                          temperature=temperature)
+                result = await _chat_once(
+                    model,
+                    messages,
+                    json_mode=json_mode,
+                    max_tokens=max_tokens,
+                    temperature=temperature,
+                )
                 if i > 0:
                     metrics.inc("llm_fallback_used")
                 return result
@@ -90,7 +97,9 @@ def _strip_think(text: str) -> str:
     return re.sub(r"<think>.*?</think>", "", text, flags=re.S).strip()
 
 
-async def _chat_once(model: str, messages: list[dict], *, json_mode: bool, max_tokens: int, temperature: float) -> str:
+async def _chat_once(
+    model: str, messages: list[dict], *, json_mode: bool, max_tokens: int, temperature: float
+) -> str:
     kwargs = {
         "model": model,
         "messages": messages,
@@ -126,8 +135,12 @@ async def _chat_once(model: str, messages: list[dict], *, json_mode: bool, max_t
 
 
 async def complete_json(system: str, user: str, max_tokens: int = 2000) -> dict:
-    text = await _chat([{"role": "system", "content": system}, {"role": "user", "content": user}],
-                       json_mode=True, max_tokens=max_tokens, temperature=0.1)
+    text = await _chat(
+        [{"role": "system", "content": system}, {"role": "user", "content": user}],
+        json_mode=True,
+        max_tokens=max_tokens,
+        temperature=0.1,
+    )
     try:
         return json.loads(text)
     except json.JSONDecodeError:
@@ -141,8 +154,12 @@ async def complete_json(system: str, user: str, max_tokens: int = 2000) -> dict:
 
 
 async def complete_text(system: str, user: str, max_tokens: int = 1200) -> str:
-    return await _chat([{"role": "system", "content": system}, {"role": "user", "content": user}],
-                       json_mode=False, max_tokens=max_tokens, temperature=0.4)
+    return await _chat(
+        [{"role": "system", "content": system}, {"role": "user", "content": user}],
+        json_mode=False,
+        max_tokens=max_tokens,
+        temperature=0.4,
+    )
 
 
 async def transcribe(audio: bytes, filename: str, lang: str | None) -> str:
@@ -155,7 +172,9 @@ async def transcribe(audio: bytes, filename: str, lang: str | None) -> str:
     if lang in ("ta", "hi", "en"):
         kwargs["language"] = lang
     try:
-        resp = await asyncio.wait_for(client().audio.transcriptions.create(**kwargs), timeout=config.STT_TIMEOUT_S)
+        resp = await asyncio.wait_for(
+            client().audio.transcriptions.create(**kwargs), timeout=config.STT_TIMEOUT_S
+        )
     except TimeoutError as e:
         raise LLMError("STT timeout") from e
     except LLMError:

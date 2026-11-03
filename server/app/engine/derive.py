@@ -1,4 +1,8 @@
-"""Derived fields (fields.DERIVED). Pure function: profile dict -> facts dict (profile + derived)."""
+"""
+Derived fields (fields.DERIVED).
+Pure function: profile dict -> facts dict (profile + derived).
+"""
+
 from __future__ import annotations
 
 
@@ -14,13 +18,23 @@ def derive(profile: dict) -> tuple[dict, set[str]]:
     children = profile.get("children")
     if children is not None:
         facts["has_girl_child_under_10"] = _any_child(
-            children, lambda c: c.get("gender") == "female" and c.get("age") is not None and c["age"] < 10)
+            children,
+            lambda c: c.get("gender") == "female" and c.get("age") is not None and c["age"] < 10,
+        )
         facts["has_girl_child_in_govt_school_14_17"] = _any_child(
-            children, lambda c: c.get("gender") == "female" and c.get("age") is not None
-            and 14 <= c["age"] <= 17 and c.get("school_type") == "govt")
+            children,
+            lambda c: c.get("gender") == "female"
+            and c.get("age") is not None
+            and 14 <= c["age"] <= 17
+            and c.get("school_type") == "govt",
+        )
         facts["has_boy_child_in_govt_school_14_17"] = _any_child(
-            children, lambda c: c.get("gender") == "male" and c.get("age") is not None
-            and 14 <= c["age"] <= 17 and c.get("school_type") == "govt")
+            children,
+            lambda c: c.get("gender") == "male"
+            and c.get("age") is not None
+            and 14 <= c["age"] <= 17
+            and c.get("school_type") == "govt",
+        )
 
     caste = profile.get("caste_category")
     if caste is not None:

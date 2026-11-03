@@ -1,9 +1,11 @@
-"""Dense embeddings: fastembed multilingual model, falling back to signed feature hashing.
+"""
+Dense embeddings: fastembed multilingual model, falling back to signed feature hashing.
 
 The hashing embedder (character n-grams + words) needs no download and works for any script, but it only
 captures spelling overlap. It is used when EMBED_MODEL=hash or fastembed / the model cannot be loaded.
 Chunk vectors are cached per (embedder, corpus) in search.py, so switching backends re-embeds the corpus.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -25,7 +27,7 @@ def _features(text: str):
         padded = f"#{w}#"
         for n in (3, 4):
             for i in range(len(padded) - n + 1):
-                yield f"c{n}:" + padded[i:i + n], 0.5
+                yield f"c{n}:" + padded[i : i + n], 0.5
     for a, b in zip(words, words[1:], strict=False):
         yield f"b:{a}_{b}", 0.7
 
@@ -52,12 +54,17 @@ class Embedder:
                 import warnings
 
                 from fastembed import TextEmbedding
-                with warnings.catch_warnings():  # "now uses mean pooling": that is the correct pooling
+
+                with (
+                    warnings.catch_warnings()
+                ):  # "now uses mean pooling": that is the correct pooling
                     warnings.simplefilter("ignore", UserWarning)
                     self.model = TextEmbedding(model_name, cache_dir=config.MODEL_CACHE)
                 self.name = model_name
             except Exception as e:  # not installed, offline on first run, unknown model
-                log.warning("dense model %s unavailable (%s); using hashing embedder", model_name, e)
+                log.warning(
+                    "dense model %s unavailable (%s); using hashing embedder", model_name, e
+                )
         self.dim = len(self.embed(["probe"])[0])
 
     def embed(self, texts: list[str]) -> list[list[float]]:
@@ -65,7 +72,7 @@ class Embedder:
             return [hash_embed(t) for t in texts]
         out = []
         for v in self.model.embed(texts):
-            n = float((v ** 2).sum()) ** 0.5 or 1.0
+            n = float((v**2).sum()) ** 0.5 or 1.0
             out.append((v / n).tolist())
         return out
 

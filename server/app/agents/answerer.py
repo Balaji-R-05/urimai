@@ -93,9 +93,7 @@ async def answer(
         "topic": topic,
         "schemes": [_record(r) for r in results],
     }
-    if (
-        passages
-    ):  # retrieval's best-matching sections of these same records, most relevant first
+    if passages:  # retrieval's best-matching sections of these same records, most relevant first
         payload["retrieved_passages"] = passages
     text = await llm.complete_text(
         SYSTEM.format(language=LANG_NAME.get(lang, "English")),

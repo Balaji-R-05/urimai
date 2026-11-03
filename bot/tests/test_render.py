@@ -17,6 +17,7 @@ def _resp(**over):
 
 # ---------- _clip / inr ----------
 
+
 def test_clip_leaves_short_strings_alone():
     assert render._clip("short") == "short"
 
@@ -35,6 +36,7 @@ def test_inr_groups_indian_style():
 
 # ---------- keyboards ----------
 
+
 def test_language_keyboard_has_three_languages():
     kb = render.language_keyboard()
     row = kb.inline_keyboard[0]
@@ -49,12 +51,16 @@ def test_retry_keyboard_has_single_retry_button():
 
 # ---------- card_signature ----------
 
+
 def test_card_signature_reflects_counts_and_ids():
-    resp = _resp(results={
-        "likely": [{"scheme_id": "a"}, {"scheme_id": "b"}],
-        "need_info": [{}],
-        "not_eligible": [{}, {}],
-    }, summary={"annual_cash_value_inr": 5000, "cover_highlights": []})
+    resp = _resp(
+        results={
+            "likely": [{"scheme_id": "a"}, {"scheme_id": "b"}],
+            "need_info": [{}],
+            "not_eligible": [{}, {}],
+        },
+        summary={"annual_cash_value_inr": 5000, "cover_highlights": []},
+    )
     assert render.card_signature(resp) == (("a", "b"), 1, 2, 5000)
 
 
@@ -65,6 +71,7 @@ def test_card_signature_changes_when_results_change():
 
 
 # ---------- learned_text ----------
+
 
 def test_learned_text_none_when_nothing_new():
     assert render.learned_text(_resp(), "en") is None
@@ -82,6 +89,7 @@ def test_learned_text_reports_corrections():
 
 # ---------- results_card ----------
 
+
 def test_results_card_shows_no_results_hint_when_empty():
     resp = _resp(results={"likely": [], "need_info": [], "not_eligible": []})
     text, kb = render.results_card(resp, "en")
@@ -90,11 +98,13 @@ def test_results_card_shows_no_results_hint_when_empty():
 
 
 def test_results_card_lists_likely_schemes_with_buttons():
-    resp = _resp(results={
-        "likely": [{"scheme_id": "a", "name": "Scheme A", "status": "likely"}],
-        "need_info": [],
-        "not_eligible": [],
-    })
+    resp = _resp(
+        results={
+            "likely": [{"scheme_id": "a", "name": "Scheme A", "status": "likely"}],
+            "need_info": [],
+            "not_eligible": [],
+        }
+    )
     text, kb = render.results_card(resp, "en")
     assert "✅" in text
     buttons = [b for row in kb.inline_keyboard for b in row]
@@ -117,34 +127,45 @@ def test_results_card_uses_response_disclaimer_when_present():
 
 # ---------- bucket_list ----------
 
+
 def test_bucket_list_shows_fail_reason_for_not_eligible():
-    resp = _resp(results={
-        "likely": [], "need_info": [],
-        "not_eligible": [{"scheme_id": "x", "name": "Scheme X", "fail_reason": "Too old"}],
-    })
+    resp = _resp(
+        results={
+            "likely": [],
+            "need_info": [],
+            "not_eligible": [{"scheme_id": "x", "name": "Scheme X", "fail_reason": "Too old"}],
+        }
+    )
     text, kb = render.bucket_list(resp, "not_eligible", "en")
     assert "Too old" in text
     assert kb.inline_keyboard[-1][0].callback_data == "c"  # back button last
 
 
 def test_bucket_list_shows_missing_labels_for_need_info():
-    resp = _resp(results={
-        "likely": [],
-        "need_info": [{"scheme_id": "y", "name": "Scheme Y", "missing_labels": ["Age", "District"]}],
-        "not_eligible": [],
-    })
+    resp = _resp(
+        results={
+            "likely": [],
+            "need_info": [
+                {"scheme_id": "y", "name": "Scheme Y", "missing_labels": ["Age", "District"]}
+            ],
+            "not_eligible": [],
+        }
+    )
     text, _ = render.bucket_list(resp, "need_info", "en")
     assert "Age, District" in text
 
 
 # ---------- find_result ----------
 
+
 def test_find_result_searches_all_buckets():
-    resp = _resp(results={
-        "likely": [{"scheme_id": "a"}],
-        "need_info": [{"scheme_id": "b"}],
-        "not_eligible": [{"scheme_id": "c"}],
-    })
+    resp = _resp(
+        results={
+            "likely": [{"scheme_id": "a"}],
+            "need_info": [{"scheme_id": "b"}],
+            "not_eligible": [{"scheme_id": "c"}],
+        }
+    )
     assert render.find_result(resp, "b")["scheme_id"] == "b"
     assert render.find_result(resp, "c")["scheme_id"] == "c"
 
@@ -154,6 +175,7 @@ def test_find_result_returns_none_when_missing():
 
 
 # ---------- scheme_detail ----------
+
 
 def _scheme(**over):
     base = {
@@ -185,11 +207,13 @@ def test_scheme_detail_shows_fail_reason_when_not_eligible():
 
 
 def test_scheme_detail_lists_conflicting_schemes_by_name():
-    resp = _resp(results={
-        "likely": [_scheme(scheme_id="a", name="Scheme A")],
-        "need_info": [],
-        "not_eligible": [],
-    })
+    resp = _resp(
+        results={
+            "likely": [_scheme(scheme_id="a", name="Scheme A")],
+            "need_info": [],
+            "not_eligible": [],
+        }
+    )
     r = _scheme(scheme_id="a", name="Scheme A", conflicts_with=["a"])
     text, _ = render.scheme_detail(resp, r, "en")
     assert "Scheme A" in text
@@ -211,14 +235,18 @@ def test_scheme_detail_omits_priority_line_when_absent():
 
 
 def test_scheme_detail_shows_deadline_and_window():
-    r = _scheme(apply={"where": "CSC", "steps": [], "deadline": "2026-12-31", "window": "Open all year"})
+    r = _scheme(
+        apply={"where": "CSC", "steps": [], "deadline": "2026-12-31", "window": "Open all year"}
+    )
     text, _ = render.scheme_detail(_resp(), r, "en")
     assert "2026-12-31" in text
     assert "Open all year" in text
 
 
 def test_scheme_detail_shows_contact_details():
-    r = _scheme(contact={"phone": "1800-000-0000", "email": "help@example.invalid", "helpline_hours": "9-6"})
+    r = _scheme(
+        contact={"phone": "1800-000-0000", "email": "help@example.invalid", "helpline_hours": "9-6"}
+    )
     text, _ = render.scheme_detail(_resp(), r, "en")
     assert "1800-000-0000" in text
     assert "help@example.invalid" in text
@@ -244,21 +272,25 @@ def test_feedback_category_keyboard_targets_the_scheme():
 
 # ---------- documents ----------
 
+
 def test_documents_empty_message_when_none():
     assert "No documents yet" in render.documents(_resp(), "en")
 
 
 def test_documents_lists_with_singular_and_plural_counts():
-    resp = _resp(documents=[
-        {"label": "Aadhaar", "schemes": ["a"]},
-        {"label": "Income Certificate", "schemes": ["a", "b"]},
-    ])
+    resp = _resp(
+        documents=[
+            {"label": "Aadhaar", "schemes": ["a"]},
+            {"label": "Income Certificate", "schemes": ["a", "b"]},
+        ]
+    )
     text = render.documents(resp, "en")
     assert "Aadhaar" in text and "for 1 scheme" in text
     assert "Income Certificate" in text and "for 2 schemes" in text
 
 
 # ---------- hints ----------
+
 
 def test_hints_none_when_absent():
     assert render.hints(_resp(), "en") is None
@@ -271,21 +303,25 @@ def test_hints_formats_bullet_list():
 
 # ---------- profile ----------
 
+
 def test_profile_empty_when_no_resp():
     assert "Nothing yet" in render.profile(None, "en")
 
 
 def test_profile_lists_fields_and_marks_inferred():
-    resp = {"profile_view": [
-        {"label": "Age", "display": "42"},
-        {"label": "District", "display": "Chennai", "inferred": True},
-    ]}
+    resp = {
+        "profile_view": [
+            {"label": "Age", "display": "42"},
+            {"label": "District", "display": "Chennai", "inferred": True},
+        ]
+    }
     text = render.profile(resp, "en")
     assert "Age: <b>42</b>" in text
     assert "District: <b>Chennai</b> <i>(inferred)</i>" in text
 
 
 # ---------- reply_keyboard ----------
+
 
 def test_reply_keyboard_none_when_nothing_to_show():
     assert render.reply_keyboard(_resp(), qid=1) is None
@@ -298,19 +334,23 @@ def test_reply_keyboard_includes_answered_scheme_buttons():
 
 
 def test_reply_keyboard_lays_out_bool_question_three_per_row():
-    resp = _resp(next_question={
-        "input_type": "bool",
-        "options": [{"label": "Yes"}, {"label": "No"}, {"label": "Skip"}],
-    })
+    resp = _resp(
+        next_question={
+            "input_type": "bool",
+            "options": [{"label": "Yes"}, {"label": "No"}, {"label": "Skip"}],
+        }
+    )
     kb = render.reply_keyboard(resp, qid=7)
     row = kb.inline_keyboard[0]
     assert [b.callback_data for b in row] == ["a|7|0", "a|7|1", "a|7|2"]
 
 
 def test_reply_keyboard_lays_out_non_bool_question_two_per_row():
-    resp = _resp(next_question={
-        "input_type": "choice",
-        "options": [{"label": "A"}, {"label": "B"}, {"label": "C"}],
-    })
+    resp = _resp(
+        next_question={
+            "input_type": "choice",
+            "options": [{"label": "A"}, {"label": "B"}, {"label": "C"}],
+        }
+    )
     kb = render.reply_keyboard(resp, qid=1)
     assert [len(row) for row in kb.inline_keyboard] == [2, 1]

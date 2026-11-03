@@ -24,6 +24,7 @@ Usage:
     python -m app.catalogue.import_myscheme <raw.json> --state "Tamil Nadu" --limit 5 --out data/drafts/batch.json
     python -m app.catalogue.import_myscheme <raw.json> --level central --limit 10 --out data/drafts/central.json
 """
+
 from __future__ import annotations
 
 import argparse
@@ -58,7 +59,9 @@ def _field_catalogue() -> str:
             lines.append(f"- {name}: bool (derived; yes/no only)")
             continue
         if name == "state":
-            lines.append(f"- state: enum {{{', '.join(sorted(schema.STATES))}}} (use the 2-letter CODE, not the name)")
+            lines.append(
+                f"- state: enum {{{', '.join(sorted(schema.STATES))}}} (use the 2-letter CODE, not the name)"
+            )
             continue
         t = meta["type"]
         if t == "enum":
@@ -162,7 +165,9 @@ async def extract_one(raw: dict) -> dict:
         mode=raw.get("Application Mode", ""),
         tags=raw.get("Tags / Categories", ""),
         description=_raw_text(raw.get("Description")),
-        eligibility_general=_raw_text(raw.get("Eligibility (General)") or raw.get("Eligibility Criteria")),
+        eligibility_general=_raw_text(
+            raw.get("Eligibility (General)") or raw.get("Eligibility Criteria")
+        ),
         exclusions=_raw_text(raw.get("Exclusions / Ineligibility")),
         benefits=_raw_text(raw.get("Benefits")),
         application_process=_raw_text(raw.get("Application Process")),
@@ -240,12 +245,16 @@ def _assemble(raw: dict, drafted: dict) -> dict:
         "documents": _normalize_documents(drafted.get("documents"), notes),
         "application": drafted.get("application") or {"mode": "offline"},
         "source": {
-            "url": raw.get("Official Link") or raw.get("MyScheme URL") or "https://www.myscheme.gov.in/",
+            "url": raw.get("Official Link")
+            or raw.get("MyScheme URL")
+            or "https://www.myscheme.gov.in/",
             "origin": "myscheme.gov.in",
             "external_id": raw.get("Scheme Slug"),
         },
-        "verification": {"status": "draft", "notes": " ".join(
-            filter(None, [drafted.get("confidence_notes"), *notes])) or None},
+        "verification": {
+            "status": "draft",
+            "notes": " ".join(filter(None, [drafted.get("confidence_notes"), *notes])) or None,
+        },
         "mutually_exclusive_with": [],
     }
     if drafted.get("contact"):
@@ -269,7 +278,12 @@ async def _extract_with_retry(raw: dict, attempts: int = 3) -> dict:
             if is_last or ("429" not in str(e) and "rate_limit" not in str(e)):
                 raise
             wait = llm._rate_limit_wait(str(e)) or RATE_LIMIT_RETRY_S
-            log.warning("rate-limited on every model; waiting %.0fs (attempt %d/%d)", wait, attempt, attempts)
+            log.warning(
+                "rate-limited on every model; waiting %.0fs (attempt %d/%d)",
+                wait,
+                attempt,
+                attempts,
+            )
             await asyncio.sleep(wait)
     raise AssertionError("unreachable")
 
@@ -300,11 +314,22 @@ async def run(records: list[dict]) -> tuple[list[dict], dict[str, list[str]]]:
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     ap.add_argument("raw_json", help="Path to the raw export (a JSON list of scheme records)")
-    ap.add_argument("--state", help="Only records whose 'State / UT / Ministry' equals this (e.g. 'Tamil Nadu')")
-    ap.add_argument("--level", choices=["central", "state"], help="Only 'central' or 'state' records")
-    ap.add_argument("--limit", type=int, default=5, help="Max records to process (LLM calls cost money; default 5)")
+    ap.add_argument(
+        "--state", help="Only records whose 'State / UT / Ministry' equals this (e.g. 'Tamil Nadu')"
+    )
+    ap.add_argument(
+        "--level", choices=["central", "state"], help="Only 'central' or 'state' records"
+    )
+    ap.add_argument(
+        "--limit",
+        type=int,
+        default=5,
+        help="Max records to process (LLM calls cost money; default 5)",
+    )
     ap.add_argument("--out", required=True, help="Where to write the draft schemes JSON")
     args = ap.parse_args()
 
@@ -322,7 +347,9 @@ def main() -> None:
     if not records:
         sys.exit("no records match the given filters")
 
-    config.LLM_TIMEOUT_S = max(config.LLM_TIMEOUT_S, 30.0)  # extraction output is long; the live-chat default is too short
+    config.LLM_TIMEOUT_S = max(
+        config.LLM_TIMEOUT_S, 30.0
+    )  # extraction output is long; the live-chat default is too short
     drafts, failed = asyncio.run(run(records))
 
     out_path = Path(args.out)

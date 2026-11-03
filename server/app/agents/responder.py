@@ -38,23 +38,32 @@ Hard rules:
 - Never say the user IS eligible; say schemes "look likely" / "you may be eligible". Final decision is by the government department.
 - Never mention any scheme that is not in top_likely.
 - Never ask for Aadhaar number, phone number, bank account number or address.
-- If the user asked something off-topic, answer in one short sentence and steer back to the question."""
+- If the user asked something off-topic, answer in one short sentence and steer back to the question.
+"""
 
 TEMPLATES = {
     "thanks": L("Thank you.", "நன்றி.", "धन्यवाद।"),
-    "off_topic": L("Thanks for sharing! Sorry, I just need one more detail.",
-                   "பகிர்ந்ததற்கு நன்றி! மன்னிக்கவும், இன்னும் ஒரு தகவல் மட்டும் தேவை.",
-                   "बताने के लिए धन्यवाद! माफ़ कीजिए, बस एक और जानकारी चाहिए।"),
-    "count": L("{n} schemes look likely for you so far.", "இதுவரை {n} திட்டங்கள் உங்களுக்குக் கிடைக்க வாய்ப்புள்ளது.",
-               "अब तक {n} योजनाएँ आपके लिए संभावित हैं।"),
-    "done": L("I have enough information now. Please look at the scheme list and the documents checklist.",
-              "இப்போது போதுமான தகவல் கிடைத்துவிட்டது. திட்டப் பட்டியலையும் ஆவணப் பட்டியலையும் பாருங்கள்.",
-              "अब मेरे पास पर्याप्त जानकारी है। कृपया योजनाओं की सूची और दस्तावेज़ सूची देखें।"),
+    "off_topic": L(
+        "Thanks for sharing! Sorry, I just need one more detail.",
+        "பகிர்ந்ததற்கு நன்றி! மன்னிக்கவும், இன்னும் ஒரு தகவல் மட்டும் தேவை.",
+        "बताने के लिए धन्यवाद! माफ़ कीजिए, बस एक और जानकारी चाहिए।",
+    ),
+    "count": L(
+        "{n} schemes look likely for you so far.",
+        "இதுவரை {n} திட்டங்கள் உங்களுக்குக் கிடைக்க வாய்ப்புள்ளது.",
+        "अब तक {n} योजनाएँ आपके लिए संभावित हैं।",
+    ),
+    "done": L(
+        "I have enough information now. Please look at the scheme list and the documents checklist.",
+        "இப்போது போதுமான தகவல் கிடைத்துவிட்டது. திட்டப் பட்டியலையும் ஆவணப் பட்டியலையும் பாருங்கள்.",
+        "अब मेरे पास पर्याप्त जानकारी है। कृपया योजनाओं की सूची और दस्तावेज़ सूची देखें।",
+    ),
 }
 
 
-def template_reply(lang: str, likely_count: int, question: str | None, learned_any: bool,
-                   off_topic: bool = False) -> str:
+def template_reply(
+    lang: str, likely_count: int, question: str | None, learned_any: bool, off_topic: bool = False
+) -> str:
     if off_topic and question:
         return f"{tr(TEMPLATES['off_topic'], lang)} {question}"
     parts = []
@@ -66,9 +75,17 @@ def template_reply(lang: str, likely_count: int, question: str | None, learned_a
     return " ".join(parts)
 
 
-async def respond(*, lang: str, user_message: str | None, learned: list[str],
-                  likely_count: int, top_likely: list[str], next_question: str | None, off_topic: bool = False) -> str:
-    system = SYSTEM.format(language=LANG_NAME.get(lang, "English"), max_sentences=2)  # short: read on a phone, often spoken aloud
+async def respond(
+    *,
+    lang: str,
+    user_message: str | None,
+    learned: list[str],
+    likely_count: int,
+    top_likely: list[str],
+    next_question: str | None,
+    off_topic: bool = False,
+) -> str:
+    system = SYSTEM.format(language=LANG_NAME.get(lang, "English"), max_sentences=2)
     payload = {
         "user_message": user_message,
         "facts_learned_this_turn": learned,

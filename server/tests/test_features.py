@@ -1,4 +1,5 @@
 """Feature tests: tap-friendly questions (#4) and scheme Q&A (#1). No network needed."""
+
 import pytest
 from app.agents import answerer, extractor, llm
 from app.core import config
@@ -16,6 +17,7 @@ def client(monkeypatch):
 
 # ---------- #4 buttons ----------
 
+
 def test_occupation_has_buttons_in_tamil():
     q = question_payload("occupation", "ta")
     assert q["input_type"] == "enum"
@@ -31,14 +33,28 @@ def test_disability_percent_has_range_buttons():
 
 
 # a profile where only disability decides the disability pension (igndps)
-BASE = {"age": 50, "gender": "male", "state": "TN", "annual_family_income": 50000, "has_bpl_ration_card": True,
-        "occupation": "daily_wage_labourer", "marital_status": "married", "residence": "urban",
-        "has_pucca_house": True, "is_epfo_member": False, "owns_house": True, "has_electricity_connection": True,
-        "wants_to_start_business": False, "children": [], "caste_category": "bc"}
+BASE = {
+    "age": 50,
+    "gender": "male",
+    "state": "TN",
+    "annual_family_income": 50000,
+    "has_bpl_ration_card": True,
+    "occupation": "daily_wage_labourer",
+    "marital_status": "married",
+    "residence": "urban",
+    "has_pucca_house": True,
+    "is_epfo_member": False,
+    "owns_house": True,
+    "has_electricity_connection": True,
+    "wants_to_start_business": False,
+    "children": [],
+    "caste_category": "bc",
+}
 
 
 def _session(sid):
     from app.core.session import Session
+
     return Session(id=sid, profile=dict(BASE))
 
 
@@ -72,10 +88,14 @@ async def test_ignored_gate_does_not_fall_through_to_percentage(client):
     s = _session("dis-ignored")
     s.asked["has_disability"] = 2
     r = await orchestrator.answer(s, "age", 50, "en")
-    assert r["next_question"] is None or r["next_question"]["field"] not in ("has_disability", "disability_percent")
+    assert r["next_question"] is None or r["next_question"]["field"] not in (
+        "has_disability",
+        "disability_percent",
+    )
 
 
 # ---------- #1 scheme Q&A ----------
+
 
 @pytest.mark.anyio
 async def test_scheme_question_uses_template_when_llm_fails(monkeypatch):
@@ -90,20 +110,23 @@ async def test_scheme_question_uses_template_when_llm_fails(monkeypatch):
     monkeypatch.setattr(extractor, "extract", fake_extract)
     monkeypatch.setattr(answerer, "answer", boom)
     from app.core.session import Session
+
     s = Session(id="qa")
     r = await orchestrator.chat(s, "KMUT-க்கு என்ன ஆவணம் வேணும்?", "ta")
     assert r["answered_schemes"] == ["kmut"]
     assert "கலைஞர் மகளிர் உரிமைத் தொகை" in r["reply"]
-    assert "ஆதார் அட்டை" in r["reply"]           # documents come from the catalogue record
+    assert "ஆதார் அட்டை" in r["reply"]  # documents come from the catalogue record
     assert r["next_question"]["text"] in r["reply"]  # interview continues after the answer
 
 
 # ---------- off-topic reply to a question ----------
 
+
 @pytest.mark.anyio
 async def test_off_topic_reply_repeats_question_without_using_a_try(monkeypatch):
     from app.agents import responder
     from app.core.session import Session
+
     monkeypatch.setattr(llm, "available", lambda: True)
     seen = []
 
@@ -133,6 +156,7 @@ async def test_off_topic_reply_repeats_question_without_using_a_try(monkeypatch)
 async def test_off_topic_template_when_llm_reply_fails(monkeypatch):
     from app.agents import responder
     from app.core.session import Session
+
     monkeypatch.setattr(llm, "available", lambda: True)
 
     async def nothing_extracted(*a, **k):
@@ -152,12 +176,17 @@ async def test_off_topic_template_when_llm_reply_fails(monkeypatch):
 @pytest.mark.anyio
 async def test_real_answer_is_not_off_topic(monkeypatch):
     from app.core.session import Session
+
     monkeypatch.setattr(llm, "available", lambda: True)
     s = Session(id="ot3")
     await orchestrator.answer(s, "gender", "female", "en")
     q = (await orchestrator.answer(s, "age", 30, "en"))["next_question"]
     assert q["field"] != "opening"
-    value = q["options"][0]["value"] if q["options"] else {"state": "TN", "district": "Madurai"}[q["field"]]
+    value = (
+        q["options"][0]["value"]
+        if q["options"]
+        else {"state": "TN", "district": "Madurai"}[q["field"]]
+    )
 
     async def extracted(*a, **k):
         return [{"field": q["field"], "value": value, "quote": "x", "confidence": 0.9}], None

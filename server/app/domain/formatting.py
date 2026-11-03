@@ -1,7 +1,8 @@
 """Human-readable, localized display of profile values and rule conditions."""
+
 from __future__ import annotations
 
-from app.domain.fields import DERIVED, FIELDS, STATE_NAMES, UI, tr
+from app.domain.fields import DERIVED, FIELDS, NO, STATE_NAMES, UI, YES, tr
 
 
 def inr(n: int | float) -> str:
@@ -49,7 +50,9 @@ def children_display(children: list[dict], lang: str) -> str:
     parts = []
     for c in children:
         g = c.get("gender")
-        word = tr(UI["daughter"] if g == "female" else UI["son"] if g == "male" else UI["child"], lang)
+        word = tr(
+            UI["daughter"] if g == "female" else UI["son"] if g == "male" else UI["child"], lang
+        )
         age = c.get("age")
         parts.append(f"{word} {age}" if age is not None else word)
     return ", ".join(parts)
@@ -69,7 +72,13 @@ def value_display(field: str, value, lang: str) -> str:
             return tr(c["label"], lang)
     if field == "disability_percent":
         return f"{value}%"
-    if t == "bool" or field in DERIVED:
+    if t == "bool":
+        # Plain Yes/No here: value_display is always shown right next to the field's own
+        # label (profile view, "learned"/"corrected" lines), where many fields' full bool_phrase
+        # ("Wants to start or grow a business") just restates the label. The fuller phrase is
+        # still used standalone in rule-check text via bool_phrase() (no label shown there).
+        return tr(YES if value else NO, lang)
+    if field in DERIVED:
         return bool_phrase(field, bool(value), lang)
     if t == "enum":
         return option_label(field, value, lang)
@@ -104,8 +113,16 @@ def condition_text(cond: dict, lang: str, negate: bool = False) -> str:
         return f"{label} not {lo}–{hi}" if negate else f"{label} {lo}–{hi}"
 
     if negate:
-        op = {"eq": "ne", "ne": "eq", "in": "not_in", "not_in": "in",
-              "gte": "lt", "gt": "lte", "lte": "gt", "lt": "gte"}.get(op, op)
+        op = {
+            "eq": "ne",
+            "ne": "eq",
+            "in": "not_in",
+            "not_in": "in",
+            "gte": "lt",
+            "gt": "lte",
+            "lte": "gt",
+            "lt": "gte",
+        }.get(op, op)
 
     if op in ("gte", "gt", "lte", "lt"):
         sym = {"gte": "≥", "gt": ">", "lte": "≤", "lt": "<"}[op]

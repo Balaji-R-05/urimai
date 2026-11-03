@@ -19,23 +19,24 @@ class ChatState:
     lang: str = config.DEFAULT_LANG
     lang_chosen: bool = False
     voice_on: bool = config.VOICE_REPLIES_DEFAULT
-    last: dict | None = None            # last server response
+    voice_chosen: bool = False  # asked once, right after language
+    last: dict | None = None  # last server response
     card_msg_id: int | None = None
     card_sig: tuple | None = None
-    q_id: int = 0                       # increments with every question, so stale button taps are ignored
+    q_id: int = 0  # increments with every question, so stale button taps are ignored
     question: dict | None = None
     last_user_text: str | None = None
     hints_shown: set = field(default_factory=set)
-    feedback_for: str | None = None     # scheme_id awaiting a "what's wrong" reply, or None
+    feedback_for: str | None = None  # scheme_id awaiting a "what's wrong" reply, or None
 
 
 _states: OrderedDict[int, ChatState] = OrderedDict()
 _locks: dict[int, asyncio.Lock] = {}
 
 
-# Drops the least-recently-touched chats once we're over MAX_CHATS. A chat's lock is
-# only dropped alongside it when that lock is free, so an in-flight handler never
-# loses the lock object it's holding.
+# Drops the least-recently-touched chats once we're over MAX_CHATS.
+# A chat's lock is only dropped alongside it when that lock is free,
+# so an in-flight handler never loses the lock object it's holding.
 def _evict_lru() -> None:
     while len(_states) > MAX_CHATS:
         oldest_id, _ = _states.popitem(last=False)
@@ -69,7 +70,8 @@ def reset(chat_id: int) -> ChatState:
     old = _states.get(chat_id)
     new = ChatState()
     if old:
-        new.lang, new.lang_chosen, new.voice_on = old.lang, old.lang_chosen, old.voice_on
+        new.lang, new.lang_chosen = old.lang, old.lang_chosen
+        new.voice_on, new.voice_chosen = old.voice_on, old.voice_chosen
     _states[chat_id] = new
     _states.move_to_end(chat_id)
     _evict_lru()

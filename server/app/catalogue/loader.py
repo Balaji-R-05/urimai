@@ -39,9 +39,7 @@ READ_ATTEMPTS = 3
 
 
 def _read_mongo() -> list[dict]:
-    """
-    All scheme documents. Retries a few times: a short network drop shouldn't stop the bot starting.
-    """
+    """All scheme documents. Retries a few times: a short network drop shouldn't stop the bot starting."""
     from pymongo.errors import PyMongoError
 
     from app.core import db
@@ -55,34 +53,41 @@ def _read_mongo() -> list[dict]:
         except PyMongoError as e:
             if attempt == READ_ATTEMPTS:
                 raise CatalogueError(f"cannot read schemes from MongoDB: {db.explain(e)}") from e
-            log.warning("reading schemes failed (attempt %d/%d): %s; retrying", attempt, READ_ATTEMPTS,
-                        db.explain(e))
+            log.warning(
+                "reading schemes failed (attempt %d/%d): %s; retrying",
+                attempt,
+                READ_ATTEMPTS,
+                db.explain(e),
+            )
             time.sleep(2 * attempt)
         finally:
             client.close()
     if not schemes:
-        raise CatalogueError(f"MongoDB collection '{config.MONGODB_DB}.{config.MONGODB_COLLECTION}' is empty; "
-                             "run: python -m app.catalogue.seed")
+        raise CatalogueError(
+            f"MongoDB collection '{config.MONGODB_DB}.{config.MONGODB_COLLECTION}' is empty; "
+            "run: python -m app.catalogue.seed"
+        )
     return schemes
 
 
 def served(s: Scheme) -> bool:
-    """
-    Shown to users: active and past draft review.
-    """
+    """Shown to users: active and past draft review."""
     return s.status == "active" and s.verification.status != "draft"
 
 
 def to_engine(s: Scheme, loaded_ids: set[str]) -> dict:
     """
-    The dict the rule engine, planner and replies read. State schemes get a residence rule prepended.
+    The dict the rule engine, planner and replies read.
+    State schemes get a residence rule prepended.
     """
     d = to_document(s)
     elig = d["eligibility"]
     for block in ("all", "any", "none", "other"):
         elig.setdefault(block, [])
     if s.state:
-        elig["all"].insert(0, {"field": "state", "op": "eq", "value": s.state, "text": lives_in(s.state)})
+        elig["all"].insert(
+            0, {"field": "state", "op": "eq", "value": s.state, "text": lives_in(s.state)}
+        )
     docs = d.get("documents", [])
     d["documents"] = [x if isinstance(x, str) else x["id"] for x in docs]
     d["document_labels"] = {x["id"]: x["label"] for x in docs if isinstance(x, dict)}
@@ -108,15 +113,20 @@ def validate(docs: list[dict], strict: bool = True) -> list[dict]:
     ids = {s.id for s in keep}
     if not keep:
         raise CatalogueError("no servable schemes (all invalid, draft or closed)")
-    log.info("catalogue: %d schemes served (%d draft/closed, %d invalid)", len(keep), len(valid) - len(keep),
-             len(errors))
+    log.info(
+        "catalogue: %d schemes served (%d draft/closed, %d invalid)",
+        len(keep),
+        len(valid) - len(keep),
+        len(errors),
+    )
     return [to_engine(s, ids) for s in keep]
 
 
 @lru_cache(maxsize=1)
 def load_schemes() -> list[dict]:
     """
-    The served catalogue, shared by the engine, the extractor and retrieval. Treat as read-only.
+    The served catalogue, shared by the engine, the extractor and retrieval.
+    Treat as read-only.
     """
     if config.MONGODB_URI:
         return validate(_read_mongo(), strict=False)

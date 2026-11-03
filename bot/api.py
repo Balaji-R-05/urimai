@@ -20,9 +20,7 @@ class Backend:
         )
 
     async def _post(self, path: str, **kwargs) -> dict:
-        """
-        Send a POST request to the backend and return the JSON response.
-        """
+        """Send a POST request to the backend and return the JSON response."""
         try:
             response = await self.client.post(path, **kwargs)
             response.raise_for_status()
@@ -31,9 +29,7 @@ class Backend:
             raise BackendError(f"{path}: {type(e).__name__}: {e}") from e
 
     async def chat(self, session_id: str, message: str, lang: str) -> dict:
-        """
-        Send a message to the backend and get a response.
-        """
+        """Send a message to the backend and get a response."""
         return await self._post(
             "/api/chat",
             json={
@@ -45,9 +41,7 @@ class Backend:
         )
 
     async def answer(self, session_id: str, field: str, value, skip: bool, lang: str) -> dict:
-        """
-        Send an answer to the backend.
-        """
+        """Send an answer to the backend."""
         return await self._post(
             "/api/answer",
             json={
@@ -61,25 +55,18 @@ class Backend:
         )
 
     async def feedback(self, scheme_id: str, lang: str, text: str | None = None) -> None:
-        """
-        Reports an issue with a scheme's info.
-        """
+        """Reports an issue with a scheme's info."""
         await self._post("/api/feedback", json={"scheme_id": scheme_id, "lang": lang, "text": text})
 
     async def reset(self, session_id: str) -> None:
-        """
-        Reset the session, deleting all answers and profile.
-        """
+        """Reset the session, deleting all answers and profile."""
         await self._post("/api/session/reset", json={"session_id": session_id})
 
     async def report(self, session_id: str, lang: str) -> bytes | None:
-        """
-        PDF report bytes, or None when the session has no profile yet.
-        """
+        """PDF report bytes, or None when the session has no profile yet."""
         try:
             response = await self.client.get(
-                f"/api/session/{session_id}/report",
-                params={"lang": lang}
+                f"/api/session/{session_id}/report", params={"lang": lang}
             )
             if response.status_code == 404:
                 return None
@@ -89,9 +76,7 @@ class Backend:
             raise BackendError(f"report: {type(e).__name__}: {e}") from e
 
     async def transcribe(self, audio: bytes, lang: str) -> str:
-        """
-        Transcribe the given audio bytes to text.
-        """
+        """Transcribe the given audio bytes to text."""
         data = await self._post(
             "/api/transcribe",
             files={"file": ("voice.ogg", audio, "audio/ogg")},
@@ -100,9 +85,7 @@ class Backend:
         return (data.get("text") or "").strip()
 
     async def health(self) -> dict:
-        """
-        Check the health of the backend.
-        """
+        """Check the health of the backend."""
         try:
             response = await self.client.get("/api/health")
             return response.json()

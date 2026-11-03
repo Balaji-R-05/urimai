@@ -1,4 +1,5 @@
 """Catalogue sources: JSON seed by default, MongoDB when MONGODB_URI is set (client stubbed, no server needed)."""
+
 import copy
 
 import pytest
@@ -17,7 +18,9 @@ class _Collection:
         self.docs = docs
 
     def find(self, _filter, projection):
-        return _Cursor({k: v for k, v in d.items() if projection.get(k, 1)} for d in copy.deepcopy(self.docs))
+        return _Cursor(
+            {k: v for k, v in d.items() if projection.get(k, 1)} for d in copy.deepcopy(self.docs)
+        )
 
 
 @pytest.fixture
@@ -50,7 +53,9 @@ def test_mongo_source_is_validated_like_the_seed(mongo):
     assert {s["id"] for s in schemes} == {s["id"] for s in read_seed()}
     assert all("_id" not in s for s in schemes)
     kmut = next(s for s in schemes if s["id"] == "kmut")
-    assert kmut["eligibility"]["all"][0]["field"] == "state"  # residence rule added for state schemes
+    assert (
+        kmut["eligibility"]["all"][0]["field"] == "state"
+    )  # residence rule added for state schemes
 
 
 def test_empty_mongo_collection_fails_loudly(mongo):

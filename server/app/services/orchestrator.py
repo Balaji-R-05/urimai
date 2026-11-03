@@ -1,4 +1,7 @@
-"""Per-turn pipeline for a Telegram chat: extract -> normalise -> derive -> evaluate -> plan -> respond."""
+"""
+Per-turn pipeline for a Telegram chat: extract -> normalise -> derive -> evaluate -> plan -> respond.
+"""
+
 from __future__ import annotations
 
 import logging
@@ -31,14 +34,24 @@ class Trace:
 
     def mark(self, step: str, **detail):
         now = time.perf_counter()
-        self.steps.append({"step": step, "ms": round((now - self._t) * 1000), **({"detail": detail} if detail else {})})
+        self.steps.append(
+            {
+                "step": step,
+                "ms": round((now - self._t) * 1000),
+                **({"detail": detail} if detail else {}),
+            }
+        )
         self._t = now
 
 
 def _display_changes(entries: list[dict], lang: str) -> list[dict]:
     out = []
     for e in entries:
-        item = {"field": e["field"], "label": field_label(e["field"], lang), "display": value_display(e["field"], e["new"], lang)}
+        item = {
+            "field": e["field"],
+            "label": field_label(e["field"], lang),
+            "display": value_display(e["field"], e["new"], lang),
+        }
         if e.get("old") is not None:
             item["from_display"] = value_display(e["field"], e["old"], lang)
         out.append(item)
@@ -53,13 +66,32 @@ def _profile_view(profile: dict, facts: dict, inferred: set, lang: str) -> list[
             v = facts.get(f)
         if v is None:
             continue
-        view.append({"field": f, "label": field_label(f, lang), "display": value_display(f, v, lang),
-                     "inferred": f in inferred and profile.get(f) is None})
+        # 0% is just has_disability's own side effect, not a fact worth its own line
+        # next to "Disability: No" (see app/nlp/normalise.side_effects).
+        if f == "disability_percent" and not facts.get("has_disability"):
+            continue
+        view.append(
+            {
+                "field": f,
+                "label": field_label(f, lang),
+                "display": value_display(f, v, lang),
+                "inferred": f in inferred and profile.get(f) is None,
+            }
+        )
     return view
 
 
-async def _finish(s: Session, *, lang: str, user_message: str | None, learned: list[dict], changes: list[dict],
-                  trace: Trace, question: dict | None = None, repeat: str | None = None) -> dict:
+async def _finish(
+    s: Session,
+    *,
+    lang: str,
+    user_message: str | None,
+    learned: list[dict],
+    changes: list[dict],
+    trace: Trace,
+    question: dict | None = None,
+    repeat: str | None = None,
+) -> dict:
     facts, inferred = derive(s.profile)
     raw = evaluate_all(facts, SCHEMES, lang)
     results = build_results(raw, SCHEMES_BY_ID, lang)
@@ -99,8 +131,13 @@ async def _finish(s: Session, *, lang: str, user_message: str | None, learned: l
         asked_about = [by_id[i] for i in question["scheme_ids"] if i in by_id]
         answered = [r["scheme_id"] for r in asked_about]
         try:
-            reply = await answerer.answer(question=user_message or "", topic=question["topic"],
-                                          results=asked_about, lang=lang, passages=question.get("passages"))
+            reply = await answerer.answer(
+                question=user_message or "",
+                topic=question["topic"],
+                results=asked_about,
+                lang=lang,
+                passages=question.get("passages"),
+            )
             trace.mark("answer_question", schemes=answered)
         except llm.LLMError as e:
             log.warning("answerer failed: %s", e)
@@ -111,16 +148,22 @@ async def _finish(s: Session, *, lang: str, user_message: str | None, learned: l
     elif llm.available():
         try:
             reply = await responder.respond(
-                lang=lang, user_message=user_message, learned=learned_text,
-                likely_count=len(likely), top_likely=[r["name"] for r in likely],
-                next_question=nq["text"] if nq else None, off_topic=off_topic)
+                lang=lang,
+                user_message=user_message,
+                learned=learned_text,
+                likely_count=len(likely),
+                top_likely=[r["name"] for r in likely],
+                next_question=nq["text"] if nq else None,
+                off_topic=off_topic,
+            )
             trace.mark("respond")
         except llm.LLMError as e:
             log.warning("responder failed: %s", e)
             trace.mark("respond", error=str(e))
     if not reply:
-        reply = responder.template_reply(lang, len(likely), nq["text"] if nq else None, bool(learned_text),
-                                         off_topic=off_topic)
+        reply = responder.template_reply(
+            lang, len(likely), nq["text"] if nq else None, bool(learned_text), off_topic=off_topic
+        )
 
     s.history.append({"role": "assistant", "text": reply})
     s.history = s.history[-12:]
@@ -170,7 +213,8 @@ async def chat(s: Session, message: str, lang: str) -> dict:
     if llm.available():
         try:
             updates, question = await extractor.extract(
-                numerals.to_digits(message), s.history[:-1], s.last_field, s.profile)
+                numerals.to_digits(message), s.history[:-1], s.last_field, s.profile
+            )
             trace.mark("extract", updates=updates, question=question)
             learned, changes = apply_updates(s.profile, updates, s.turn, s.evidence)
             # A question was pending, but the reply gave no facts and asked nothing ("nice weather today")
@@ -186,12 +230,25 @@ async def chat(s: Session, message: str, lang: str) -> dict:
     if question is not None:
         hits = await retrieval.search(message, s.profile.get("state"))
         merged = retrieval.merge_question(question, hits)
-        trace.mark("retrieve", hits=retrieval.trace_view(hits),
-                   extractor_ids=question["scheme_ids"], final=merged and merged["scheme_ids"],
-                   topic=merged and merged["topic"], source=merged and merged["source"])
+        trace.mark(
+            "retrieve",
+            hits=retrieval.trace_view(hits),
+            extractor_ids=question["scheme_ids"],
+            final=merged and merged["scheme_ids"],
+            topic=merged and merged["topic"],
+            source=merged and merged["source"],
+        )
         question = merged
-    return await _finish(s, lang=lang, user_message=message, learned=learned, changes=changes, trace=trace,
-                         question=question, repeat=repeat)
+    return await _finish(
+        s,
+        lang=lang,
+        user_message=message,
+        learned=learned,
+        changes=changes,
+        trace=trace,
+        question=question,
+        repeat=repeat,
+    )
 
 
 async def answer(s: Session, field: str, value, lang: str, skip: bool = False) -> dict:
@@ -207,12 +264,15 @@ async def answer(s: Session, field: str, value, lang: str, skip: bool = False) -
             old = s.profile.get(field)
             s.profile[field] = v
             s.evidence[field] = {"value": v, "quote": "(button)", "turn": s.turn}
-            (changes if old is not None and old != v else learned).append({"field": field, "old": old, "new": v})
+            (changes if old is not None and old != v else learned).append(
+                {"field": field, "old": old, "new": v}
+            )
             learned.extend(side_effects(s.profile, field, v))
             s.history.append({"role": "user", "text": f"[{field} = {v}]"})
     trace.mark("answer", field=field, value=value, skip=skip)
-    return await _finish(s, lang=lang, user_message=None,
-                         learned=learned, changes=changes, trace=trace)
+    return await _finish(
+        s, lang=lang, user_message=None, learned=learned, changes=changes, trace=trace
+    )
 
 
 def report_snapshot(s: Session, lang: str) -> dict:
